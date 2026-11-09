@@ -64,6 +64,18 @@ window.__lint = () => {
   return out;
 };
 
+// Visible on-screen text of the frame that was just rendered (build.mjs --text). Used to check numbers against the claims ledger (HV-08).
+window.__visibleText = () => {
+  const eff = (e) => { let o = 1; for (let p = e; p && p !== document.documentElement; p = p.parentElement) { const cs = getComputedStyle(p); if (cs.display === 'none' || cs.visibility === 'hidden') return 0; o *= parseFloat(cs.opacity); } return o; };
+  const out = [];
+  for (const e of document.querySelectorAll('#stage *')) {
+    if (e.closest('svg')) continue;
+    const own = [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent.trim()).filter(Boolean).join(' ');
+    if (own && eff(e) >= 0.3) out.push(own);
+  }
+  return out;
+};
+
 // A cut (see build.mjs CUTS) can set window.__SCRIPT_URL, window.__BADGES and window.__buildScenes before __init runs.
 window.__init = async () => {
   Object.assign(BADGES, window.__BADGES || {});

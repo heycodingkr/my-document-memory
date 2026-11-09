@@ -4,7 +4,7 @@
 window.__SCRIPT_URL = '/demo/video/hackathon/script.json';
 window.__BADGES = {
   illus: { cls: 'illus', text: () => 'ILLUSTRATION' },
-  grid: { cls: 'illus', text: () => 'ILLUSTRATION · FOUR WINDOWS' },
+  grid: { cls: '', text: () => 'REAL CAPTURES · RECORDED SEPARATELY' },
   real: { cls: '', text: () => 'REAL APP · SPED UP' },
   whatif: { cls: 'whatif', text: () => 'WHAT-IF · NOT MEASURED' }
 };
@@ -29,16 +29,6 @@ const setStatus = (p, text, cls = '') => {
 };
 const setText = (e, s) => { if (e.textContent !== s) e.textContent = s; };
 const blinkOf = (t) => (Math.floor(t * 2.6) % 2 ? '▍' : ' ');
-// Sequential typing windows for [{el, text}] between t0 and t1, proportional to length. Returns [{el,text,a,b}].
-const schedule = (items, t0, t1) => {
-  const total = items.reduce((n, i) => n + i.text.length, 0); let at = t0;
-  return items.map((i) => { const d = (t1 - t0) * i.text.length / total; const r = { ...i, a: at, b: at + d }; at += d; return r; });
-};
-const runTyping = (plan, lt) => {
-  const live = plan.find((p) => lt >= p.a && lt < p.b);
-  plan.forEach((p) => { setText(p.el, typed(p.text, seg(lt, p.a, p.b)) + (p === live ? blinkOf(lt) : '')); });
-};
-const lineRows = (log, rows) => rows.map((r) => ({ ...r, el: A(log, `top:${10 + r.i * 24}px;`, `<b>›</b>${r.text}`, 'll') }));
 
 // ── 1 · problem (light, illustration) ──
 function buildProblem() {
@@ -130,56 +120,22 @@ function buildCommand() {
   };
 }
 
-// ── 3 · four windows (dark): Docs (drawn) · Slides (REAL run) · Blog (drawn) · Document Memory (REAL MCP trace + REAL app) ──
+// ── 3 · four windows: separately recorded Docs / Blog / Slides, plus the real MCP trace and app ──
 function buildAgents() {
   const s = addScene('agents', { badge: 'grid' });
   const sl = FT.slides, ma = FT.memory_app;
-  const docs = makePane(s, 60, 100, 888, 400, 'Google Docs · one-page overview', 'ILLUSTRATION');
+  const docs = makePane(s, 60, 100, 888, 400, 'Google Docs · one-page overview', 'REAL CAPTURE · EDITED', 'lime');
   const slides = makePane(s, 972, 100, 888, 400, 'Google Slides · 10-slide deck', `REAL RUN · EARLIER PROJECT · ×${sl.speed}`, 'lime');
-  const blog = makePane(s, 60, 516, 888, 400, 'Naver Blog · promo post', 'ILLUSTRATION');
+  const blog = makePane(s, 60, 516, 888, 400, 'Naver Blog · promo post', 'REAL CAPTURE · EDITED', 'lime');
   const mem = makePane(s, 972, 516, 888, 400, 'Document Memory · MCP + app', 'REAL · MCP + APP', 'lime');
   const panes = [docs, slides, blog, mem];
 
-  // Docs (drawn): agent log + page
-  const dLog = A(docs.body, '', '', 'plog');
-  const dRows = lineRows(dLog, ['ask Document Memory', 'got: One-Page Overview', 'got: project notes', 'open Google Docs', 'type title', 'type · Purpose', 'type · The Problem', 'type · How It Works', 'type · What Runs Today', "type · What's Next", 'flag · launch date', 'ready for review'].map((text, i) => ({ i, text })));
-  const dDoc = A(docs.body, 'left:230px;right:0;top:0;bottom:0;background:#e6ebf0;');
-  A(dDoc, '', '<u style="left:14px;width:40px"></u><u style="left:62px;width:26px"></u><u style="left:96px;width:26px"></u><u style="left:130px;width:60px"></u><u style="left:198px;width:26px"></u>', 'tbstrip');
-  const dSheet = A(dDoc, 'left:46px;top:30px;width:566px;height:330px;', '', 'sheet');
-  const DOC = [['My Document Memory: Project Overview', null],
-    ['Purpose', 'Helps people share how documents are made, so anyone can create the document they need with AI.'],
-    ['The Problem', 'Every document starts from zero: find a format, plan the outline, gather sources, fix the style, then explain it all to an AI again.'],
-    ['How It Works', 'Templates, references and finished documents are stored separately. An AI host searches them over MCP and creates an editable draft.'],
-    ['What Runs Today', 'A Rust API with SQLite, a web app, a dmem command line and an MCP server with seven tools. Exports: DOCX, PPTX, Markdown, HTML.'],
-    ["What's Next", 'Publishing templates for others and team libraries. Public launch date: [needs confirmation]']];
-  const dItems = [];
-  DOC.forEach(([h, p], i) => {
-    if (i === 0) dItems.push({ el: A(dSheet, 'top:14px;font-size:17px;font-weight:800;color:#14222d;', '', 't'), text: h, row: 4 });
-    else {
-      const top = 44 + (i - 1) * 57;
-      dItems.push({ el: A(dSheet, `top:${top}px;`, '', 'hd'), text: h, row: 4 + i });
-      dItems.push({ el: A(dSheet, `top:${top + 18}px;height:34px;`, '', 'p'), text: p });
-    }
-  });
-  const dPlan = schedule(dItems, 14.4, 30.0);
-  const dHeads = dPlan.filter((i) => i.row);
-  const dRowAt = [5.5, 12.9, 13.3, 13.8, ...dHeads.map((i) => i.a), dPlan[dPlan.length - 1].b - 1.2, 30.6];   // ask, got, got, open, type×6, flag, ready
-
-  // Blog (drawn)
-  const bLog = A(blog.body, '', '', 'plog');
-  const bRows = lineRows(bLog, ['ask Document Memory', 'got: Promo Blog Post', 'got: project notes', 'open Naver Blog', 'type title', 'type · Hook', 'type · What It Does', 'type · How It Works', 'add tags', 'ready for review'].map((text, i) => ({ i, text })));
-  const bDoc = A(blog.body, 'left:230px;right:0;top:0;bottom:0;background:#eaefec;');
-  A(bDoc, '', '<span class="abs mono" style="left:14px;top:5px;font-size:11px;color:#5d7367;white-space:nowrap">Naver Blog · new post</span>', 'tbstrip');
-  const bSheet = A(bDoc, 'left:46px;top:30px;width:566px;height:330px;', '', 'sheet');
-  const BLOG = [['Stop starting every document from zero', 't'],
-    ['Reports, decks, posts: every one begins with the same chores. Find a format. Plan the outline. Gather sources. Fix the style.', 'p', 154],
-    ['My Document Memory keeps your templates, references and finished documents, so your AI starts from a good structure instead of a blank page.', 'p', 202],
-    ['It flags anything it cannot confirm, links claims back to their source, and exports to DOCX, PPTX, Markdown or HTML.', 'p', 250],
-    ['#DocumentMemory  #AIWriting  #Templates', 'g', 298]];
-  A(bSheet, 'left:34px;right:30px;top:62px;height:76px;background:#dde5e0;border-radius:6px;', '<svg viewBox="0 0 120 40" width="120" height="40" style="position:absolute;left:223px;top:18px"><path d="M4 34 L34 8 L56 26 L72 14 L116 34 Z" fill="#b9c8be"/><circle cx="92" cy="9" r="5" fill="#cbd8ce"/></svg>');
-  const bItems = BLOG.map(([text, kind, top]) => ({ text, el: kind === 't' ? A(bSheet, 'top:20px;font-size:20px;font-weight:800;color:#14222d;', '', 't') : A(bSheet, `top:${top}px;${kind === 'g' ? 'font-size:12px;color:#2a7a52;font-weight:700;' : 'height:34px;'}`, '', kind === 'g' ? 'p' : 'p') }));
-  const bPlan = schedule(bItems, 16.6, 30.6);
-  const bRowAt = [5.8, 15.2, 15.6, 16.0, bPlan[0].a, bPlan[1].a, bPlan[2].a, bPlan[3].a, bPlan[4].a, 31.2];   // ask, got, got, open, title, Hook, What It Does, How It Works, tags, ready
+  // Genuine viewport frames; prep-arise.py has already cropped account UI and edited pauses.
+  for (const [id, pane, clip, y] of [['docs', docs, FT.docs, 134], ['blog', blog, FT.blog, 550]]) {
+    A(pane.body, 'left:0;top:0;width:888px;height:366px;', '', 'hole');
+    window.__overlays.push({ id: `${id}-real-capture`, file: clip.file, src: { from: clip.src_from }, speed: clip.speed,
+      x: 60, y, w: 888, h: 366, from: clip.from, to: 62, hold: true });
+  }
 
   // Slides (REAL run): a hole where the clip goes; the clip itself is composited by build.mjs
   A(slides.body, 'left:20px;top:0;width:848px;height:366px;', '', 'hole');
@@ -197,23 +153,23 @@ function buildAgents() {
     return { c, e: A(mLog, `top:${6 + i * 40}px;`, `<span class="tk">✓</span><span class="tn">${c.tool}</span><span class="tm">${ms} ms</span><span class="td">${detail}</span>`, 'trow') };
   });
   A(mem.body, 'left:336px;top:0;width:546px;height:366px;', '', 'hole');
+  // Until the real app clip starts (it covers this area), say what the memory keeps: three things, stored separately.
+  A(mem.body, 'left:358px;top:20px;', 'WHAT IT REMEMBERS', 'label');
+  const keeps = [['form', 'Template', 'sections · author · version · license'], ['refs', 'Reference', 'the original · checksum · text positions'], ['versions', 'Document', 'pinned versions · saved history']].map(([ic, name, sub], i) =>
+    A(mem.body, `left:358px;top:${58 + i * 96}px;width:502px;height:82px;`, `${icon(ic, 46, 'position:absolute;left:18px;top:18px')}<div class="h" style="position:absolute;left:84px;top:12px;font-size:26px;letter-spacing:-.02em;white-space:nowrap">${name}</div><div class="mono" style="position:absolute;left:84px;top:48px;font-size:14px;color:#9fb7a6;white-space:nowrap">${sub}</div>`, 'card'));
   window.__overlays.push({ id: 'memory-real-app', file: ma.file, src: { from: ma.src_from }, speed: ma.speed, crop: { x: 240, y: 95, w: 1200, h: 805 }, x: 1308, y: 550, w: 546, h: 366, from: ma.from, to: 62, hold: true });
   const memTotal = `${TRACE.calls.length} calls · ${Math.round(TRACE.total_ms)} ms`;
 
   s.update = (lt) => {
     panes.forEach((p, i) => show(p.root, fade(lt, i * 0.15, 0.7 + i * 0.15), 26));
-    // agent logs
-    dRows.forEach((r, i) => { r.el.style.opacity = fade(lt, dRowAt[i], dRowAt[i] + 0.3); });
-    bRows.forEach((r, i) => { r.el.style.opacity = fade(lt, bRowAt[i], bRowAt[i] + 0.3); });
-    // typing
-    runTyping(dPlan, lt); runTyping(bPlan, lt);
     // trace rows
     mRows.forEach((r, i) => { show(r.e, fade(lt, mRowT[i], mRowT[i] + 0.35), 6); });
+    keeps.forEach((k, i) => show(k, fade(lt, 1.6 + i * 0.5, 2.2 + i * 0.5), 12));
     // statuses
     const working = (p, from, doneAt, doneText) => (lt < from ? setStatus(p, '') : lt < doneAt ? setStatus(p, '● WORKING', 'amber') : setStatus(p, doneText, 'lime'));
-    working(docs, 1.0, 30.4, '✓ READY FOR REVIEW');
+    working(docs, 1.0, 31.4, '✓ READY FOR REVIEW');
     working(slides, 1.4, 32.3, '✓ 10 / 10 SLIDES');
-    working(blog, 1.2, 31.0, '✓ READY FOR REVIEW');
+    working(blog, 1.2, 31.4, '✓ SAVED AS DRAFT');
     (lt < 5.0 ? setStatus(mem, '') : lt < 15.6 ? setStatus(mem, '● ANSWERING', 'amber') : setStatus(mem, `✓ ${memTotal}`, 'lime'));
   };
 }
@@ -292,8 +248,9 @@ function buildClose() {
   A(s, 'left:0;top:236px;width:1920px;text-align:center;', `<span class="biglogo ic" style="width:150px;height:150px">${logoSvg}</span>`);
   A(s, 'left:0;top:416px;width:1920px;text-align:center;font-size:84px;', 'my document memory', 'h');
   const tag = A(s, 'left:0;top:540px;width:1920px;text-align:center;font-size:66px;color:var(--lime);', 'Share the memory. Save the time.', 'h');
-  const cred = A(s, 'left:210px;top:730px;width:1500px;text-align:center;font:400 19px/1.6 var(--mono);color:#9fb7a6;', 'Product screens: the real app, driven by scripted clicks. Slides window: a real agent run from an earlier project. Windows marked ILLUSTRATION are drawings.');
-  s.update = (lt) => { show(tag, fade(lt, 0.5, 1.2), 14); cred.style.opacity = fade(lt, 1.2, 1.9) * 0.9; };
+  const url = A(s, 'left:0;top:640px;width:1920px;text-align:center;font-size:44px;color:#f3f1e8;letter-spacing:.02em;', SCRIPT.footage.site_url || 'mydocumentmemory.com', 'mono');
+  const cred = A(s, 'left:210px;top:760px;width:1500px;text-align:center;font:400 19px/1.6 var(--mono);color:#9fb7a6;', SCRIPT.footage.disclosure);
+  s.update = (lt) => { show(tag, fade(lt, 0.5, 1.2), 14); show(url, fade(lt, 0.9, 1.5), 10); cred.style.opacity = fade(lt, 1.2, 1.9) * 0.9; };
 }
 
 window.__buildScenes = async () => {

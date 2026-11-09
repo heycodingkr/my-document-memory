@@ -50,6 +50,7 @@ const lang = opt('--lang', 'en');
 if (!cut.langs.includes(lang)) throw new Error(`--lang must be ${cut.langs.join(' or ')} for the ${cutName} cut, got ${lang}`);
 const fps = Number(opt('--fps', '30'));
 const stills = opt('--at', '');
+const textAt = opt('--text', '');   // print the visible on-screen text at these times as JSON (number/claims check)
 const lint = flag('--lint');
 const outMp4 = path.resolve(opt('--out', path.join(repo, 'demo/out/video', cut.out(lang))));
 const from = Number(opt('--from', '0'));
@@ -107,6 +108,11 @@ if (lint) {
   for (const f of found.values()) console.log(`[${f.type}] t=${f.first}–${f.last}s (${f.count}×) ${JSON.stringify(f.text)} ${f.detail || ''}`);
   console.log(`lint (${lang}): ${sorted.length} sample times, ${found.size} distinct issue(s), ${problems} page problem(s)`);
   process.exitCode = found.size || problems ? 1 : 0;
+} else if (textAt) {
+  const rows = [];
+  for (const t of textAt.split(',').map(Number)) rows.push({ t, text: await page.evaluate((x) => { window.__render(x); return window.__visibleText(); }, t) });
+  console.log(JSON.stringify(rows));
+  process.exitCode = problems ? 1 : 0;
 } else if (stills) {
   const dir = '/tmp/mdm-video/stills';
   mkdirSync(dir, { recursive: true });
