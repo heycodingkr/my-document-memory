@@ -33,6 +33,7 @@
 - GET /v1/me: 사용자별 양식/자료/문서/기여 수. 개인 자료는 기존 owner 경계로 격리한다. 웹의 내 메모리는 내 양식·자료·작성 문서로 구성한다.
 - GET /v1/public/templates 및 /{id}: 로그인 없이 공개 승인 양식과 기존 seed만 조회. 비공개 ID는 404. q/family 필터와 기존 최대 20개 제한. 원문 자료·작성 문서·이메일·소유자 ID는 포함하지 않는다.
 - POST /v1/me/contributions {template_id,author,license,rights_confirmed}: 가입된 계정으로 인증해야 하며, accounts 행이 없는 local Bearer 소유자는 401이다. 회원에게 발급·매핑된 Bearer는 CLI/MCP 호환을 유지한다. 내 기여 목록·검수 결과·철회도 같은 회원 조건을 적용한다. 자기 소유 private 양식만, 공개될 구조 미리보기 후 권리 확인, CC0-1.0 또는 CC-BY-4.0. source 원문·작성 문서·비공개 provenance를 포함하지 않는 불변 snapshot을 pending으로 제출. 같은 양식의 활성 중복 제출은 409. 다른 소유자의 동일 구조는 독립 기여다.
+- 회귀 fixture는 회원용 Bearer가 가리키는 `local`·`bob`의 `accounts` 행을 명시적으로 준비한다. 토큰 문자열을 설정하는 것만으로 가입되지 않으며, fixture 실패를 해결하기 위해 회원 검사를 완화하지 않는다. CLI/MCP도 같은 서버 권한 조건을 따른다.
 - GET /v1/me/contributions: 자신의 기여만. POST /v1/me/contributions/{id}/withdraw: 자신의 pending/approved 기여 철회. 철회된 공개 원본은 탐색/복사에서 사라지고 기존 복사본의 고정 출처는 유지된다.
 - 상태는 `pending`(검토 대기), `approved`(승인·공개), `rejected`(반려), `withdrawn`(철회)다. 회원 웹 화면은 상태별 필터·요청/갱신 시각·명시적 상태 갱신을 제공하고, 로그인 전 기여 진입은 가입/로그인 후 내 기여 화면으로 돌아온다. 비회원 웹 토큰 연결은 이메일 회원 로그인 동작을 제공한다.
 - GET /v1/admin/contributions, POST /v1/admin/contributions/{id}/decision {decision}: 별도 DMEM_ADMIN_TOKEN만 허용. 일반 사용자/Bearer local에 관리자 권한 없음. pending만 approve/reject 가능. approve는 불변 snapshot을 공개 catalog 새 ID로 원자적으로 저장. 철회와 동시 검수는 하나만 성공. 자동 게시·자동 개인정보 검수를 구현했다고 표시하지 않는다.

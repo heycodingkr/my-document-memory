@@ -2,6 +2,8 @@
 
 Specification: [bugfix-regression-v1](../spec/bugfix-regression-v1.md). Date: 2026-11-09.
 
+This is the initial shared-checkout investigation. The isolated release candidate and completed push/production verification are recorded in [bugfix-publication-v1](bugfix-publication-v1.md).
+
 | Case | Input | Expected result |
 |---|---|---|
 | BUG-398-DESKTOP | Synthetic email-member login at 1416×614, 1024×500, 720×614 and the 701×500 breakpoint boundary; scroll sidebar with pointer, click Getting started, return, sign out | Sidebar is viewport-bounded; footer controls can be revealed and clicked, guide opens, return works, session becomes anonymous |
