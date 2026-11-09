@@ -26,6 +26,6 @@ with tempfile.TemporaryDirectory(prefix='dmem-accounts-') as d:
                     if urllib.request.urlopen(base+'/healthz',timeout=1).status==200:break
                 except OSError:time.sleep(.05)
             else:raise RuntimeError('fixture readiness timeout')
-            subprocess.run(['pnpm','exec','playwright','test','accounts.spec.ts'],cwd=ROOT/'web',env=env,check=True)
+            subprocess.run(['pnpm','exec','playwright','test',*env.get('DMEM_E2E_TESTS','accounts.spec.ts public-access.spec.ts review.spec.ts members.spec.ts admin-email.spec.ts').split()],cwd=ROOT/'web',env=env,check=True)
         finally:
             process.terminate();process.wait(timeout=5)

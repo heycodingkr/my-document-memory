@@ -20,7 +20,8 @@
   <button class="primary" onclick={verify} disabled={busy}>{busy?'Signing in…':'Continue to my space'}</button>
   <div class="login-links"><button type="button" class="text-button" disabled={busy} onclick={()=>{useLink=false;error='';}}>Send a new sign-in link</button></div>
  {:else}
-  <p>{mode==='signup'?'Create a free account with a private library for your templates, references and documents.':'Sign in with the link sent to your email. Your saved library will be waiting.'}</p>
+  <p>{mode==='signup'?'Anyone can create a free account with a personal email address. No invitation or organization account is required.':'Sign in with the link sent to your email. Your saved library will be waiting.'}</p>
+  <p>Public memories are open to everyone. Sign in to request a contribution and follow its review status.</p>
   {#if enabled===false}<p class="setup-note">Email sign-in is being set up. Please try again later.</p>{/if}
   {#if sent}
    <p class="sent" role="status"><strong>Check your inbox.</strong><br/>A sign-in link is on its way to <strong>{email}</strong>. Open it within 10 minutes. You can use the link once.</p>

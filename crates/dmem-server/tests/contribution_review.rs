@@ -1,9 +1,11 @@
 use axum::{Router, body::Body, http::Request};
-use dmem_server::{AuthConfig, Store, router_with_auth};
+use dmem_server::{AuthConfig, router_with_auth};
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
 use std::sync::Arc;
 use tower::ServiceExt;
+#[path = "support/members.rs"]
+mod members;
 
 const ALICE: &str = "synthetic-alice-owner-token";
 const BOB: &str = "synthetic-bob-owner-token";
@@ -11,9 +13,11 @@ const ADMIN: &str = "synthetic-community-admin-at-least-32-characters";
 const ORIGIN: &str = "http://localhost:5174";
 
 fn app() -> Router {
-    app_with_store(Arc::new(Store::open(":memory:").unwrap()))
+    let dir = tempfile::tempdir().unwrap();
+    app_at(&dir.path().join("review.sqlite3")).layer(axum::Extension(Arc::new(dir)))
 }
-fn app_with_store(store: Arc<Store>) -> Router {
+fn app_at(path: &std::path::Path) -> Router {
+    let store = members::open_member_store(path, &["alice", "bob"]);
     let mut config = AuthConfig::default();
     config.admin_token = Some(ADMIN.into());
     router_with_auth(
@@ -79,7 +83,7 @@ async fn submit(app: &Router, summary: &str, sections: Value) -> Value {
 async fn decisions_review_the_submitted_snapshot_and_survive_reopening() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("library.sqlite3");
-    let app = app_with_store(Arc::new(Store::open(&path).unwrap()));
+    let app = app_at(&path);
     let unsafe_c = submit(
         &app,
         "sk-syntheticOnlyNeverUse0123456789",
@@ -130,7 +134,7 @@ async fn decisions_review_the_submitted_snapshot_and_survive_reopening() {
     assert_eq!(approved["snapshot"]["summary"], "Clean immutable summary");
     drop(db);
     drop(app);
-    let reopened = app_with_store(Arc::new(Store::open(&path).unwrap()));
+    let reopened = app_at(&path);
     let (status, report) = call(
         &reopened,
         "GET",
@@ -376,7 +380,7 @@ async fn pii_injection_hidden_text_and_rejection_are_checked_without_echoing() {
 async fn unsafe_tag_is_blocked_by_review_route_and_never_published() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("review.sqlite3");
-    let app = app_with_store(Arc::new(Store::open(&path).unwrap()));
+    let app = app_at(&path);
     let marker = "AKIAABCDEFGHIJKLMNOP";
     let (status, template) = call(
         &app,

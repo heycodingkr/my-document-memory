@@ -5,7 +5,6 @@ use rusqlite::{OptionalExtension, params};
 use serde::Serialize;
 use sha2::Sha256;
 use std::{
-    collections::HashSet,
     future::Future,
     pin::Pin,
     sync::Arc,
@@ -107,7 +106,6 @@ impl EmailSender for ResendEmailSender {
 #[derive(Clone)]
 pub struct AuthConfig {
     pub(crate) secret: String,
-    pub(crate) admin_emails: HashSet<String>,
     pub mailer: Option<Arc<dyn EmailSender>>,
     pub secure_cookies: bool,
     pub admin_token: Option<String>,
@@ -118,7 +116,6 @@ impl Default for AuthConfig {
     fn default() -> Self {
         Self {
             secret: format!("{}{}", Uuid::new_v4().simple(), Uuid::new_v4().simple()),
-            admin_emails: HashSet::new(),
             mailer: None,
             secure_cookies: false,
             admin_token: None,
@@ -143,15 +140,20 @@ impl AuthConfig {
             ..Self::default()
         })
     }
-    pub fn set_admin_emails(
-        &mut self,
-        emails: impl IntoIterator<Item = String>,
-    ) -> Result<(), Fault> {
-        self.admin_emails = emails
-            .into_iter()
-            .map(|email| normalize_email(&email))
-            .collect::<Result<HashSet<_>, _>>()?;
-
+    /// Exact normalized addresses; an empty list disables browser administration.
+    pub fn set_admin_emails(&mut self, value: &str) -> Result<(), Fault> {
+        let emails: std::collections::BTreeSet<String> = if value.trim().is_empty() {
+            std::collections::BTreeSet::new()
+        } else {
+            value
+                .split(',')
+                .map(normalize_email)
+                .collect::<Result<_, _>>()?
+        };
+        if emails.iter().any(|email| email.contains('*')) {
+            return Err(Fault::InvalidInput);
+        }
+        self.admin_emails = emails;
         Ok(())
     }
     pub(crate) fn now(&self) -> u64 {
@@ -372,6 +374,17 @@ impl Store {
     }
     pub(crate) fn session(&self, auth: &AuthConfig, token: &str) -> Result<Account, Fault> {
         self.db.lock().map_err(|_|Fault::Internal)?.query_row("SELECT a.id,a.email FROM sessions s JOIN accounts a ON a.id=s.account_id WHERE s.token_hash=?1 AND s.expires_at>?2",params![auth.digest(token),auth.now()],|r|Ok(Account{id:r.get(0)?,email:r.get(1)?})).optional().map_err(|_|Fault::Internal)?.ok_or(Fault::AuthRequired)
+    }
+    pub(crate) fn is_member(&self, owner: &str) -> Result<bool, Fault> {
+        self.db
+            .lock()
+            .map_err(|_| Fault::Internal)?
+            .query_row(
+                "SELECT EXISTS(SELECT 1 FROM accounts WHERE id=?1)",
+                params![owner],
+                |row| row.get(0),
+            )
+            .map_err(|_| Fault::Internal)
     }
     pub(crate) fn logout(&self, auth: &AuthConfig, token: &str) -> Result<(), Fault> {
         self.db

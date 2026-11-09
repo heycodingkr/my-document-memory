@@ -15,6 +15,8 @@ use std::{
     },
 };
 use tower::ServiceExt;
+#[path = "support/members.rs"]
+mod members;
 
 const ORIGIN: &str = "http://localhost:5174";
 const LOCAL: &str = "synthetic-admin-test-local-token";
@@ -115,7 +117,7 @@ impl F {
     fn new(allowlist: &str) -> Self {
         let temp = tempfile::tempdir().unwrap();
         let path = temp.path().join("admin.sqlite3");
-        let store = Arc::new(Store::open(&path).unwrap());
+        let store = members::open_member_store(&path, &["local"]);
         let mail = Arc::new(Mail::default());
         let clock = Arc::new(AtomicU64::new(100000));
         let mut auth = AuthConfig::new(
@@ -123,12 +125,7 @@ impl F {
             mail.clone(),
         )
         .unwrap();
-        let emails = if allowlist.trim().is_empty() {
-            Vec::new()
-        } else {
-            allowlist.split(',').map(str::trim).map(str::to_owned).collect()
-        };
-        auth.set_admin_emails(emails).unwrap();
+        auth.set_admin_emails(allowlist).unwrap();
         auth.admin_token = Some(OPERATOR.into());
         auth.secure_cookies = true;
         let now = clock.clone();
@@ -275,17 +272,14 @@ async fn only_exact_normalized_allowed_email_gets_mail_with_generic_response() {
 #[test]
 fn invalid_allowlist_fails_closed_and_does_not_replace_valid_configuration() {
     let mut auth = AuthConfig::default();
-    auth.set_admin_emails(["operator@example.test".to_owned()]).unwrap();
+    auth.set_admin_emails("operator@example.test").unwrap();
     for invalid in [
         "operator@example.test,",
         "*@example.test",
         "invalid",
         "operator@example.test,\nwrong",
     ] {
-        assert_eq!(
-            auth.set_admin_emails([invalid.to_owned()]),
-            Err(Fault::InvalidInput)
-        );
+        assert_eq!(auth.set_admin_emails(invalid), Err(Fault::InvalidInput));
     }
 }
 #[tokio::test]
@@ -344,7 +338,7 @@ async fn expired_undelivered_and_revoked_links_cannot_create_admin_sessions() {
     f.start("operator@example.test").await;
     let token = f.link();
     let mut revoked = f.auth.clone();
-    revoked.set_admin_emails(Vec::<String>::new()).unwrap();
+    revoked.set_admin_emails("").unwrap();
     let app = F::router(f.store.clone(), revoked);
     assert_eq!(
         req(
@@ -542,7 +536,7 @@ async fn session_persists_but_revocation_expiry_and_logout_remove_authority() {
         StatusCode::OK
     );
     let mut revoked = f.auth.clone();
-    revoked.set_admin_emails(Vec::<String>::new()).unwrap();
+    revoked.set_admin_emails("").unwrap();
     let revoked = F::router(f.store.clone(), revoked);
     assert_eq!(
         req(

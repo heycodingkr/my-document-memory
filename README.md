@@ -8,6 +8,10 @@
 
 Keep useful structures, writing rules, and ways to use references as reusable memory. One person's writing experience can become a better starting point for another person and their AI.
 
+**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
+
+Anyone can browse, search, and preview public memories without signing in. Individuals can [create a free account](https://mydocumentmemory.com/#signup) with a personal email address. Contribution requests require a registered, signed-in account; follow Awaiting review, Approved · Public, Rejected, and Withdrawn states in My contributions.
+
 [The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [Free templates](#start-free-with-the-ai-you-choose) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
 
 

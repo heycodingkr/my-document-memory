@@ -7,15 +7,18 @@ use axum::http::HeaderMap;
 use serde::Deserialize;
 
 pub(super) fn routes(s: &App) -> Router<App> {
-    let personal = Router::new()
-        .route("/me", get(dashboard))
-        .route("/me/profile", get(member_profile).put(save_member_profile))
+    let contributions = Router::new()
         .route("/me/contributions", get(contributions).post(submit))
         .route("/me/contributions/{id}/review", get(own_review))
         .route(
             "/me/contributions/{id}/withdraw",
             axum::routing::post(withdraw),
         )
+        .route_layer(middleware::from_fn_with_state(s.clone(), require_member));
+    let personal = Router::new()
+        .route("/me", get(dashboard))
+        .route("/me/profile", get(member_profile).put(save_member_profile))
+        .merge(contributions)
         .route_layer(middleware::from_fn_with_state(s.clone(), authenticate));
     Router::new()
         .route("/auth/config", get(config))
@@ -37,6 +40,17 @@ pub(super) fn routes(s: &App) -> Router<App> {
         )
         .merge(personal)
         .layer(DefaultBodyLimit::max(16 * 1024))
+}
+async fn require_member(
+    State(s): State<App>,
+    Extension(Owner(owner)): Extension<Owner>,
+    req: Request,
+    next: Next,
+) -> Result<Response, HttpError> {
+    if !run(s, move |db| db.is_member(&owner)).await? {
+        return Err(Fault::AuthRequired.into());
+    }
+    Ok(next.run(req).await)
 }
 pub(super) async fn no_store(req: Request, next: Next) -> Response {
     let mut r = next.run(req).await;
@@ -374,7 +388,6 @@ async fn review(
 }
 fn admin(s: &App, headers: &HeaderMap, write: bool) -> Result<String, HttpError> {
     super::admin::authorize(s, headers, write)
-
 }
 async fn queue(
     State(s): State<App>,
@@ -395,7 +408,6 @@ async fn decision(
     input: Result<Json<Decision>, JsonRejection>,
 ) -> Reply<crate::community::Contribution> {
     let actor = admin(&s, &headers, true)?;
-
     let id = path(p)?;
     let input = body(input)?;
     if !["approve", "reject"].contains(&input.decision.as_str()) {

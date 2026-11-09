@@ -1,14 +1,16 @@
 use axum::{body::Body, http::Request};
-use dmem_server::{AuthConfig, Store, router, router_with_auth};
+use dmem_server::{AuthConfig, router, router_with_auth};
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
-use std::sync::Arc;
 use tower::ServiceExt;
+#[path = "support/members.rs"]
+mod members;
 const TOKEN: &str = "synthetic-owner-token";
 const ADMIN: &str = "synthetic-reviewer-key-at-least-32-characters";
 #[tokio::test]
 async fn attribution_limit_rejects_instead_of_silently_dropping_credits() {
-    let db = Arc::new(Store::open(":memory:").unwrap());
+    let dir = tempfile::tempdir().unwrap();
+    let db = members::open_member_store(&dir.path().join("library.sqlite3"), &["alice"]);
     let mut config = AuthConfig::default();
     config.admin_token = Some(ADMIN.into());
     let app = router_with_auth(
@@ -63,7 +65,8 @@ async fn call(app: &axum::Router, path: &str, input: Value, admin: bool) -> Valu
 }
 #[tokio::test]
 async fn public_snapshot_never_exposes_a_private_copy_id() {
-    let db = Arc::new(Store::open(":memory:").unwrap());
+    let dir = tempfile::tempdir().unwrap();
+    let db = members::open_member_store(&dir.path().join("library.sqlite3"), &["alice"]);
     let original = db.copy_template("alice", "meeting.minutes.ko").unwrap();
     let second = db.copy_template("alice", &original.id).unwrap();
     let app = router(
@@ -81,7 +84,8 @@ async fn public_snapshot_never_exposes_a_private_copy_id() {
 }
 #[tokio::test]
 async fn public_derivative_copies_retain_the_first_contributors_attribution() {
-    let db = Arc::new(Store::open(":memory:").unwrap());
+    let dir = tempfile::tempdir().unwrap();
+    let db = members::open_member_store(&dir.path().join("library.sqlite3"), &["alice", "bob"]);
     let a = db.copy_template("alice", "meeting.minutes.ko").unwrap();
     let mut config = AuthConfig::default();
     config.admin_token = Some(ADMIN.into());

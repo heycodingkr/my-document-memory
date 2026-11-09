@@ -125,7 +125,7 @@ impl Harness {
         .unwrap();
         config.admin_token = Some(ADMIN.into());
         config
-            .set_admin_emails([" Operator@Example.Test ".to_owned()])
+            .set_admin_emails(" Operator@Example.Test ")
             .unwrap();
         let clock = time.clone();
         config.clock = Arc::new(move || clock.load(Ordering::SeqCst));
@@ -727,6 +727,44 @@ async fn hourly_email_limit_and_session_expiry() {
     );
 }
 #[tokio::test]
+async fn public_reading_is_anonymous_but_contributions_require_a_registered_member() {
+    let h = Harness::new();
+    for path in ["/v1/public/templates", "/v1/public/templates/meeting.minutes.ko"] {
+        let response = req(&h.app, "GET", path, None, "", "", "", "").await;
+        assert_eq!(response.status, 200, "{path}");
+        assert!(!response.raw.contains("\"owner\":"));
+        assert!(!response.raw.contains("\"email\":"));
+    }
+    // A configured local token authenticates its private library, but does not sign up a member.
+    assert_eq!(req(&h.app, "GET", "/v1/templates", None, "", "", LOCAL, "").await.status, 200);
+    for token in ["", LOCAL, ADMIN, "invalid-synthetic-token"] {
+        for (method, path) in [
+            ("GET", "/v1/me/contributions"),
+            ("POST", "/v1/me/contributions"),
+            ("GET", "/v1/me/contributions/missing/review"),
+            ("POST", "/v1/me/contributions/missing/withdraw"),
+        ] {
+            let response = req(&h.app, method, path, Some(json!({})), "", "", token, ORIGIN).await;
+            assert_eq!(response.status, 401, "{method} {path}");
+            assert_eq!(response.data["code"], "auth_required");
+        }
+    }
+    // Personal addresses need neither an invitation nor an administrator/domain allowlist.
+    let (cookie, csrf, _) = h.login("Independent.Person@Gmail.Com").await;
+    let copied = h.call("POST", "/v1/templates/meeting.minutes.ko/copy", None, &cookie, &csrf).await;
+    assert_eq!(copied.status, 200);
+    let input = json!({"template_id":copied.data["id"],"author":"Individual member","license":"CC-BY-4.0","rights_confirmed":true});
+    assert_eq!(h.call("POST", "/v1/me/contributions", Some(input.clone()), &cookie, "").await.status, 401);
+    let contribution = h.call("POST", "/v1/me/contributions", Some(input), &cookie, &csrf).await;
+    assert_eq!(contribution.status, 200);
+    assert_eq!(contribution.data["status"], "pending");
+    let public_path = format!("/v1/public/templates/{}", contribution.data["snapshot"]["id"].as_str().unwrap());
+    assert_eq!(req(&h.app, "GET", &public_path, None, "", "", "", "").await.status, 404);
+    assert_eq!(h.call("POST", "/v1/auth/logout", None, &cookie, &csrf).await.status, 200);
+    assert_eq!(h.call("GET", "/v1/me/contributions", None, &cookie, "").await.status, 401);
+}
+
+#[tokio::test]
 async fn contribution_review_copy_attribution_withdrawal_and_private_boundary() {
     let h = Harness::new();
     let (alice, csrf, _) = h.login("alice@example.test").await;
@@ -1217,7 +1255,7 @@ async fn allowlisted_admin_session_can_review_contributions_with_csrf_and_origin
         200
     );
     let mut revoked = h.config.clone();
-    revoked.set_admin_emails(Vec::new()).unwrap();
+    revoked.set_admin_emails("").unwrap();
     let revoked_app = Harness::router(&h.path, revoked);
     assert_eq!(
         req(
