@@ -16,7 +16,7 @@
 | WI-10 | 동일 owner/source/form/content/mode import 두 번, DB 재열기 | 같은 id, created true→false, 항목/출처 1개, 재조회 동일 |
 | WI-11 | 같은 URL에 KR/US/JP locale/variant 또는 다른 doc_type/provider; JP 참고자료 저장·재조회·양식 추출 | 독립 양식 공존, template와 reference origin의 form 보존, 참고자료→양식에도 provider/doc_type/locale/region/variant 유지; 기존 recall로 자기 양식 조회 |
 | WI-12 | source full 허용 → 저장·생성에 참고자료 사용 | 살균한 원문 span만 저장, 원문 HTML/입력 폼/hidden 없음 |
-| WI-13 | 외부 unknown/NC 또는 제약 있는 출처를 가져온 뒤 CC0로 기여 | 검출 권리/출처가 검수에서 유지, 허용되지 않은 재게시 거부 |
+| WI-13 | 외부 unknown/NC 또는 제약 있는 출처를 가져온 뒤 recall·CC0 기여 | recall도 원래 license와 structure_only를 반환, 검출 권리/출처가 검수에서 유지, 허용되지 않은 재게시 거부 |
 | WI-14 | 공개 Google Docs/Slides URL과 fixture DOCX/PPTX export | 올바른 export 형식·문서/덱 구조, 원본 ID/query/fragment는 DB/응답 출처에 없음 |
 | WI-15 | 검색 provider 미설정 / 합성 Brave 응답 / 유효하지 않은 결과 URL | 미설정 명시, 설정 시 후보만 반환·저장 0; 비공개/위험 결과 제외, 키 비노출 |
 | WI-16 | HTTP 무인증·세션 CSRF 누락·알 수 없는 필드·잘못된 형식/ID | 기존 고정 오류, side effect 없음 |

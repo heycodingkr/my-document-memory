@@ -15,6 +15,7 @@
 - preview는 소유자별 임시 메모리(15분·개수/bytes 상한)에만 보관하고 item을 저장하지 않는다. import는 같은 preview 스냅샷을 사용하며 만료·타 소유자 ID는 동일 not_found다. 같은 owner·source·form·content·copy mode 재요청은 같은 항목을 반환한다.
 - 선택한 정규화 form은 template뿐 아니라 reference의 출처에도 영속 저장한다. 웹 reference에서 양식을 추출할 때 그 form과 외부 권리를 이어받는다. 기존 recall v1의 대상은 양식이며 reference는 별도 검색·읽기를 사용한다.
 - 라이선스 기본값은 unknown. 검출된 CC0/CC-BY/MIT/Apache의 허용 범위에서만 full copy를 허용한다. 그 외는 structure_only이며 본문·목록·표 본문은 저장하지 않는다. 가져온 외부 양식은 provenance가 검수에서 보존되어 임의 재라이선스로 게시되지 않는다.
+- 기존 recall v1 순위는 유지한다. 웹 출처가 있는 힌트는 출처 원장의 license/copy policy를 반환하고, 사용자 직접 작성물의 기본 `full` 정책을 적용하지 않는다. 직접 가져온 항목의 source origin은 `imported`, 개인 복사본은 `copied`다.
 - browser 어댑터는 공개 stdio MCP child 한 연결을 유지한다. 캡처 전후 context의 client/session/window/tab/URL/lease 소유권을 확인한다. 입력에 URL/HTML을 받지 않는다. 화면에 보이는 문서만 캡처하며 폼 값·cookie/storage는 읽지 않는다. 교체·만료·사용자/타 세션 탭은 저장 전에 거부한다.
 - 임의 HTTP HTML 입력은 claimed provenance다. 어댑터가 `DMEM_CAPTURE_SECRET`으로 본문·시각에 서명한 요청만 captured로 기록한다. 서버와 어댑터에 같은 비밀을 설정하며 MCP 도구 인수·로그에는 노출하지 않는다. 미설정이면 캡처를 명시적으로 거부한다.
 

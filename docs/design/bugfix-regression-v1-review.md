@@ -10,6 +10,14 @@ The checkout contains substantial pre-existing uncommitted account, web-memory, 
 
 #411 was reported after contribution routes gained require_member. Current accounts_fixture already inserts local/bob account rows; preserve this provisioning and the server gate. Fresh builds and real product/browser smokes will determine whether the reported mismatch remains.
 
+## Reproduction and root cause
+
+Fresh Rust workspace tests, Svelte check/build and real CLI/MCP community smoke pass before this pass changes product source. The existing sidebar overflow-y:auto fix passes pointer-driven footer/guide/sign-out checks at 1416×614 and 1024×500; mobile 390×844 also passes.
+
+The new 720×614 test fails before implementation: document scrollWidth is 722, with a MyPage memory-box extending to x721.578125. The two-column memory-card grid retains its content minimum width in the narrow desktop main area. The same screenshot shows cramped/overlapping account labels and duplicate Sign out: AccountNavigation switches at 760px, whereas the app sidebar stays a desktop column until 700px.
+
+Use the existing app breakpoint (700px) for account navigation, and stack MyPage memory cards below 900px to accommodate the desktop sidebar. Preserve existing short-height scrolling and mobile sign-out behavior. Add the focused tests to the default account smoke so these widths remain covered.
+
 ## Review and results
 
-Pending focused reproduction and fresh validation.
+Pending post-fix validation.

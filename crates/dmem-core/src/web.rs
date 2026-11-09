@@ -42,6 +42,19 @@ pub fn document_parts(blocks: &[Block], slides: &[Slide]) -> Vec<WebPart> {
     parts
 }
 
+pub fn apply_origin(hint: &mut Hint, origin: &WebOrigin) {
+    hint.source.license = origin.license.clone();
+    hint.source.copy_policy = match origin.copy_policy {
+        CopyMode::StructureOnly => "structure_only",
+        CopyMode::Full => "full",
+    }
+    .into();
+    if hint.source.origin != "copied" {
+        hint.source.origin = "imported".into();
+    }
+    crate::recall::trim_budget(hint);
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebExtract {
     pub title: String,

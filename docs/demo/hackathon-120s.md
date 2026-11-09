@@ -9,7 +9,7 @@ Owner request, 2026-11-09: extend the English demo to 120 seconds and explain co
 | 0–75 s | Existing problem, command, real-editor composite and library flow | Reuse the verified 90-second cut's source and footage; separate-run and earlier-project disclosures remain |
 | 75–85 s | Company formats | Manage different companies' report/proposal/meeting-note structures in a library. Demonstrate templates and guidance; do not imply organization isolation/permissions unless verified |
 | 85–95 s | Shared standard | Give an agent a memory link with reusable structure/writing/design guidance. Across-tool consistency means following the same instructions, not guaranteed identical rendering or universal native connectors |
-| 95–105 s | Contribution and reuse | Share useful memories and show leaderboard credit. Exact scoring trigger/formula must be opened in current source/tests before narration is finalized; distinguish uses by others from self-use/votes/reviews |
+| 95–105 s | Contribution and reuse | Share useful templates for others to reuse. Each approved template that remains public earns 20 points; public profile/leaderboard display is opt-in. Copies/views do not earn points |
 | 105–116 s | Time-saving illustration | Existing 10 minutes × 1000 reuses ≈ 167 hours, still explicitly hypothetical |
 | 116–120 s | Close | Product name, tagline and website |
 
@@ -35,7 +35,7 @@ This is a long session; a bounded multi-file evidence inventory goes to the firs
 | LV-01 | Existing renderer and hackathon tests | Baseline passes before edits; previous source assets decode |
 | LV-02 | `node demo/video/build.mjs --cut hackathon-120 --text 78,90,100` before routing support | Focused failure reports unknown cut; after implementation the same invocation renders actual feature text |
 | LV-03 | New JSON/test suite | Contiguous 0–120 s scenes; captions ≤66 characters and ≤17 chars/s; narration fits; beats inside scenes, no caption overlap; explicit separate-run / illustration / hypothetical disclosures |
-| LV-04 | Current scoring code/test cases | Reuse-credit narration matches the actual eligibility and deduplication rules; sample scores clearly illustrative |
+| LV-04 | Current scoring code/test cases | Approval-credit narration matches the actual eligibility rules; no points-for-reuse claim; sample scores clearly illustrative |
 | LV-05 | Current share/template routes and payloads | Public links point to supported resources; confidential references remain private. No unverified company workspace or pixel-identical layout claim |
 | LV-06 | Both cuts' layout lint and representative stills | New cut has no overflow, overlap or caption wrapping; shared code leaves 90 s layout valid |
 | LV-07 | Final 120 s video/SRT/voice | 1920×1080, 30fps H.264/AAC stereo, 120.000±0.1 s, exact subtitle text/times, no voice overflow, approximately −16 LUFS and true peak ≤−1 dBFS |
@@ -45,3 +45,10 @@ This is a long session; a bounded multi-file evidence inventory goes to the firs
 ## Design, root cause and review record
 
 The existing renderer/voice CLI select only `demo-day` and `hackathon`; the latter is fixed to 90 seconds. Introduce an explicit additional cut rather than retiming the existing export. Reuse the verified footage and pure-time scene functions; add the three scenes only for the longer cut. Current capability evidence, red/green results and final review will be appended after direct verification.
+
+### Directly verified capability ledger
+
+- Scoring: `crates/dmem-server/src/members.rs:6–18` counts approved contributions with a surviving public catalog template, at 20 each. `web/src/lib/Leaderboard.svelte:11` and `MemberPanel.svelte:17` explicitly exclude views/copies. `member_leaderboard.rs:431–494` asserts pending/rejected 0, two approvals 40, one approval 20, and removal of 20 on withdrawal. The requested usage-based reward is therefore not presented as current behavior. Example animation: 80 → 100 on one additional approval, with fictional names and an illustration badge.
+- Sharing: `http/account.rs:319–337` exposes anonymous public-template reads. A live read of `https://api.mydocumentmemory.com/v1/public/templates/meeting.minutes.en` returned the public meeting-note template and ordered sections. It is a supported API link; the UI has no per-template deep link. The link's actual payload carries structure, not a complete design profile. The illustration labels writing/design guidance as additional AI instructions supplied by the user.
+- Formats: `dmem-contracts/src/lib.rs:83` and `store.rs:145–170` support named templates, form metadata and ordered sections. Fictional companies illustrate library organization, not organization accounts or permissions. `prompt.ts` supplies the selected structure and reference IDs to the host; actual external-editor behavior depends on that host and review. No identical-rendering guarantee is made.
+- Pre-edit focused route check: `node demo/video/build.mjs --cut hackathon-120 --text 78,90,100` exited 1 with an unknown-cut error. Baseline existing renderer/script tests passed 25/25; original 90-second stills and final artifacts were hashed under `.artifacts/video-120/baseline/`.

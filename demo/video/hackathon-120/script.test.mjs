@@ -45,13 +45,18 @@ test('longer narrative names guidance without promising identical rendering or t
   assert.doesNotMatch(words, /pixel-perfect|identical rendering|every platform|organization permissions|at the same time|simultaneously/i);
 });
 
-test('reuse-point example is backed by current source and clearly increases only for a qualifying event', () => {
+test('approval-point example follows the current policy without claiming reuse earns points', () => {
   const r = spec.feature_examples.reputation;
   assert.equal(r.source_status, 'verified');
   assert.ok(Number.isSafeInteger(r.before) && r.before >= 0);
   assert.ok(Number.isSafeInteger(r.increment) && r.increment > 0);
   assert.equal(r.after, r.before + r.increment);
+  assert.equal(r.increment, 20);
   assert.ok(r.source && r.rule);
+  assert.match(spec.beats.find(b => b.id === 'r02').en.vo, /Approved public templates earn twenty points/);
+  const scene = readFileSync(new URL('./scenes.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(scene, /qualifying reuse|reuse gives the author credit/);
+  assert.match(scene, /per approved public template/);
 });
 
 test('time-saving assumptions, English voice and closing URL remain consistent', () => {

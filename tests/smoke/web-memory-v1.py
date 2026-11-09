@@ -229,13 +229,12 @@ def run_arise(env, site, base, out, cli, http):
             value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import form:has(input[aria-label='Document URL']) button"}))
             wait_eval("Boolean(document.querySelector('.web-preview'))", lambda result: str(result).lower() == "true", "url-preview")
             value(browser.call("browser_type",{"session_id":session,"selector":"input[aria-label='Import title']","text":"Arise web UI structure"}))
+            wait_eval("document.querySelector('input[aria-label=\"Import title\"]')?.value||''", lambda result: result == "Arise web UI structure", "title-input")
             value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import button.primary"}))
-            for _ in range(60):
-                ready=value(browser.call("browser_eval",{"session_id":session,"js":"document.querySelector('.web-content [role=status]')?.textContent||''"}))
-                if "Saved to your private library" in ready.get("result",""):break
-                time.sleep(.15)
+            wait_eval("document.querySelector('.web-content [role=status]')?.textContent||''", lambda result: isinstance(result, str) and "Saved to your private library" in result, "save")
             status, records=http("/v1/templates?q=Arise%20web%20UI%20structure")
             check("WI-18 actual Arise native form saves through the app",status==200 and any(t["title"]=="Arise web UI structure" and t["form"]["region"]=="KR" for t in records["items"]))
+            value(browser.call("browser_eval",{"session_id":session,"js":"document.querySelector('.web-content [role=status]').scrollIntoView({block:'end'});'saved status visible'"}))
             shot=browser.call("browser_screenshot",{"session_id":session})
             for block in shot.raw.get("content",[]):
                 if block.get("type")=="image":(out/"arise-web-ui.png").write_bytes(base64.b64decode(block["data"]))

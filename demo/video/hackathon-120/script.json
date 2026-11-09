@@ -235,8 +235,8 @@
       "start": 100,
       "end": 104.6,
       "en": {
-        "cap": "See your contributions on the leaderboard.",
-        "vo": "See your contributions and their reuse on the community leaderboard."
+        "cap": "Approved public templates earn leaderboard points.",
+        "vo": "Approved public templates earn twenty points on the leaderboard."
       }
     },
     {
@@ -326,10 +326,12 @@
       "Orbit"
     ],
     "reputation": {
-      "before": 0,
-      "after": 0,
-      "increment": 0,
-      "source_status": "pending"
+      "before": 80,
+      "after": 100,
+      "increment": 20,
+      "source_status": "verified",
+      "source": "crates/dmem-server/src/members.rs:6-18; crates/dmem-server/tests/member_leaderboard.rs:431-494",
+      "rule": "20 points per approved public template · public profile is opt-in"
     }
   }
 }

@@ -269,10 +269,10 @@ async fn only_exact_normalized_allowed_email_gets_mail_with_generic_response() {
     );
     assert_eq!(f.mail.links.lock().unwrap().len(), 1);
 }
-#[test]
-fn invalid_allowlist_fails_closed_and_does_not_replace_valid_configuration() {
-    let mut auth = AuthConfig::default();
-    auth.set_admin_emails("operator@example.test").unwrap();
+#[tokio::test]
+async fn invalid_allowlist_fails_closed_and_does_not_replace_valid_configuration() {
+    let f = F::new("operator@example.test");
+    let mut auth = f.auth.clone();
     for invalid in [
         "operator@example.test,",
         "*@example.test",
@@ -281,6 +281,22 @@ fn invalid_allowlist_fails_closed_and_does_not_replace_valid_configuration() {
     ] {
         assert_eq!(auth.set_admin_emails(invalid), Err(Fault::InvalidInput));
     }
+    let app = F::router(f.store.clone(), auth);
+    let response = req(
+        &app,
+        "POST",
+        "/v1/admin/auth/email/link",
+        Some(json!({"email":"operator@example.test"})),
+        "",
+        "",
+        "",
+        Some(ORIGIN),
+    )
+    .await;
+    assert_eq!(response.status, StatusCode::ACCEPTED);
+    let links = f.mail.links.lock().unwrap();
+    assert_eq!(links.len(), 1);
+    assert_eq!(links[0].0, "operator@example.test");
 }
 #[tokio::test]
 async fn administrator_link_requires_post_is_single_use_and_not_a_member_session() {

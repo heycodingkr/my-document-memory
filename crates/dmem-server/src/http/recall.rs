@@ -53,7 +53,15 @@ pub(super) async fn handler(
     };
     let result = tokio::task::spawn_blocking(move || {
         let candidates = s.store.recall_candidates(&owner)?;
-        dmem_core::recall(&candidates, &q)
+        let mut result = dmem_core::recall(&candidates, &q)?;
+        for hint in &mut result.hints {
+            match s.store.web_origin(&owner, &hint.memory_id) {
+                Ok(origin) => dmem_core::web::apply_origin(hint, &origin),
+                Err(Fault::NotFound) => {}
+                Err(error) => return Err(error),
+            }
+        }
+        Ok(result)
     })
     .await;
     match result {

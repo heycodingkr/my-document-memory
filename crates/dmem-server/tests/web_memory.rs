@@ -417,6 +417,41 @@ async fn wi11_reference_form_survives_reload_and_template_extraction() {
     assert_eq!(template.form.variant.as_deref(), Some("jp_rirekisho"));
 }
 #[tokio::test]
+async fn wi13_recall_does_not_upgrade_external_copy_rights() {
+    let tmp = tempfile::tempdir().unwrap();
+    let f = fixture(&tmp.path().join("db")).await;
+    *f.content.lock().unwrap() =
+        "<title>Policy</title><h2>Approval structure</h2><p>PROSE_TEST</p>".into();
+    let (_, p) = post(
+        &f.app,
+        "/v1/web/preview",
+        A,
+        json!({"url":format!("{}/doc",f.url)}),
+    )
+    .await;
+    let (_, saved) = post(
+        &f.app,
+        "/v1/web/import",
+        A,
+        json!({"preview_id":p["preview_id"],"kind":"template"}),
+    )
+    .await;
+    let request = Request::builder().uri("/v1/recall?url=https%3A%2F%2Fexample.com%2Fdoc&doc_type=report&provider=html&locale=en-US&scope=mine").header("authorization",format!("Bearer {A}")).body(Body::empty()).unwrap();
+    let response = f.app.clone().oneshot(request).await.unwrap();
+    assert_eq!(response.status(), 200);
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    let result: Value = serde_json::from_slice(&bytes).unwrap();
+    let hint = result["hints"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|h| h["memory_id"] == saved["id"])
+        .unwrap();
+    assert_eq!(hint["source"]["copy_policy"], "structure_only");
+    assert_eq!(hint["source"]["license"], "unknown");
+    assert_eq!(hint["source"]["origin"], "imported");
+}
+#[tokio::test]
 async fn wi11_detected_british_locale_keeps_its_region() {
     let tmp = tempfile::tempdir().unwrap();
     let f = fixture(&tmp.path().join("db")).await;

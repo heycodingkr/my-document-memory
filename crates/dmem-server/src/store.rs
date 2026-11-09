@@ -169,7 +169,11 @@ impl Store {
             version: 1,
             title: input.title,
             summary: input.summary,
-            form: normalize_form(input.form)?,
+            form: if let Some(origin) = &web_origin {
+                origin.form.clone()
+            } else {
+                normalize_form(input.form)?
+            },
             sections: input.sections,
             tags: input.tags,
             author: "My library".into(),

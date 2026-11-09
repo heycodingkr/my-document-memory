@@ -119,6 +119,7 @@ impl Store {
         let value = WebOrigin {
             record_id: id.clone(),
             canonical_url: snapshot.preview.canonical_url.clone(),
+            form: form.clone(),
             license: snapshot.page.license.clone(),
             copy_policy: mode,
             provenance: provenance.into(),

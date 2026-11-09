@@ -43,7 +43,7 @@ function buildSharedStandard() {
   A(s, 'left:80px;top:132px;font-size:74px;white-space:nowrap;', 'One link. A common standard.', 'h');
   A(s, 'left:80px;top:232px;font-size:28px;color:#b9cabb;', 'Give your AI the method behind the document.');
   const memory = A(s, 'left:80px;top:320px;width:600px;height:540px;', '', 'card');
-  A(memory, 'left:30px;top:26px;', 'PUBLIC TEMPLATE LINK', 'label');
+  A(memory, 'left:30px;top:26px;', 'TEMPLATE + YOUR AI INSTRUCTIONS', 'label');
   const u = new URL(SCRIPT.feature_examples.public_template_url);
   A(memory, 'left:30px;top:70px;font:400 20px/1.55 var(--mono);color:var(--lime);', `${u.host}<br>/v1/public/templates/<br>${u.pathname.split('/').at(-1)}`);
   const criteria = [['Structure', 'Sections and ordering'], ['Writing patterns', 'Tone and review prompts'], ['Design guidance', 'Layout intent and examples']];
@@ -51,7 +51,7 @@ function buildSharedStandard() {
     A(memory, `left:30px;top:${190 + i * 86}px;font-size:26px;font-weight:700;`, title);
     A(memory, `left:30px;top:${226 + i * 86}px;font-size:20px;color:#b9cabb;`, sub);
   });
-  A(memory, 'left:30px;top:490px;font-size:17px;color:#b9cabb;', 'Private source files stay in your space.', 'mono');
+  A(memory, 'left:30px;top:490px;font-size:16px;color:#b9cabb;', 'Add writing and design instructions for your AI.', 'mono');
   const host = A(s, 'left:760px;top:410px;width:410px;height:330px;', '', 'card');
   A(host, 'left:30px;top:26px;', 'YOUR AI HOST', 'label');
   ['Read the memory', 'Follow the standard', 'Review the result'].forEach((t, i) => A(host, `left:30px;top:${94 + i * 68}px;font-size:${i === 0 ? 32 : 28}px;white-space:nowrap;`, t, i === 0 ? 'h' : ''));
@@ -83,7 +83,7 @@ function buildContributionCredit() {
   const steps = [
     ['Contribute a template', 'Keep the useful structure and attribution.'],
     ['Approved and public', 'The submitted snapshot is reviewed first.'],
-    ['Someone else reuses it', 'Eligible reuse gives the author credit.']
+    ['Help someone else reuse it', 'Share a better starting point for their AI.']
   ].map(([head, sub], i) => {
     const card = A(flow, `left:30px;top:${82 + i * 135}px;width:660px;height:108px;border-radius:16px;background:#edf2e6;`, '', 'card');
     A(card, 'left:22px;top:20px;font-size:29px;white-space:nowrap;', head, 'h');
@@ -99,7 +99,7 @@ function buildContributionCredit() {
     const row = A(board, `left:30px;top:${145 + i * 94}px;width:900px;height:82px;border:1px solid #dce4d5;border-radius:14px;background:#f1f5ed;`);
     A(row, 'left:20px;top:29px;font-size:19px;color:var(--muted);', `0${i + 1}`, 'mono');
     A(row, 'left:80px;top:15px;font-size:29px;', name, 'h');
-    A(row, 'left:80px;top:54px;font-size:16px;color:var(--muted);', i === 0 ? 'Approved memory · reused by another member' : 'Reviewed public contribution');
+    A(row, 'left:80px;top:54px;font-size:16px;color:var(--muted);', 'Reviewed public templates');
     const score = A(row, 'left:728px;top:23px;font-size:35px;', '', 'h');
     return { row, score };
   });
@@ -110,10 +110,10 @@ function buildContributionCredit() {
     show(board, fade(lt, 2.6, 3.2), 18);
     const earned = lt >= 6.6;
     rows.forEach(({ row, score }, i) => {
-      setText(score, String(i === 0 ? (earned ? rep.after : rep.before) : Math.max(0, rep.before - i * 2)));
+      setText(score, String(i === 0 ? (earned ? rep.after : rep.before) : Math.max(0, rep.before - i * rep.increment)));
       row.style.background = i === 0 && earned ? '#e3efbf' : '#f1f5ed';
     });
-    setText(bonus, `+${rep.increment} for qualifying reuse`);
+    setText(bonus, `+${rep.increment} per approved public template`);
     show(bonus, fade(lt, 6.6, 7.1), 12);
   };
 }

@@ -67,6 +67,7 @@ pub struct WebPreview {
 pub struct WebOrigin {
     pub record_id: String,
     pub canonical_url: String,
+    pub form: Form,
     pub license: String,
     pub copy_policy: CopyMode,
     pub provenance: String,

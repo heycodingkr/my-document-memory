@@ -108,3 +108,22 @@ Completion contract and capture/save evidence: [`docs/demo/hackathon-resume.md`]
 Privacy check for any footage or the final video (macOS): `swiftc -O demo/video/capture/ocr-scan.swift -o /tmp/ocr-scan`, extract one frame per second with
 `ffmpeg -i video.mp4 -vf fps=1 frames/%03d.png`, then `/tmp/ocr-scan frames/*.png` (exit 1 on any e-mail, loopback address, token-shaped string or account hint).
 Look at the frames too: OCR does not see a foreign window or an avatar.
+
+## Hackathon cut (120 s, English)
+
+The longer cut adds three illustrated scenes about company formats, sharing a public template link with AI instructions, and approved-contribution points. It reuses the verified Docs/Blog captures and the disclosed earlier Slides run. The original 90-second exports and URL remain available. Claim boundaries, scoring sources and checks: [`docs/demo/hackathon-120s.md`](../../docs/demo/hackathon-120s.md).
+
+```sh
+node --test demo/video/*.test.mjs demo/video/hackathon/*.test.mjs demo/video/hackathon-120/*.test.mjs
+node demo/video/build.mjs --cut hackathon-120 --lint
+node demo/video/build.mjs --cut hackathon-120 --at 78,83,88,93,98,103,112,118
+node demo/video/build.mjs --cut hackathon-120 --out demo/out/video/mdm-hackathon-120s.en.real.mp4
+python3 -I demo/video/make-voice.py --cut hackathon-120 --dry-run
+python3 -I demo/video/make-voice.py --cut hackathon-120 demo/out/video/mdm-hackathon-120s.en.real.mp4 demo/out/video/mdm-hackathon-120s.en.final.mp4
+```
+
+The render writes the SRT and poster beside the silent MP4; the voice step copies its video stream and adds the English audio. Copy the SRT/poster to the final basename when packaging. `--cut hackathon-120` is English only. Narration caches unchanged beats from the 90-second version.
+
+Current leaderboard policy is 20 points per approved template while it remains public; views/copies do not earn points. Example names and points are marked as illustrations. The public template link provides structure; writing/design guidance is supplied to the AI host as additional instructions. Cross-tool consistency means following those standards, with human review.
+
+For YouTube, retain the 120.000-second local master and use a 119.900-second delivery copy if AAC padding otherwise displays 2:01. Trim only the final static/silent tail, after the last spoken beat. Confirm the saved upload is unlisted, displays 2:00, and has its own URL.

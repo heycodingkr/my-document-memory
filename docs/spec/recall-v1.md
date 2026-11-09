@@ -75,6 +75,8 @@ HTTP `GET /v1/recall?…`(Bearer 필수, 기존 소유자 경계), CLI, MCP가 �
 | `matched_on`, `locale_match` | 2절 |
 | `freshness`, `warnings` | `"fresh"`, `[]` |
 
+`web-memory-v1`로 가져온 항목은 출처 원장의 license/copy policy가 위 기본값보다 우선한다. 웹 직접 가져오기는 `source.origin="imported"`, 개인 복사본은 `"copied"`를 유지한다. 보정 뒤에도 같은 토큰 예산을 적용한다. URL 순위와 `scope`는 이 단계의 계약을 유지한다([intake 계약](web-memory-v1.md), `WI-13`).
+
 힌트마다 추정 토큰 ≤ 400이다(`ceil(UTF-8 바이트 / 4)`, 압축 JSON 기준 1600바이트 이하). 넘으면 `summary`가 40자를 넘는 동안 앞쪽 절반만 남기는 것을 반복하고(더블의 `_hint`와 같다), 그래도 넘으면 `outline`을 끝에서부터 하나씩 뺀다. `title`·`form`·`source`는 줄이지 않는다. 줄인 `summary`는 원문의 앞부분이고 `outline`은 원문의 앞쪽 항목들이다.
 
 ## 4. 안전

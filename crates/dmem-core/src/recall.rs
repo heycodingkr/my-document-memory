@@ -125,7 +125,7 @@ fn hint(t: &Template, tier: &str, matched_on: Vec<String>, locale_match: &str) -
         warnings: vec![],
     }
 }
-fn trim_budget(h: &mut Hint) {
+pub(crate) fn trim_budget(h: &mut Hint) {
     while serde_json::to_vec(h).map_or(usize::MAX, |v| v.len()) > 1600 {
         if h.summary.chars().count() > 40 {
             let n = h.summary.chars().count() / 2;
