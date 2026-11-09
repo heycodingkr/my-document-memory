@@ -7,6 +7,7 @@ const messages:Record<string,string>={
  payload_too_large:'Files must be at most 10 MiB and extracted text at most 1 MiB.',
  review_blocked:'This submission needs changes before it can be approved. Read the review findings.',
  unsupported_format:'This format is not supported yet.',extract_empty:'No text was found. Scanned files need text recognition.',
+ request_timed_out:'The server took too long to respond. Please try again.',
  server_unavailable:'Cannot connect to the server. Check that it is running.',internal:'The library operation failed. Try again shortly.'
 };
 export class ApiFailure extends Error{
@@ -21,9 +22,16 @@ export class Api{
  if(!response.ok){const error=await response.json().catch(()=>({code:'internal'}));throw new ApiFailure(typeof error.code==='string'?error.code:'internal');}
  return response.json();
  }
+ private async readWithTimeout<T>(path:string):Promise<T>{
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),10_000);
+  try{return await this.request<T>(path,{signal:controller.signal});}
+  catch(e){if(controller.signal.aborted)throw new ApiFailure('request_timed_out');throw e;}
+  finally{clearTimeout(timeout);}
+ }
  status(){return this.request('/status');}
  authConfig(){return this.request<{email_enabled:boolean}>('/auth/config');}
- session(){return this.request<Session>('/auth/session');}
+ session(){return this.readWithTimeout<Session>('/auth/session');}
  startEmail(email:string){return this.request<{retry_after:number}>('/auth/email/start',{method:'POST',body:JSON.stringify({email})});}
  verifyEmail(code:string){return this.request<Session>('/auth/email/verify',{method:'POST',body:JSON.stringify({code})});}
  startEmailLink(email:string){return this.request<{retry_after:number}>('/auth/email/link',{method:'POST',body:JSON.stringify({email})});}
@@ -32,7 +40,7 @@ export class Api{
  publicTemplates(q='',locale='en-US'){const params=new URLSearchParams({q});if(locale!=='all')params.set('locale',locale);return this.request<List<Template>>('/public/templates?'+params);}
  profile(){return this.request<MemberProfile>('/me/profile');}
  saveProfile(handle:string|null,public_profile:boolean){return this.request<MemberProfile>('/me/profile',{method:'PUT',body:JSON.stringify({handle,public_profile})});}
- leaderboard(offset=0){return this.request<LeaderboardData>('/leaderboard?offset='+offset);}
+ leaderboard(offset=0){return this.readWithTimeout<LeaderboardData>('/leaderboard?offset='+offset);}
  publicProfile(handle:string){return this.request<PublicMemberProfile>('/profiles/'+encodeURIComponent(handle));}
  dashboard(){return this.request<Dashboard>('/me');}
  contributions(){return this.request<List<Contribution>>('/me/contributions');}
