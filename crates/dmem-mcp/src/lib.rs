@@ -2,12 +2,14 @@
 use dmem_client::{DmemClient, recall_path, safe_id, search_path};
 use dmem_contracts::{CreateDocument, CreateTemplate, RecallQuery, SaveDocument};
 use serde_json::{Value, json};
+mod web_tools;
+pub mod bridge;
 pub const MAX_FRAME: usize = 64 * 1024;
 fn schema(properties: Value, required: Vec<&str>) -> Value {
     json!({"type":"object","properties":properties,"required":required,"additionalProperties":false})
 }
 pub fn tools() -> Value {
-    json!([
+    let mut value = json!([
      {"name":"document_memory_status","description":"Get supported formats and form vocabulary.","inputSchema":schema(json!({}),vec![])},
      {"name":"document_template_search","description":"Find template structures. Templates are format guidance, not factual sources.","inputSchema":schema(json!({"query":{"type":"string","maxLength":200}}),vec![])},
      {"name":"document_source_search","description":"Find the user's private reference spans.","inputSchema":schema(json!({"query":{"type":"string","maxLength":200}}),vec![])},
@@ -25,7 +27,9 @@ pub fn tools() -> Value {
      {"name":"document_contribution_list","description":"List only this user's contribution snapshots and review decisions.","inputSchema":schema(json!({}),vec![])},
      {"name":"document_contribution_check","description":"Read deterministic review findings for the user's submitted snapshot. A passing check never publishes it.","inputSchema":schema(json!({"id":{"type":"string","maxLength":100}}),vec!["id"])},
      {"name":"document_contribution_withdraw","description":"Withdraw the user's pending or approved contribution. Existing private copies keep their attribution.","inputSchema":schema(json!({"id":{"type":"string","maxLength":100}}),vec!["id"])}
-    ])
+    ]);
+    value.as_array_mut().unwrap().extend(web_tools::tools());
+    value
 }
 fn error(id: Value, code: i32, message: &str) -> Value {
     json!({"jsonrpc":"2.0","id":id,"error":{"code":code,"message":message}})
@@ -76,6 +80,7 @@ pub async fn handle(client: &DmemClient, message: Value) -> Option<Value> {
     Some(json!({"jsonrpc":"2.0","id":id,"result":result}))
 }
 async fn invoke(client: &DmemClient, name: &str, args: Value) -> Result<Value, String> {
+    if let Some(result)=web_tools::invoke(client,name,args.clone()).await{return result;}
     let obj = args.as_object().ok_or("invalid_input")?;
     let allowed = match name {
         "document_memory_status" | "document_contribution_list" => vec![],
@@ -305,7 +310,7 @@ mod tests {
         let r = handle(&c, json!({"jsonrpc":"2.0","id":1,"method":"tools/list"}))
             .await
             .unwrap();
-        assert_eq!(r["result"]["tools"].as_array().unwrap().len(), 17);
+        assert_eq!(r["result"]["tools"].as_array().unwrap().len(), 21);
         assert_eq!(
             handle(&c, json!([])).await.unwrap()["error"]["code"],
             -32600

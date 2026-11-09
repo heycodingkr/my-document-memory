@@ -83,9 +83,22 @@ fn patterns() -> &'static Vec<(&'static str, &'static str, Regex)> {
         ("injection", "prompt_override", r"(?i)ignore (?:all )?previous instructions|disregard previous instructions|이전 지시(?:사항)?(?:를|을)? 무시|send the document to\s+http|외부로 전송|run the following command|비밀번호를 입력"),
     ].into_iter().map(|(reason, code, pattern)| (reason, code, Regex::new(pattern).expect("static review pattern"))).collect())
 }
+pub fn contains_secret(text: &str) -> bool {
+    let text = normalized(text);
+    patterns().iter().any(|(reason, _, pattern)| *reason == "secret" && pattern.is_match(&text))
+        || assignment().captures_iter(&text).any(|captures|credential_value_is_secret(&captures[1]))
+}
+pub fn contains_injection(text: &str) -> bool {
+    let text = normalized(text);
+    patterns().iter().any(|(reason, _, pattern)| *reason == "injection" && pattern.is_match(&text))
+}
 fn assignment() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     RE.get_or_init(|| Regex::new(r"(?i)\b(?:password|passwd|secret|api_key|apikey|access_token|auth_token)\s*[:=]\s*(\S{8,})").unwrap())
+}
+fn credential_value_is_secret(value:&str)->bool {
+    !["{{", "<", "$"].iter().any(|p|value.starts_with(p))
+        && !value.chars().all(|c|"_*.-xX#".contains(c))
 }
 fn cards() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
@@ -181,9 +194,7 @@ pub fn review_snapshot(contribution_id: &str, t: &Template, catalog: &[Template]
         }
         for captures in assignment().captures_iter(&text) {
             let value = &captures[1];
-            if !["{{", "<", "$"].iter().any(|p| value.starts_with(p))
-                && !value.chars().all(|c| "_*.-xX#".contains(c))
-            {
+            if credential_value_is_secret(value) {
                 add(
                     &mut findings,
                     "R1",

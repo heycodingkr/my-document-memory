@@ -4,6 +4,7 @@ mod normalization;
 mod output;
 mod recall;
 pub mod review;
+pub mod web;
 use dmem_contracts::*;
 pub use formats::{Extracted, extract};
 pub use normalization::*;

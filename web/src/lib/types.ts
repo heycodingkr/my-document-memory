@@ -15,6 +15,7 @@ export type Document = {id:string;version:number;title:string;family:Family;temp
 export type List<T> = {items:T[]};
 export type ContributionStatus = 'pending'|'approved'|'rejected'|'withdrawn';
 export type ContributionQueueStatus = ContributionStatus|'all';
+export type ContributionPage = List<Contribution>&{next_cursor:string|null};
 export type Session = {account:{id:string;email:string};csrf_token:string};
 export type MemberProfile = {handle:string|null;public_profile:boolean;total_points:number;approved_contributions:number;overall_rank:number|null;public_rank:number|null;points_per_approval:number};
 export type RankedMember = {handle:string;total_points:number;approved_contributions:number;rank:number};

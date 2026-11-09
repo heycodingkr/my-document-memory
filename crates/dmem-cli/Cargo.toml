@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 dmem-client.workspace = true
 dmem-contracts.workspace = true
+dmem-mcp = { path = "../dmem-mcp" }
 clap.workspace = true
 tokio.workspace = true
 serde_json.workspace = true

@@ -47,7 +47,7 @@ async fn main() {
     config.admin_token = Some("synthetic-e2e-admin-token-at-least-32-characters".into());
     config
         .set_admin_emails(
-            "reviewer@example.test,reviewer-blocked@example.test,reviewer-cross@example.test",
+            "reviewer@example.test,reviewer-blocked@example.test,reviewer-cross@example.test,reviewer-queue@example.test",
         )
         .unwrap();
     let db = std::env::var("DMEM_E2E_DATABASE").unwrap();
