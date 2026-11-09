@@ -126,7 +126,7 @@ fn english_catalog_is_additive_and_idempotent() {
         serde_json::from_value(json!({"locale":"en-US","visibility":"public"})).unwrap();
     assert_eq!(
         db.templates("english-owner", search).unwrap().items.len(),
-        9
+        21.min(MAX_RESULTS)
     );
 }
 
@@ -138,7 +138,7 @@ fn locale_is_filtered_before_the_result_limit() {
     }
     let search: Search = serde_json::from_value(json!({"locale":"en-US"})).unwrap();
     let result = db.templates("english-owner", search).unwrap();
-    assert_eq!(result.items.len(), 9);
+    assert_eq!(result.items.len(), 21.min(MAX_RESULTS));
     assert!(result.items.iter().all(|t| t.form.locale == "en-US"));
     assert!(result.items.iter().any(|t| t.id == "meeting.minutes.en"));
 }

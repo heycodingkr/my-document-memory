@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "author": "My Document Memory",
+  "license": "CC0-1.0",
+  "entries": [
+    {
+      "id": "project.brief.en",
+      "locale": "en-US",
+      "title": "Project Brief",
+      "summary": "Define the problem, intended users, scope and measurable success before proposing work. Separate confirmed facts from assumptions, name an owner for each open decision, and leave unsupported dates or budgets for confirmation.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Problem and Evidence",
+        "Audience and User Needs",
+        "Desired Outcomes and Success Measures",
+        "Scope and Explicit Exclusions",
+        "Deliverables and Owners",
+        "Milestones and Dependencies",
+        "Risks and Assumptions",
+        "Decisions and Next Actions"
+      ],
+      "tags": [
+        "Starter",
+        "Planning",
+        "Template"
+      ]
+    },
+    {
+      "id": "project.brief.ko",
+      "locale": "ko-KR",
+      "title": "프로젝트 기획안",
+      "summary": "문제와 대상 사용자, 범위, 측정 가능한 성공 기준을 먼저 정리합니다. 확인된 사실과 가정을 구분하고 미정인 결정마다 담당자를 적으세요. 근거 없는 일정과 예산은 만들지 않고 확인 필요로 남깁니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "문제와 근거",
+        "대상 사용자와 요구",
+        "목표와 성공 지표",
+        "범위와 제외 항목",
+        "산출물과 담당자",
+        "마일스톤과 의존성",
+        "리스크와 가정",
+        "결정과 다음 행동"
+      ],
+      "tags": [
+        "Starter",
+        "Planning",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "product.requirements.en",
+      "locale": "en-US",
+      "title": "Product Requirements Document",
+      "summary": "Describe user problems and observable product behavior before implementation choices. Give each requirement a testable acceptance criterion; include empty, loading, error and permission states. Label hypotheses and unresolved tradeoffs.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "User Problem and Evidence",
+        "Goals and Non-goals",
+        "Users and Main Scenarios",
+        "Functional Requirements",
+        "Permissions and Data Boundaries",
+        "Loading, Empty and Failure States",
+        "Acceptance Criteria",
+        "Rollout and Open Questions"
+      ],
+      "tags": [
+        "Starter",
+        "Product",
+        "Template"
+      ]
+    },
+    {
+      "id": "product.requirements.ko",
+      "locale": "ko-KR",
+      "title": "제품 요구사항 정의서",
+      "summary": "구현 방법보다 사용자 문제와 관찰 가능한 제품 동작을 먼저 정의합니다. 요구사항마다 검증 가능한 인수 기준을 붙이고 빈 화면, 로딩, 오류, 권한 상태를 포함하세요. 가설과 미결정 절충안은 명시합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "사용자 문제와 근거",
+        "목표와 비목표",
+        "사용자와 주요 시나리오",
+        "기능 요구사항",
+        "권한과 데이터 경계",
+        "로딩·빈 화면·실패 상태",
+        "인수 기준",
+        "출시 계획과 열린 질문"
+      ],
+      "tags": [
+        "Starter",
+        "Product",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "decision.memo.en",
+      "locale": "en-US",
+      "title": "Decision Memo",
+      "summary": "Lead with the decision needed and its owner. Compare feasible options against the same criteria, distinguish evidence from forecasts, record the chosen tradeoff and what would trigger reconsideration. Do not invent approval or consensus.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Decision Needed and Owner",
+        "Context and Constraints",
+        "Evidence and Unknowns",
+        "Options Compared Against Criteria",
+        "Recommendation and Tradeoffs",
+        "Consequences and Reversibility",
+        "Revisit Triggers",
+        "Decision Record and Actions"
+      ],
+      "tags": [
+        "Starter",
+        "Decisions",
+        "Template"
+      ]
+    },
+    {
+      "id": "decision.memo.ko",
+      "locale": "ko-KR",
+      "title": "의사결정 메모",
+      "summary": "필요한 결정과 결정권자를 먼저 적습니다. 실행 가능한 선택지를 같은 기준으로 비교하고 근거와 예측을 구분하세요. 선택한 절충안과 재검토 조건을 남기며 실제로 받지 않은 승인이나 합의를 만들지 않습니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "필요한 결정과 결정권자",
+        "배경과 제약",
+        "근거와 미확인 사항",
+        "공통 기준으로 비교한 선택지",
+        "권고안과 절충점",
+        "영향과 되돌릴 수 있는 범위",
+        "재검토 조건",
+        "결정 기록과 실행 항목"
+      ],
+      "tags": [
+        "Starter",
+        "Decisions",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "research.brief.en",
+      "locale": "en-US",
+      "title": "Research Brief",
+      "summary": "Frame a focused question and summarize what the selected sources support. Cite source locations for material claims, describe the sample and method, include contradictory findings, and make uncertainty and limits visible before recommending action.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Research Question and Scope",
+        "Method and Source Selection",
+        "Key Findings with Sources",
+        "Contradictory Evidence",
+        "Interpretation and Confidence",
+        "Limitations and Missing Information",
+        "Implications and Options",
+        "Follow-up Questions"
+      ],
+      "tags": [
+        "Starter",
+        "Research",
+        "Template"
+      ]
+    },
+    {
+      "id": "research.brief.ko",
+      "locale": "ko-KR",
+      "title": "리서치 브리프",
+      "summary": "조사 질문을 좁히고 선택한 자료가 뒷받침하는 내용만 요약합니다. 주요 주장에는 출처 위치를 붙이고 표본과 방법, 상반된 결과를 함께 적으세요. 권고 전에 불확실성과 조사 한계를 명시합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "조사 질문과 범위",
+        "방법과 자료 선정",
+        "출처가 있는 핵심 결과",
+        "상반된 근거",
+        "해석과 신뢰 수준",
+        "한계와 부족한 정보",
+        "시사점과 선택지",
+        "후속 조사 질문"
+      ],
+      "tags": [
+        "Starter",
+        "Research",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "incident.postmortem.en",
+      "locale": "en-US",
+      "title": "Incident Review and Prevention",
+      "summary": "Write a factual, blameless incident review. Separate detection, contributing conditions and verified root cause; cite timestamps and observed impact. Assign prevention work with owners and validation criteria, without inventing outage metrics.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Summary and Observed Impact",
+        "Detection and Response Timeline",
+        "Verified Root Cause",
+        "Contributing Conditions",
+        "What Worked and What Did Not",
+        "Corrective Actions and Owners",
+        "Prevention and Verification",
+        "Unresolved Questions"
+      ],
+      "tags": [
+        "Starter",
+        "Operations",
+        "Template"
+      ]
+    },
+    {
+      "id": "incident.postmortem.ko",
+      "locale": "ko-KR",
+      "title": "장애 회고와 재발 방지",
+      "summary": "관찰된 사실을 중심으로 개인을 탓하지 않는 장애 회고를 작성합니다. 탐지 과정, 기여 요인, 검증한 근본 원인을 구분하고 시간과 실제 영향을 근거로 남기세요. 재발 방지 항목에는 담당자와 검증 기준을 정합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "요약과 관찰된 영향",
+        "탐지와 대응 시간순 기록",
+        "검증한 근본 원인",
+        "기여 요인",
+        "잘된 점과 개선할 점",
+        "시정 조치와 담당자",
+        "재발 방지와 검증",
+        "미해결 질문"
+      ],
+      "tags": [
+        "Starter",
+        "Operations",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "blog.technical.en",
+      "locale": "en-US",
+      "title": "Technical Blog Article",
+      "summary": "Start from a concrete reader problem, show the approach with a small reproducible example, then discuss results and limits. Attribute external ideas and measurements. Keep code, versions and screenshots consistent and separate experience from general claims.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Reader Problem and Promise",
+        "Context and Prerequisites",
+        "Approach and Reasoning",
+        "Minimal Reproducible Example",
+        "Results and Evidence",
+        "Limits and Alternatives",
+        "Practical Takeaways",
+        "References and Next Steps"
+      ],
+      "tags": [
+        "Starter",
+        "Writing",
+        "Template"
+      ]
+    },
+    {
+      "id": "blog.technical.ko",
+      "locale": "ko-KR",
+      "title": "기술 블로그 글",
+      "summary": "독자의 구체적인 문제로 시작하고 작은 재현 예제로 접근법을 설명합니다. 결과와 한계를 함께 다루고 외부 아이디어와 측정값에는 출처를 붙이세요. 코드와 버전, 화면을 일치시키고 개인 경험을 일반적인 사실과 구분합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "독자 문제와 얻을 수 있는 것",
+        "배경과 준비 사항",
+        "접근법과 선택 이유",
+        "최소 재현 예제",
+        "결과와 근거",
+        "한계와 대안",
+        "실무에서 가져갈 점",
+        "참고자료와 다음 단계"
+      ],
+      "tags": [
+        "Starter",
+        "Writing",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "project.plan.en",
+      "locale": "en-US",
+      "title": "Project Execution Plan",
+      "summary": "Turn an agreed goal into owned work, dependencies and review points. Use explicit deliverables and completion criteria, not vague activity lists. Mark estimated dates and capacity assumptions, and record how changes, risks and stakeholder decisions will be handled.",
+      "doc_type": "proposal",
+      "provider": "docx",
+      "sections": [
+        "Goal and Completion Criteria",
+        "Workstreams and Deliverables",
+        "Owners and Responsibilities",
+        "Sequence and Dependencies",
+        "Milestones and Capacity Assumptions",
+        "Risks and Contingencies",
+        "Review and Communication Cadence",
+        "Change Decisions and Next Steps"
+      ],
+      "tags": [
+        "Starter",
+        "Planning",
+        "Template"
+      ]
+    },
+    {
+      "id": "project.plan.ko",
+      "locale": "ko-KR",
+      "title": "프로젝트 실행 계획",
+      "summary": "합의한 목표를 담당 작업과 의존성, 검토 지점으로 나눕니다. 모호한 활동 목록 대신 산출물과 완료 기준을 적으세요. 예상 일정과 가용 인력의 가정을 표시하고 변경, 리스크, 이해관계자의 결정을 다룰 방법을 정합니다.",
+      "doc_type": "proposal",
+      "provider": "docx",
+      "sections": [
+        "목표와 완료 기준",
+        "작업 묶음과 산출물",
+        "담당자와 책임",
+        "실행 순서와 의존성",
+        "마일스톤과 가용 인력 가정",
+        "리스크와 대응책",
+        "검토와 공유 주기",
+        "변경 결정과 다음 단계"
+      ],
+      "tags": [
+        "Starter",
+        "Planning",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "presentation.executive.en",
+      "locale": "en-US",
+      "title": "Executive Decision Presentation",
+      "summary": "Build a short presentation around one decision for a named audience. Give each slide one takeaway and the evidence needed to support it. Compare options fairly, show risks and assumptions, and end with an explicit ask; approve the outline before drafting slides.",
+      "doc_type": "report_deck",
+      "provider": "pptx",
+      "sections": [
+        "Decision and Main Takeaway",
+        "Situation and Urgency",
+        "Evidence and Observed Impact",
+        "Options and Common Criteria",
+        "Recommended Path and Tradeoffs",
+        "Risks and Mitigations",
+        "Plan and Owners",
+        "Explicit Ask and Next Checkpoint"
+      ],
+      "tags": [
+        "Starter",
+        "Presentations",
+        "Template"
+      ]
+    },
+    {
+      "id": "presentation.executive.ko",
+      "locale": "ko-KR",
+      "title": "경영진 의사결정 발표",
+      "summary": "대상 청중에게 필요한 하나의 결정을 중심으로 짧은 발표를 구성합니다. 슬라이드마다 핵심 메시지 하나와 이를 뒷받침하는 근거를 정하세요. 선택지를 공정하게 비교하고 가정과 리스크를 밝힌 뒤 구체적인 요청으로 마무리합니다.",
+      "doc_type": "report_deck",
+      "provider": "pptx",
+      "sections": [
+        "필요한 결정과 핵심 메시지",
+        "상황과 지금 필요한 이유",
+        "근거와 관찰된 영향",
+        "선택지와 공통 비교 기준",
+        "권고안과 절충점",
+        "리스크와 대응",
+        "실행 계획과 담당자",
+        "구체적인 요청과 다음 검토"
+      ],
+      "tags": [
+        "Starter",
+        "Presentations",
+        "문서 템플릿"
+      ]
+    },
+    {
+      "id": "memory.evidence.en",
+      "locale": "en-US",
+      "title": "Evidence-first Writing Memory",
+      "summary": "Reuse these rules with your connected AI before drafting any document: use only selected references for factual claims, preserve source locations and dates, distinguish inference from fact, mark missing information, and run a claim-by-claim citation review.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Define Audience and Evidence Scope",
+        "Map Claims to Selected Source Locations",
+        "Separate Facts, Inferences and Assumptions",
+        "Mark Missing or Conflicting Information",
+        "Keep Numbers, Dates and Units Traceable",
+        "Verify Citations Against Originals",
+        "List Confirmation Questions Before Finalizing"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "Writing rules"
+      ]
+    },
+    {
+      "id": "memory.evidence.ko",
+      "locale": "ko-KR",
+      "title": "근거 중심 작성 메모리",
+      "summary": "문서를 쓰기 전에 연결한 AI에 재사용할 작성 규칙입니다. 사실 주장은 선택한 참고자료로만 뒷받침하고 출처 위치와 날짜를 보존하세요. 추론과 사실을 구분하고 부족한 정보는 확인 필요로 남긴 뒤 주장별로 인용을 검토합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "독자와 사용할 근거의 범위 정의",
+        "주장과 선택한 출처 위치 연결",
+        "사실·추론·가정 구분",
+        "부족하거나 상충하는 정보 표시",
+        "숫자·날짜·단위의 근거 유지",
+        "원문과 인용 대조",
+        "완성 전 확인 질문 정리"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "작성 메모리"
+      ]
+    },
+    {
+      "id": "memory.clear-writing.en",
+      "locale": "en-US",
+      "title": "Clear Writing and Voice Memory",
+      "summary": "Give your connected AI a reusable voice checklist: lead with the reader's purpose, use concrete verbs and stable terms, put one main idea in each paragraph, remove unsupported emphasis and repetition, and preserve the meaning and uncertainty of the source.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Identify Reader and Required Action",
+        "Lead with the Main Point",
+        "Use Concrete Verbs and Consistent Terms",
+        "Give Each Paragraph One Main Idea",
+        "Replace Repetition and Unsupported Emphasis",
+        "Preserve Meaning, Tone and Uncertainty",
+        "Read Aloud and Check the Reader's Next Step"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "Writing rules"
+      ]
+    },
+    {
+      "id": "memory.clear-writing.ko",
+      "locale": "ko-KR",
+      "title": "명료한 문장과 어조 메모리",
+      "summary": "연결한 AI에 반복해서 전달할 어조와 문장 점검표입니다. 독자의 목적을 먼저 밝히고 구체적인 동사와 일관된 용어를 사용하세요. 문단마다 핵심 생각 하나를 담고 근거 없는 강조와 반복을 줄이되 원문의 의미와 불확실성을 유지합니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "독자와 필요한 행동 파악",
+        "핵심 내용부터 제시",
+        "구체적인 동사와 일관된 용어 사용",
+        "문단마다 중심 생각 하나 유지",
+        "반복과 근거 없는 강조 수정",
+        "의미·어조·불확실성 보존",
+        "소리 내어 읽고 다음 행동 확인"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "작성 메모리"
+      ]
+    },
+    {
+      "id": "memory.quality-review.en",
+      "locale": "en-US",
+      "title": "Document Quality Review Memory",
+      "summary": "Use this review memory before sharing a report, proposal or plan. Check purpose, required sections, internal consistency, source support, permission to share and actionable ownership. Return findings with locations and severity; unresolved findings remain visible.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "Confirm Purpose, Audience and Required Sections",
+        "Check Names, Numbers, Dates and Terminology",
+        "Trace Material Claims to Evidence",
+        "Review Privacy and Sharing Permission",
+        "Verify Owners, Due Dates and Acceptance Criteria",
+        "Record Findings by Location and Severity",
+        "Resolve or Explicitly Carry Open Questions"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "Writing rules"
+      ]
+    },
+    {
+      "id": "memory.quality-review.ko",
+      "locale": "ko-KR",
+      "title": "문서 품질 검토 메모리",
+      "summary": "보고서와 제안서, 계획을 공유하기 전에 재사용하는 검토 메모리입니다. 목적과 필수 항목, 문서 내부의 일관성, 출처 근거, 공유 권한, 실행 담당자를 확인하세요. 발견 사항에는 위치와 중요도를 붙이고 미해결 사항을 숨기지 않습니다.",
+      "doc_type": "report",
+      "provider": "docx",
+      "sections": [
+        "목적·독자·필수 항목 확인",
+        "이름·숫자·날짜·용어 대조",
+        "중요한 주장과 근거 연결",
+        "개인정보와 공유 권한 검토",
+        "담당자·기한·인수 기준 확인",
+        "위치와 중요도로 발견 사항 기록",
+        "해결하거나 열린 질문으로 명시"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "작성 메모리"
+      ]
+    },
+    {
+      "id": "memory.slide-story.en",
+      "locale": "en-US",
+      "title": "Slide Story and Outline Review Memory",
+      "summary": "Apply this reusable presentation memory before generating slides. Define the audience and desired decision, order claims into a clear narrative, require one takeaway per slide and source-backed evidence, review the outline explicitly, and remove slides that do not serve the ask.",
+      "doc_type": "report_deck",
+      "provider": "pptx",
+      "sections": [
+        "Audience, Context and Desired Decision",
+        "Narrative Arc and Main Claims",
+        "One Takeaway for Each Slide",
+        "Evidence, Citations and Visual Purpose",
+        "Outline Questions and Explicit Approval",
+        "Consistency and Accessibility Check",
+        "Closing Ask and Follow-up Ownership"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "Writing rules"
+      ]
+    },
+    {
+      "id": "memory.slide-story.ko",
+      "locale": "ko-KR",
+      "title": "슬라이드 스토리와 개요 검토 메모리",
+      "summary": "슬라이드를 만들기 전에 적용할 발표 구성 메모리입니다. 청중과 필요한 결정을 정하고 주장을 이해하기 쉬운 흐름으로 배치하세요. 장마다 핵심 메시지와 근거를 확인하고 개요를 명시적으로 승인한 뒤 요청과 무관한 장은 덜어냅니다.",
+      "doc_type": "report_deck",
+      "provider": "pptx",
+      "sections": [
+        "청중·배경·필요한 결정",
+        "전체 흐름과 중심 주장",
+        "슬라이드별 핵심 메시지 하나",
+        "근거·인용·시각 자료의 목적",
+        "개요 확인 질문과 명시적 승인",
+        "일관성과 접근성 점검",
+        "마지막 요청과 후속 담당자"
+      ],
+      "tags": [
+        "Starter",
+        "Memory",
+        "작성 메모리"
+      ]
+    }
+  ]
+}

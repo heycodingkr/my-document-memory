@@ -1,6 +1,8 @@
 # 계정·내 공간·공개 기여 v1
 
-상태: 구현 및 검증 진행 (2026-11-09). 기본 웹 이메일 로그인은 동시 작업 [이메일 링크 명세](landing-email-links-v1.md)로 확장됐으며, 본 명세의 OTP API도 호환 유지한다. 기존 runtime-v1의 Rust/Axum/SQLite/Svelte와 Bearer 기반 CLI/MCP 호환성을 유지한다. 테스트 정의: [accounts-community-v1](../test/accounts-community-v1.md).
+상태: 구현·검증·운영 배포 완료 (2026-11-09). 실행 근거: [검증 결과](../test/accounts-community-v1-results.md). 기본 웹 이메일 로그인은 동시 작업 [이메일 링크 명세](landing-email-links-v1.md)로 확장됐으며, 본 명세의 OTP API도 호환 유지한다. 기존 runtime-v1의 Rust/Axum/SQLite/Svelte와 Bearer 기반 CLI/MCP 호환성을 유지한다. 테스트 정의: [accounts-community-v1](../test/accounts-community-v1.md).
+
+일반 개인 가입·익명 열람·회원 기여 권한 및 상태 화면 보강은 운영 배포·검증까지 완료했다. [추가 검증 결과](../test/personal-public-contributions-v1.md)에 개발 검증과 운영 확인을 구분해 기록했다.
 
 ## 의존 순서와 원자 목표
 
@@ -18,6 +20,8 @@
 
 ## 계정 계약
 
+- 일반 개인 이메일도 가입·로그인할 수 있다. 초대·조직 도메인·관리자 허용 목록은 일반 계정의 조건이 아니며, 최초 이메일 인증 성공 시 계정을 생성한다. 공개 메모리 검색·목록·상세 미리보기는 익명으로 접근한다.
+
 - POST /v1/auth/email/start {email}: 이메일 정규화/검증, 10분 유효한 6자리 코드. 브라우저 challenge 쿠키에 바인딩. 60초 재발송 제한과 시간당 이메일/브라우저 제한. 코드·토큰·이메일을 로그/오류에 출력하지 않는다. 미설정 mailer는 503이며 발송 성공으로 표시하지 않는다.
 - POST /v1/auth/email/verify {code}: 같은 challenge 쿠키, 최대 5회 시도, 1회 사용. 성공 시 영속 계정과 30일 세션. 쿠키 HttpOnly/SameSite=Lax/Path=/, HTTPS 운영에서는 Secure. 저장소에는 코드와 세션 원문 대신 keyed hash를 저장한다. 재발송은 이전 코드를 무효화한다.
 - GET /v1/auth/session: 현재 계정·이메일·csrf token. POST /v1/auth/logout: 세션 폐기와 쿠키 제거. 브라우저 쓰기는 정확한 허용 Origin 및 X-CSRF-Token을 검증한다. 로그인 start/verify도 허용 Origin을 필수 검증해 login CSRF를 방지한다.
@@ -28,8 +32,9 @@
 
 - GET /v1/me: 사용자별 양식/자료/문서/기여 수. 개인 자료는 기존 owner 경계로 격리한다. 웹의 내 메모리는 내 양식·자료·작성 문서로 구성한다.
 - GET /v1/public/templates 및 /{id}: 로그인 없이 공개 승인 양식과 기존 seed만 조회. 비공개 ID는 404. q/family 필터와 기존 최대 20개 제한. 원문 자료·작성 문서·이메일·소유자 ID는 포함하지 않는다.
-- POST /v1/me/contributions {template_id,author,license,rights_confirmed}: 자기 소유 private 양식만, 공개될 구조 미리보기 후 권리 확인, CC0-1.0 또는 CC-BY-4.0. source 원문·작성 문서·비공개 provenance를 포함하지 않는 불변 snapshot을 pending으로 제출. 같은 양식의 활성 중복 제출은 409. 다른 소유자의 동일 구조는 독립 기여다.
+- POST /v1/me/contributions {template_id,author,license,rights_confirmed}: 가입된 계정으로 인증해야 하며, accounts 행이 없는 local Bearer 소유자는 401이다. 회원에게 발급·매핑된 Bearer는 CLI/MCP 호환을 유지한다. 내 기여 목록·검수 결과·철회도 같은 회원 조건을 적용한다. 자기 소유 private 양식만, 공개될 구조 미리보기 후 권리 확인, CC0-1.0 또는 CC-BY-4.0. source 원문·작성 문서·비공개 provenance를 포함하지 않는 불변 snapshot을 pending으로 제출. 같은 양식의 활성 중복 제출은 409. 다른 소유자의 동일 구조는 독립 기여다.
 - GET /v1/me/contributions: 자신의 기여만. POST /v1/me/contributions/{id}/withdraw: 자신의 pending/approved 기여 철회. 철회된 공개 원본은 탐색/복사에서 사라지고 기존 복사본의 고정 출처는 유지된다.
+- 상태는 `pending`(검토 대기), `approved`(승인·공개), `rejected`(반려), `withdrawn`(철회)다. 회원 웹 화면은 상태별 필터·요청/갱신 시각·명시적 상태 갱신을 제공하고, 로그인 전 기여 진입은 가입/로그인 후 내 기여 화면으로 돌아온다. 비회원 웹 토큰 연결은 이메일 회원 로그인 동작을 제공한다.
 - GET /v1/admin/contributions, POST /v1/admin/contributions/{id}/decision {decision}: 별도 DMEM_ADMIN_TOKEN만 허용. 일반 사용자/Bearer local에 관리자 권한 없음. pending만 approve/reject 가능. approve는 불변 snapshot을 공개 catalog 새 ID로 원자적으로 저장. 철회와 동시 검수는 하나만 성공. 자동 게시·자동 개인정보 검수를 구현했다고 표시하지 않는다.
 - 공개 양식을 내 라이브러리로 복사하면 새 private ID와 원본 id/version/author/license를 보존한다. 복사본에서 재기여할 때 원 라이선스·저작자 attribution을 보존하며 CC-BY를 CC0로 바꾸지 못한다. 공개 ID로 검증된 attributions 계보를 최대 16개 보존하며, 한도를 넘으면 일부를 버리지 않고 license_forbids로 거절한다. 비공개 ancestor ID는 공개 snapshot의 origin/attributions에서 제거한다.
 

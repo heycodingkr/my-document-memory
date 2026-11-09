@@ -26,4 +26,6 @@
 
 Before the fix, `AuthConfig::set_admin_emails(["*@example.test"])` returned `Ok(())` because email normalization checked syntax but did not reject `*`. The focused `wildcard_admin_email_is_rejected_without_replacing_valid_allowlist` test records the expected result and verifies the prior exact address remains usable.
 
-The focused test failed before the fix (`Ok(())` instead of `Err(InvalidInput)`). After rejecting `*` before assignment, it passed. `cargo test --workspace --locked` passed all 35 tests, `cargo build --workspace --locked --examples` passed, and `cargo fmt --all -- --check` passed.
+The original focused test failed before the fix (`Ok(())` instead of `Err(InvalidInput)`). That branch passed its original 35-test workspace run.
+
+During PR #2 integration on 2026-11-09, current main already contained the guard and used a comma-separated string API. The conflict resolution keeps that API and adapts the regression to normalized ` Operator@Example.Test ` followed by `other@example.test,*@example.test`. The test checks both set size and retained exact address. Parent mutation verification temporarily removed the guard: the test failed with `Ok(())` instead of `Err(InvalidInput)`, then passed after restoration. `cargo test -p dmem-server --locked` passed on the reconciled branch. Logs: `.artifacts/branch-cleanup-20261109/pr-{wildcard-red,wildcard-green,server}.log`.

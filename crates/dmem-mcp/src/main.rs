@@ -10,7 +10,7 @@ async fn main() {
 }
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let base = std::env::var("DMEM_URL").unwrap_or_else(|_| "http://127.0.0.1:3847".into());
-    let token = std::env::var("DMEM_TOKEN").map_err(|_| "auth_required")?;
+    let token = std::env::var("DMEM_TOKEN").unwrap_or_default();
     let client = DmemClient::new(&base, token)?;
     let mut reader = BufReader::new(tokio::io::stdin());
     let mut out = tokio::io::stdout();

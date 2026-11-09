@@ -1,10 +1,13 @@
 <script lang="ts">
- let {active,connected,onview,onlogout,busy=false}:{active:string;connected:boolean;busy?:boolean;onlogout:()=>Promise<void>;onview:(view:'me'|'public'|'contributions')=>void}=$props();
+ let {active,connected,signedIn,onview,onlogout,busy=false}:{active:string;connected:boolean;signedIn:boolean;busy?:boolean;onlogout:()=>Promise<void>;onview:(view:'me'|'signin'|'public'|'contributions'|'review'|'leaderboard'|'signup')=>void}=$props();
 </script>
 <div class="account-navigation" aria-label="Account and community">
- <button class:active={active==='me'} onclick={()=>onview('me')}><span aria-hidden="true">◈</span><span>My page</span></button>
+ <button class:active={active==='me'||active==='signin'} onclick={()=>onview(connected?'me':'signin')}><span aria-hidden="true">◈</span><span>{connected?'My page':'Sign in'}</span></button>
+ {#if !signedIn}<button class:active={active==='signup'} onclick={()=>onview('signup')}><span aria-hidden="true">+</span><span>Create account</span></button>{/if}
+ <button class:active={active==='leaderboard'} onclick={()=>onview('leaderboard')}><span aria-hidden="true">↗</span><span>Leaderboard</span></button>
  <button class:active={active==='public'} onclick={()=>onview('public')}><span aria-hidden="true">◎</span><span>Public memories</span></button>
- <button class:active={active==='contributions'} disabled={!connected} onclick={()=>onview('contributions')}><span aria-hidden="true">↗</span><span>My contributions</span></button>
+ <button class:active={active==='contributions'} onclick={()=>onview('contributions')}><span aria-hidden="true">↗</span><span>My contributions</span></button>
+ <button class:active={active==='review'} onclick={()=>onview('review')}><span aria-hidden="true">✓</span><span>Review contributions</span></button>
  {#if connected}<button class="mobile-signout" disabled={busy} onclick={onlogout}>Sign out</button>{/if}
 </div>
 <style>

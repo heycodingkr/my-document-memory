@@ -19,6 +19,7 @@ export const landingCopy={
    about:{kicker:"TAKE YOUR TIME BACK",title:"Your work is done.",titleNext:"Why are you still writing about it?",summary:"Reports, meeting notes, proposals, and decks. Turning finished work into a document can take another part of your day.",story:"Finding a format. Rebuilding an outline. Explaining the same writing rules again. My Document Memory gives your connected AI a reusable starting point: templates, writing guidance, review criteria, and selected references. Let your AI handle the draft, so you can focus on the decisions that follow.",items:[
     {index:"01 / REUSE",title:"Reuse the know-how.",description:"Give your AI a useful structure and writing rules. Start with a format worth remembering."},
     {index:"02 / DELEGATE",title:"Give AI the facts.",description:"Choose the sources for this task. Let your connected AI draft from the structure and evidence you provide."},
+
     {index:"03 / DECIDE",title:"Review and decide.",description:"Check the claims and open questions. Your memories stay private unless you choose to share them."}
    ]},
    savings:{kicker:'EXPECTED SAVINGS',title:'Less time. Fewer tool calls.',description:'For recurring work such as Google Slides decks and Google Docs reports, saved structures, writing rules, and references give your agent less to rediscover.',metrics:[
@@ -90,6 +91,7 @@ export const landingCopy={
    about:{kicker:"문서에 쓰던 시간을 돌려받으세요",title:"일은 끝났는데,",titleNext:"문서는 아직인가요?",summary:"보고서, 회의록, 제안서, 발표 자료. 이미 한 일을 설명하느라 또 시간을 쓰고 있습니다.",story:"양식 찾기. 목차 짜기. 같은 작성법을 다시 설명하기. My Document Memory는 템플릿, 작성 지침, 검토 기준, 선택한 참고 자료를 연결한 AI에게 전합니다. 초안 작성은 AI에게 맡기고, 당신은 다음 결정에 집중하세요.",items:[
     {index:"01 / 노하우 활용",title:"좋은 작성법을 이어 쓰세요.",description:"유용한 구조와 작성 규칙을 AI에게 전하세요. 잘 만든 문서의 형식을 다음 작업에도 활용합니다."},
     {index:"02 / AI에게 맡기기",title:"AI에게 근거를 전하세요.",description:"이번 작업에 필요한 자료를 고르세요. 연결한 AI가 양식과 근거를 바탕으로 초안을 작성합니다."},
+
     {index:"03 / 확인과 결정",title:"확인하고, 결정하세요.",description:"주장과 확인할 항목을 검토하세요. 메모리는 직접 공유하기 전까지 비공개입니다."}
    ]},
    savings:{kicker:'기대 효과 · 참고 추정',title:'같은 설명은 줄이고, 다음 문서는 더 빠르게.',description:'Google Slides 발표 자료나 Google Docs 보고서를 반복해서 만들 때, 저장해 둔 구성과 작성 규칙, 참고 자료로 AI가 같은 방식을 다시 찾는 일을 줄일 수 있습니다.',metrics:[

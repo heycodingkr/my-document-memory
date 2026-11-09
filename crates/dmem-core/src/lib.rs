@@ -2,10 +2,13 @@
 mod formats;
 mod normalization;
 mod output;
+mod recall;
+pub mod review;
 use dmem_contracts::*;
 pub use formats::{Extracted, extract};
 pub use normalization::*;
 pub use output::{Export, export};
+pub use recall::recall;
 
 pub fn validate_title(title: &str) -> Result<(), Fault> {
     if title.trim().is_empty()

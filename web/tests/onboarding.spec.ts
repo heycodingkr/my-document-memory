@@ -6,11 +6,11 @@ test('public introduction explains the workflow before authentication',async({pa
  const apiRequests:string[]=[];
  page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/v1/'))apiRequests.push(request.url());});
  await page.goto('/');
- await expect(page.getByRole('heading',{level:1})).toHaveText('Any model.Your standard.');
+ await expect(page.getByRole('heading',{level:1})).toHaveText('The era of writing documents yourself is ending.');
  await expect(page.getByLabel('Example AI')).toBeVisible();
  await expect(page.getByRole('tablist',{name:'Document tool examples'}).getByRole('tab')).toHaveCount(3);
- await page.getByRole('link',{name:'Get started →',exact:true}).click();
- await expect(page.getByRole('heading',{name:'Three steps to your next document.'})).toBeInViewport();
+ await page.getByRole('link',{name:'Let AI write →',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Hand your next document to AI.'})).toBeInViewport();
  await expect(page.getByRole('link',{name:'Explore Arise Browser ↗',exact:true})).toHaveAttribute('href','https://arisebrowser.com/');
  await expect(page.getByRole('link',{name:'Browser connection guide ↗',exact:true})).toHaveAttribute('href','https://arisebrowser.com/blog/connect-ai-agent-to-browser-mcp/');
  expect(apiRequests.map(url=>new URL(url).pathname)).toEqual(['/v1/auth/session']);
@@ -35,7 +35,9 @@ test('tool and AI choices carry the same document criteria into the copied reque
  await page.getByLabel('Example AI').selectOption('Claude');
  await page.getByRole('tab',{name:'Google Slides',exact:true}).click();
  await expect(page.getByRole('tab',{name:'Google Slides',exact:true})).toHaveAttribute('aria-selected','true');
- await expect(page.getByRole('tabpanel',{name:'Google Slides',exact:true})).toContainText('outline');
+ const slidesPanel=page.getByRole('tabpanel',{name:'Google Slides',exact:true});
+ await expect(slidesPanel).toContainText('Project kickoff deck');
+ await expect(slidesPanel.getByRole('link',{name:'Open presentation deck example',exact:true})).toHaveAttribute('href','/examples/document-examples.svg#deck');
  const prompt=page.getByLabel('Example request');
  await expect(prompt).toContainText('Google Slides');
  await expect(prompt).toContainText('outline first');
@@ -86,7 +88,7 @@ test('introduction and connection remain usable at desktop and narrow widths',as
  await page.goto('/');
  await page.screenshot({path:'test-results/landing-desktop.png',fullPage:true});
  await page.setViewportSize({width:1440,height:614});
- await expect(page.getByRole('link',{name:'Get started →',exact:true})).toBeInViewport({ratio:1});
+ await expect(page.getByRole('link',{name:'Let AI write →',exact:true})).toBeInViewport({ratio:1});
  await page.screenshot({path:'test-results/landing-laptop.png'});
  for(const width of [390,320]){
   await page.setViewportSize({width,height:844});

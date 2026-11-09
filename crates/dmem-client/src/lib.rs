@@ -1,11 +1,12 @@
 #![forbid(unsafe_code)]
-use dmem_contracts::ApiError;
+use dmem_contracts::{ApiError, RecallQuery};
 use reqwest::{Client, Method};
 use serde::{Serialize, de::DeserializeOwned};
 pub struct DmemClient {
     http: Client,
     base: String,
     token: String,
+    origin: Option<String>,
 }
 #[derive(Debug)]
 pub struct ClientError {
@@ -53,6 +54,7 @@ impl DmemClient {
             http,
             base: base.trim_end_matches('/').into(),
             token,
+            origin: None,
         })
     }
     async fn decode<T: DeserializeOwned>(response: reqwest::Response) -> Result<T, ClientError> {
@@ -62,11 +64,40 @@ impl DmemClient {
         }
         response.json().await.map_err(unavailable)
     }
+    pub fn with_origin(mut self, origin: &str) -> Result<Self, ClientError> {
+        let parsed = reqwest::Url::parse(origin).map_err(unavailable)?;
+        if !["http", "https"].contains(&parsed.scheme())
+            || parsed.origin().ascii_serialization() != origin.trim_end_matches('/')
+        {
+            return Err(ClientError {
+                code: "invalid_input".into(),
+            });
+        }
+        self.origin = Some(parsed.origin().ascii_serialization());
+        Ok(self)
+    }
+    fn request(&self, method: Method, path: &str, authenticated: bool) -> reqwest::RequestBuilder {
+        let mut request = self.http.request(method, format!("{}{path}", self.base));
+        if authenticated && !self.token.is_empty() {
+            request = request.bearer_auth(&self.token);
+        }
+        if let Some(origin) = &self.origin {
+            request = request.header(reqwest::header::ORIGIN, origin);
+        }
+        request
+    }
+    pub async fn public_get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ClientError> {
+        Self::decode(
+            self.request(Method::GET, path, false)
+                .send()
+                .await
+                .map_err(unavailable)?,
+        )
+        .await
+    }
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T, ClientError> {
         Self::decode(
-            self.http
-                .get(format!("{}{path}", self.base))
-                .bearer_auth(&self.token)
+            self.request(Method::GET, path, true)
                 .send()
                 .await
                 .map_err(unavailable)?,
@@ -80,9 +111,7 @@ impl DmemClient {
         body: &impl Serialize,
     ) -> Result<T, ClientError> {
         Self::decode(
-            self.http
-                .request(method, format!("{}{path}", self.base))
-                .bearer_auth(&self.token)
+            self.request(method, path, true)
                 .json(body)
                 .send()
                 .await
@@ -115,9 +144,7 @@ impl DmemClient {
             reqwest::multipart::Part::bytes(bytes).file_name(filename),
         );
         Self::decode(
-            self.http
-                .post(format!("{}/v1/sources", self.base))
-                .bearer_auth(&self.token)
+            self.request(Method::POST, "/v1/sources", true)
                 .multipart(form)
                 .send()
                 .await
@@ -127,9 +154,7 @@ impl DmemClient {
     }
     pub async fn download(&self, path: &str) -> Result<Vec<u8>, ClientError> {
         let response = self
-            .http
-            .get(format!("{}{path}", self.base))
-            .bearer_auth(&self.token)
+            .request(Method::GET, path, true)
             .send()
             .await
             .map_err(unavailable)?;
@@ -144,6 +169,31 @@ pub fn search_path(resource: &str, query: &str) -> String {
     let mut url = reqwest::Url::parse("http://localhost").expect("static URL");
     url.query_pairs_mut().append_pair("q", query);
     format!("/v1/{resource}?{}", url.query().unwrap_or(""))
+}
+pub fn recall_path(q: &RecallQuery) -> String {
+    let mut url = reqwest::Url::parse("http://localhost").expect("static URL");
+    {
+        let mut pairs = url.query_pairs_mut();
+        pairs.append_pair("url", &q.url);
+        for (name, value) in [
+            ("doc_type", q.doc_type.as_deref()),
+            ("locale", q.locale.as_deref()),
+            ("provider", q.provider.as_deref()),
+            ("kind", q.kind.as_deref()),
+            ("scope", q.scope.as_deref()),
+        ] {
+            if let Some(value) = value {
+                pairs.append_pair(name, value);
+            }
+        }
+        if !q.keywords.is_empty() {
+            pairs.append_pair("keywords", &q.keywords.join(","));
+        }
+        if let Some(limit) = q.limit {
+            pairs.append_pair("limit", &limit.to_string());
+        }
+    }
+    format!("/v1/recall?{}", url.query().unwrap_or(""))
 }
 pub fn safe_id(id: &str) -> bool {
     !id.is_empty()

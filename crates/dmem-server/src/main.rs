@@ -54,16 +54,9 @@ async fn start() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         AuthConfig::default()
     };
-    let admin_emails = std::env::var("DMEM_ADMIN_EMAILS").unwrap_or_default();
-    auth.set_admin_emails(
-        admin_emails
-            .split(',')
-            .map(str::trim)
-            .filter(|email| !email.is_empty())
-            .map(str::to_owned),
-    )?;
     auth.secure_cookies = origins[0].starts_with("https://");
     auth.admin_token = secret_file("DMEM_ADMIN_TOKEN", "credentials/admin-token")?;
+    auth.set_admin_emails(&std::env::var("DMEM_ADMIN_EMAILS").unwrap_or_default())?;
     let app = router_with_auth(store, vec![(token, "local".into())], origins, web, auth)?;
     let listener = tokio::net::TcpListener::bind(addr).await?;
     eprintln!("My Document Memory API: http://{addr}");

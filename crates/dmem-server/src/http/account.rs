@@ -7,16 +7,23 @@ use axum::http::HeaderMap;
 use serde::Deserialize;
 
 pub(super) fn routes(s: &App) -> Router<App> {
-    let personal = Router::new()
-        .route("/me", get(dashboard))
+    let contributions = Router::new()
         .route("/me/contributions", get(contributions).post(submit))
+        .route("/me/contributions/{id}/review", get(own_review))
         .route(
             "/me/contributions/{id}/withdraw",
             axum::routing::post(withdraw),
         )
+        .route_layer(middleware::from_fn_with_state(s.clone(), require_member));
+    let personal = Router::new()
+        .route("/me", get(dashboard))
+        .route("/me/profile", get(member_profile).put(save_member_profile))
+        .merge(contributions)
         .route_layer(middleware::from_fn_with_state(s.clone(), authenticate));
     Router::new()
         .route("/auth/config", get(config))
+        .route("/leaderboard", get(leaderboard))
+        .route("/profiles/{handle}", get(public_member))
         .route("/auth/email/start", axum::routing::post(start))
         .route("/auth/email/verify", axum::routing::post(verify))
         .route("/auth/email/link", axum::routing::post(start_link))
@@ -26,12 +33,24 @@ pub(super) fn routes(s: &App) -> Router<App> {
         .route("/public/templates", get(public_templates))
         .route("/public/templates/{id}", get(public_template))
         .route("/admin/contributions", get(queue))
+        .route("/admin/contributions/{id}/review", get(review))
         .route(
             "/admin/contributions/{id}/decision",
             axum::routing::post(decision),
         )
         .merge(personal)
         .layer(DefaultBodyLimit::max(16 * 1024))
+}
+async fn require_member(
+    State(s): State<App>,
+    Extension(Owner(owner)): Extension<Owner>,
+    req: Request,
+    next: Next,
+) -> Result<Response, HttpError> {
+    if !run(s, move |db| db.is_member(&owner)).await? {
+        return Err(Fault::AuthRequired.into());
+    }
+    Ok(next.run(req).await)
 }
 pub(super) async fn no_store(req: Request, next: Next) -> Response {
     let mut r = next.run(req).await;
@@ -85,6 +104,37 @@ struct Start {
 #[serde(deny_unknown_fields)]
 struct Verify {
     code: String,
+}
+async fn member_profile(
+    State(s): State<App>,
+    Extension(Owner(owner)): Extension<Owner>,
+) -> Reply<crate::members::MemberProfile> {
+    Ok(Json(run(s, move |db| db.member_profile(&owner)).await?))
+}
+async fn save_member_profile(
+    State(s): State<App>,
+    Extension(Owner(owner)): Extension<Owner>,
+    input: Result<Json<crate::members::ProfileUpdate>, JsonRejection>,
+) -> Reply<crate::members::MemberProfile> {
+    let input = body(input)?;
+    let now = s.auth.now();
+    Ok(Json(
+        run(s, move |db| db.save_member_profile(&owner, input, now)).await?,
+    ))
+}
+async fn leaderboard(
+    State(s): State<App>,
+    q: Result<Query<crate::members::BoardQuery>, QueryRejection>,
+) -> Reply<crate::members::Leaderboard> {
+    let Query(q) = q.map_err(|_| HttpError(Fault::InvalidInput))?;
+    Ok(Json(run(s, move |db| db.leaderboard(q.offset)).await?))
+}
+async fn public_member(
+    State(s): State<App>,
+    p: Result<Path<String>, PathRejection>,
+) -> Reply<crate::members::PublicProfile> {
+    let handle = path(p)?;
+    Ok(Json(run(s, move |db| db.public_member(&handle)).await?))
 }
 async fn config(State(s): State<App>) -> Json<serde_json::Value> {
     Json(serde_json::json!({"email_enabled":s.auth.mailer.is_some()}))
@@ -315,8 +365,29 @@ async fn withdraw(
     let now = s.auth.now();
     Ok(Json(run(s, move |db| db.withdraw(&owner, &id, now)).await?))
 }
-fn admin(s: &App, headers: &HeaderMap, write: bool) -> Result<(), HttpError> {
-    super::admin::authorize(s, headers, write).map(|_| ())
+async fn own_review(
+    State(s): State<App>,
+    Extension(Owner(owner)): Extension<Owner>,
+    p: Result<Path<String>, PathRejection>,
+) -> Reply<dmem_core::review::ReviewReport> {
+    let id = path(p)?;
+    Ok(Json(
+        run(s, move |db| db.review_contribution(Some(&owner), &id)).await?,
+    ))
+}
+async fn review(
+    State(s): State<App>,
+    headers: HeaderMap,
+    p: Result<Path<String>, PathRejection>,
+) -> Reply<dmem_core::review::ReviewReport> {
+    admin(&s, &headers, false)?;
+    let id = path(p)?;
+    Ok(Json(
+        run(s, move |db| db.review_contribution(None, &id)).await?,
+    ))
+}
+fn admin(s: &App, headers: &HeaderMap, write: bool) -> Result<String, HttpError> {
+    super::admin::authorize(s, headers, write)
 }
 async fn queue(
     State(s): State<App>,
@@ -336,7 +407,7 @@ async fn decision(
     p: Result<Path<String>, PathRejection>,
     input: Result<Json<Decision>, JsonRejection>,
 ) -> Reply<crate::community::Contribution> {
-    admin(&s, &headers, true)?;
+    let actor = admin(&s, &headers, true)?;
     let id = path(p)?;
     let input = body(input)?;
     if !["approve", "reject"].contains(&input.decision.as_str()) {
@@ -345,7 +416,7 @@ async fn decision(
     let now = s.auth.now();
     Ok(Json(
         run(s, move |db| {
-            db.decide(&id, input.decision == "approve", now)
+            db.decide(&id, input.decision == "approve", now, &actor)
         })
         .await?,
     ))

@@ -9,7 +9,7 @@ test('English landing exposes GitHub, browser downloads and all agent connection
  await expect(nav.getByRole('link',{name:'GitHub',exact:true})).toBeVisible();
  await expect(nav.getByRole('link',{name:'GitHub',exact:true})).toHaveAttribute('href','https://github.com/heycodingkr/my-document-memory');
  await nav.getByRole('link',{name:'How it works',exact:true}).click();
- await expect(page.getByRole('heading',{name:'From a good starting point to your next document.'})).toBeInViewport();
+ await expect(page.getByRole('heading',{name:'Choose the context. Let your AI write.'})).toBeInViewport();
  await expect(page.getByRole('link',{name:'Download Arise Browser',exact:true})).toHaveAttribute('href','https://arisebrowser.com/#download');
  await expect(page.getByRole('link',{name:'Download Chrome',exact:true})).toHaveAttribute('href','https://www.google.com/chrome/');
  await nav.getByRole('link',{name:'Connect your agent',exact:true}).click();
@@ -21,11 +21,31 @@ test('English landing exposes GitHub, browser downloads and all agent connection
  await expect(page.getByLabel('MCP configuration',{exact:true})).toContainText('dmem-mcp');
  await expect(page.getByLabel('MCP configuration',{exact:true})).not.toContainText('https://mydocumentmemory.com/mcp');
  await page.goto('/');
- expect(await page.locator('.landing').innerText()).not.toMatch(/[가-힣]/);
+ // The language switch intentionally uses the destination language's name.
+ expect((await page.locator('.landing main, .landing-footer').allInnerTexts()).join('\n')).not.toMatch(/[가-힣]/);
  await page.screenshot({path:screenshots+'/landing-english-desktop.png',fullPage:true});
  await page.screenshot({path:screenshots+'/landing-hero-desktop.png'});
  await page.locator('#how-it-works').screenshot({path:screenshots+'/landing-how-it-works.png'});
  await page.locator('#connect-agent').screenshot({path:screenshots+'/landing-connect-agent.png'});
+});
+
+test('About link explains the product and fits narrow screens',async({page})=>{
+ await page.goto('/');
+ const nav=page.getByRole('navigation',{name:'Product guide'});
+ const aboutLink=nav.getByRole('link',{name:'About',exact:true});
+ await expect(aboutLink).toHaveAttribute('href','#about');
+ await aboutLink.click();
+ await expect(page).toHaveURL(/#about$/);
+ const about=page.locator('#about');
+ await expect(about.getByRole('heading',{name:'Your work is done. Why are you still writing about it?'})).toBeInViewport();
+ await expect(about).toContainText('templates, writing guidance, review criteria, and selected references');
+ for(const heading of ['Reuse the know-how.','Give AI the facts.','Review and decide.']){
+  await expect(about.getByRole('heading',{name:heading,exact:true})).toBeVisible();
+ }
+ await expect(about).toContainText('Your memories stay private unless you choose to share them.');
+ await page.setViewportSize({width:320,height:844});
+ await expect(aboutLink).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
 test('connection examples copy exactly and remain usable on narrow screens',async({page})=>{

@@ -1,5 +1,7 @@
 # My Document Memory
 
+**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
+
 ![Templates and references connected to documents and slides](docs/assets/readme-hero.png)
 
 > The era of writing documents yourself is ending.
@@ -8,7 +10,10 @@
 
 Keep useful structures, writing rules, and ways to use references as reusable memory. One person's writing experience can become a better starting point for another person and their AI.
 
-[The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
+Anyone can browse, search, and preview public memories without signing in. Individuals can [create a free account](https://mydocumentmemory.com/#signup) with a personal email address. Contribution requests require a registered, signed-in account; follow Awaiting review, Approved · Public, Rejected, and Withdrawn states in My contributions.
+
+[The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [Free templates](#start-free-with-the-ai-you-choose) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
+
 
 ## The Problem
 
@@ -16,7 +21,12 @@ People spend too much time preparing documents. A report, proposal, resume, or p
 
 Useful structures and writing know-how often stay buried in individual files. A finished document rarely explains why its sections are ordered that way, which questions need review, or what evidence supports its claims. Repeating those instructions for every AI task adds more preparation.
 
-Document memory makes that experience easier to keep, share, and reuse.
+Two recurring problems make this harder:
+
+- **Formats drift when platforms or models change.** Switching document-writing web platforms or AI models can produce inconsistent outlines, tone, and required sections, even for the same task.
+- **Lower-cost models can struggle with document writing.** A brief prompt may not give them enough guidance to produce a well-structured draft that follows your writing standard.
+
+Document memory helps address both problems by making templates, writing rules, examples, and review criteria reusable across tools and models. Add the references for each task so your AI has both a writing standard and evidence to work from.
 
 ## Our Vision
 
@@ -42,9 +52,9 @@ Keep the templates and writing practices you use on the web as document memory, 
 | [Medium](https://medium.com/) | "Turn these notes into a post in my technical blog style." | Opening, headings, examples, closing, tone, and reference links |
 | [Naver Blog](https://section.blog.naver.com/BlogHome.naver) | "Organize this experience using my usual review format." | Introduction, experience, practical details, summary, photo positions, and voice |
 
-### A consistent standard across models
+### A consistent standard across platforms and models
 
-Carry the same template, tone, required sections, references, and review criteria across AI models. The intended flow is: choose a template and references, let your connected AI work from that memory, then review and finish in a familiar web workspace.
+Carry the same outline, tone, required sections, and review criteria across web writing platforms and AI models. Use the same writing standard when moving between tools such as Google Docs and Notion or choosing a different model, so the format does not need to be reinvented each time. Choose a template and task-specific references, let your connected AI work from that memory, then review and finish in a familiar web workspace.
 
 Direct work inside each external service depends on the connected host and browser tools. The runtime's built-in creation tool currently creates an editable outline; provider synchronization and publishing are separate work.
 
@@ -60,6 +70,28 @@ For repeat work such as Google Slides decks, Google Docs reports, and Notion pro
 | Tool calls | 100 | About 66 |
 
 These estimates take inspiration from [WAM's 2026-10-16 editor pilot](https://github.com/heycodingkr/web-agentic-memory/blob/f0fdcb434916cb5ed6819546ac12ce00a3fe5e0d/web/src/lib/landing.ts#L63): the three English editor scenarios averaged about 46% less time and 34% fewer calls, with one run per condition. The example above applies those rounded percentages to a hypothetical task. Actual savings depend on the task and connected tools; **My Document Memory has not yet been benchmarked.**
+
+## Start Free, with the AI You Choose
+
+**Use free templates and a lightweight AI such as Luna to prepare documents for Google Docs, Google Slides, or Notion.** Choose a useful starting point, give your connected AI the structure and sources, then review the result in the tools you already use.
+
+- **Reuse different templates for free.** Start with report, meeting-note, project-plan, or pitch-deck structures. Keep the outline, tone, required sections, and review criteria as reusable memory.
+- **Help lower-cost models write better.** Give a lightweight model such as Luna a saved outline, writing rules, examples, review criteria, and selected references through your connected AI host. This gives it a concrete standard to follow instead of having to infer the document's structure from a short prompt alone. Review its facts and open questions before finishing.
+- **Continue in free document tools.** Export DOCX for [Google Docs](https://workspace.google.com/products/docs/), PPTX for [Google Slides](https://workspace.google.com/products/slides/), or Markdown for [Notion](https://www.notion.com/pricing). Docs and Slides offer free editing with a Google Account; Notion offers a Free plan.
+
+Browsing and reusing our templates is free. AI host, model, and API costs depend on your provider, and third-party plan limits apply. The current web app creates a template-based outline; your connected AI writes with a model. Direct editing inside another service depends on compatible host/browser tools.
+
+### Early evidence: Luna + reusable memory
+
+The related **Web Agentic Memory (WAM)** project tested a Canva workflow with `gpt-6-luna/max` on 2026-10-31. Both conditions completed the full editing/export task and independent file checks. [Original WAM Canva R7 report](https://github.com/heycodingkr/web-agentic-memory/blob/04cb13318acb0c7dff7734b6613325c361deb827/docs/test/benchmarks/canva.md).
+
+| WAM condition | Observed runtime | External tool boundaries |
+|---|---:|---:|
+| Tools only | 473.976 s | 123 |
+| Supplied WAM memory hints | 423.193 s | 106 |
+
+This is a preliminary observation: one run per condition, different templates and upload paths, higher reported tokens with hints, and unmeasured billing. It does not establish general speed or cost savings. **My Document Memory's own document-writing benchmarks are pending.**
+
 
 ## How it works
 
@@ -161,8 +193,51 @@ Call `document_memory_status` to verify the connection. Select a template and re
 | `document_memory_get` | Read a document and its pinned versions |
 | `document_template_copy` | Copy a template privately with attribution |
 | `document_memory_create` | Create an editable draft from selected IDs |
+| `document_template_save` · `document_template_get` | Save and read private reusable structures |
+| `document_memory_save` | Save an edited document revision with conflict detection |
+| `document_public_template_search` · `document_public_template_get` | Search and read approved public structures without a token |
+| `document_contribution_submit` · `document_contribution_list` | Explicitly submit a structure snapshot and follow its review |
+| `document_contribution_check` · `document_contribution_withdraw` | Read safe review findings or withdraw your contribution |
 
 Copying a template and copying a prompt are separate actions. Copying a prompt does not create a document. Deck requests remain disabled until their outline is approved.
+
+## Administrator review
+
+Open [Contribution review](https://mydocumentmemory.com/#review) to request an administrator sign-in link. Only email addresses explicitly configured by the operator can receive it. Confirm the single-use link within 10 minutes; the separate administrator session lasts two hours. Review the submitted structure and findings, then explicitly approve or reject it. **Sign out and lock queue** revokes the session.
+
+Administrator access is separate from ordinary member sign-in and CLI/MCP library tokens. Browser reviewers do not enter an operator token. The operator configures the exact email allowlist through `DMEM_ADMIN_EMAILS`; an empty list disables administrator sign-in. See [administrator setup and starter memories](docs/spec/admin-email-starters-v1.md).
+
+## Contribute and review a structure
+
+The local review runtime supports private save/read and the public contribution lifecycle from the web, CLI, and 16 stdio MCP tools. Public search/read works without `DMEM_TOKEN`; private operations use the token's library owner. Browser email accounts and separately provisioned library tokens remain distinct identities.
+
+```sh
+# Against your running local server:
+export DMEM_URL=http://127.0.0.1:3847
+./target/debug/dmem public-templates 'Meeting'
+./target/debug/dmem template-save ./template.json
+./target/debug/dmem template-show <TEMPLATE_ID>
+./target/debug/dmem contribute <TEMPLATE_ID> --author 'Public name' --license CC-BY-4.0 --rights-confirmed
+./target/debug/dmem contributions
+./target/debug/dmem contribution-check <CONTRIBUTION_ID>
+```
+
+A template input contains `title`, `summary`, `form` (`provider`, `doc_type`, `locale`), `sections`, and optional `tags`. Saving keeps it private. Submission copies only its structure into an immutable pending snapshot.
+
+Review runs submission checks → privacy/injection → license/attribution → duplicate comparison → structure validation → explicit administrator decision. Secret or personal-data findings block approval, including direct API/CLI attempts. Duplicate structures are flagged for human judgment. Review findings contain fixed codes and field names. Decisions, timestamps, and the exact snapshot hash persist in SQLite.
+
+Open `/#review` and enter the separate administrator credential in **Review contributions**, or supply `DMEM_ADMIN_TOKEN` through a private environment and run:
+
+```sh
+# Set DMEM_ORIGIN to the server's allowed web origin when it differs from DMEM_URL.
+./target/debug/dmem review-queue
+./target/debug/dmem review <CONTRIBUTION_ID>
+./target/debug/dmem decide <CONTRIBUTION_ID> --decision approve
+```
+
+The browser clears its administrator credential on leaving, locking, or reloading the review view. A passing check stays pending until approval; approved structures can be copied privately with attribution. Withdrawal stops new public reads/copies and preserves existing copies.
+
+[Workflow contract](docs/spec/memory-community-smoke-v1.md) · [Test inputs and results](docs/test/memory-community-smoke-v1.md). The repeatable local checks are `python3 tests/smoke/community-v1.py` and `python3 tests/smoke/accounts-v1.py` after building the workspace, account fixture, and web assets.
 
 ## What is stored?
 
@@ -212,14 +287,17 @@ The workspace boundaries draw on [Web Agentic Memory](https://github.com/heycodi
 
 ## Current scope
 
-Use the [runtime contract](docs/spec/runtime-v1.md) and [English handoff specification](docs/spec/english-handoff-v1.md) alongside the code.
+Use the [runtime contract](docs/spec/runtime-v1.md), [account and community specification](docs/spec/accounts-community-v1.md), and [English handoff specification](docs/spec/english-handoff-v1.md) alongside the code. [Account setup and operations](docs/spec/accounts-operations-v1.md) describes private credentials and the deployed service.
 
-- Nine English starter templates: six documents, two decks, and one spreadsheet preview. Nine Korean entries keep their original IDs and versions.
+- Resend email-link sign-in and signup, private accounts, persistent sessions, My page, and personal template/reference/document/contribution counts.
+- Opt-in public contributor profiles and a [leaderboard](https://mydocumentmemory.com/#leaderboard). My page separates private overall rank from public rank. Each approved template earns 20 contribution points while it remains public. [Member specification](docs/spec/member-leaderboard-v1.md).
+- Anonymous public templates, private copies with preserved attribution, contribution submission, administrator review, and withdrawal. [Verified results](docs/test/accounts-community-v1-results.md).
+- 42 original built-in templates and writing memories, 21 each in English and Korean. The original 18 starter IDs and versions are preserved; 24 additions cover planning, product requirements, decisions, research, incident reviews, technical writing, evidence, voice, quality checks, and slide stories.
 - Search, language/type/visibility filters, private copies, custom templates, and source-derived structures.
 - TXT/Markdown/basic DOCX/PPTX import up to 10 MiB per file with original preservation and separate reference search.
 - Document blocks, editable slides, citations, immutable saved revisions, and conflict detection.
 - Markdown/HTML, DOCX, PPTX, and browser printing for PDF.
-- Shared HTTP client, CLI, and seven MCP tools.
+- Shared HTTP client, CLI, and stdio MCP tools.
 
 Spreadsheet editing/formulas, provider synchronization, remote URL import, PDF import/OCR, and faithful reconstruction of complex Office layouts are outside this runtime. Wider product specifications include future work.
 
@@ -243,7 +321,10 @@ Run from the repository root. The first run creates a random `DMEM_TOKEN` in `.e
 
 Default ports are API `3847` and web `5174`. Reuse an existing server. The supervisor stops only its own processes. Your data and revision history persist in `data/dmem.sqlite3`. A deployed library can use a separate token and database.
 
-### Configuration
+### Configuration (local development)
+
+These defaults are for a local checkout. Hosted clients use `DMEM_URL=https://api.mydocumentmemory.com`. On the production server, `DMEM_ADDR=127.0.0.1:3848` is the internal listener behind Caddy; it is separate from the public API address.
+
 
 See [.env.example](.env.example). The development supervisor reads `.env`; existing environment variables take precedence. CLI and MCP binaries require their environment variables explicitly.
 

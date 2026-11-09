@@ -24,8 +24,8 @@ test('one brief makes three distinct complete drafts and every logo is served lo
  await expect(deck).toContainText('10/10 slides');
  await deck.getByRole('button',{name:'Preview slide 2: The blank page is only half the work.'}).click();
  await expect(deck.getByRole('heading',{level:3})).toHaveText('The blank page is only half the work.');
- await deck.getByRole('button',{name:'Preview slide 10: Your next great document starts here.'}).click();
- await expect(deck.getByRole('heading',{level:3})).toHaveText('Your next great document starts here.');
+ await deck.getByRole('button',{name:'Preview slide 10: You do the work. AI does the writing.'}).click();
+ await expect(deck.getByRole('heading',{level:3})).toHaveText('You do the work. AI does the writing.');
  await expect(page.getByRole('article',{name:'Google Docs demo: a one-page executive summary'})).toContainText('Confirm any missing facts before sharing.');
  await expect(page.getByRole('article',{name:'Naver Blog demo: an unpublished project promotional post'})).toContainText('unpublished draft');
  const sources=await page.locator('img.service-logo').evaluateAll(nodes=>[...new Set(nodes.map(n=>(n as HTMLImageElement).src))]);

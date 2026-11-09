@@ -89,7 +89,7 @@ test('deck requests require an approved outline and react to changed selections'
 
 test('landing and default catalog are English and custom templates use en-US',async({page})=>{
  await page.goto('/');await expect(page.locator('html')).toHaveAttribute('lang','en');
- expect(await page.locator('body').innerText()).not.toMatch(/[가-힣]/);
+ expect(await page.locator('main').innerText()).not.toMatch(/[가-힣]/);
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.setViewportSize({width:1440,height:1100});

@@ -855,6 +855,12 @@
             ]
           },
           "maxItems": 8
+        },
+        "notice": {
+          "type": "string",
+          "enum": [
+            "privacy.detection_limit"
+          ]
         }
       },
       "additionalProperties": false,
@@ -1413,7 +1419,7 @@
         "additionalProperties": false
       },
       "result": "#/$defs/StatusResult",
-      "served_output_schema": true
+      "served_output_schema": false
     },
     {
       "name": "doc_memory_recall",
