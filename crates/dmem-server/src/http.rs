@@ -1,5 +1,6 @@
 use crate::{AuthConfig, Store};
 mod account;
+mod admin;
 use axum::{
     Extension, Json, Router,
     extract::Request,
@@ -146,7 +147,10 @@ pub fn router_with_auth(
             "/healthz",
             get(|| async { Json(serde_json::json!({"ready":true})) }),
         )
-        .nest("/v1", api.merge(account::routes(&state)))
+        .nest(
+            "/v1",
+            api.merge(account::routes(&state)).merge(admin::routes()),
+        )
         .with_state(state)
         .layer(middleware::from_fn(account::no_store))
         .layer(cors);

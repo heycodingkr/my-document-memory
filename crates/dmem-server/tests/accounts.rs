@@ -124,6 +124,9 @@ impl Harness {
         )
         .unwrap();
         config.admin_token = Some(ADMIN.into());
+        config
+            .set_admin_emails([" Operator@Example.Test ".to_owned()])
+            .unwrap();
         let clock = time.clone();
         config.clock = Arc::new(move || clock.load(Ordering::SeqCst));
         let app = Self::router(&path, config.clone());
@@ -219,6 +222,18 @@ fn captured_link(h: &Harness) -> String {
     url.fragment()
         .unwrap()
         .strip_prefix("sign-in=")
+        .unwrap()
+        .to_owned()
+}
+fn captured_admin_link(h: &Harness) -> String {
+    let messages = h.mail.links.lock().unwrap();
+    let (email, url) = messages.last().unwrap();
+    assert_eq!(email, "operator@example.test");
+    let url = reqwest::Url::parse(url).unwrap();
+    assert_eq!(url.origin().ascii_serialization(), ORIGIN);
+    url.fragment()
+        .unwrap()
+        .strip_prefix("admin-sign-in=")
         .unwrap()
         .to_owned()
 }
@@ -940,5 +955,283 @@ async fn contribution_review_copy_attribution_withdrawal_and_private_boundary() 
             .await
             .data["origin"]["template_id"],
         public
+    );
+}
+
+#[tokio::test]
+async fn allowlisted_admin_session_can_review_contributions_with_csrf_and_origin() {
+    let h = Harness::new();
+    let (member_cookie, member_csrf, _) = h.login("contributor@example.test").await;
+    let copied = h
+        .call(
+            "POST",
+            "/v1/templates/meeting.minutes.ko/copy",
+            None,
+            &member_cookie,
+            &member_csrf,
+        )
+        .await;
+    assert_eq!(copied.status, 200);
+    let contribution = h
+        .call(
+            "POST",
+            "/v1/me/contributions",
+            Some(json!({"template_id":copied.data["id"],"author":"Contributor","license":"CC-BY-4.0","rights_confirmed":true})),
+            &member_cookie,
+            &member_csrf,
+        )
+        .await;
+    assert_eq!(contribution.status, 200);
+    let contribution_id = contribution.data["id"].as_str().unwrap();
+    let public_id = contribution.data["snapshot"]["id"].as_str().unwrap();
+
+    let previous_link_count = h.mail.links.lock().unwrap().len();
+    let unknown = h
+        .call(
+            "POST",
+            "/v1/admin/auth/email/link",
+            Some(json!({"email":"not-allowlisted@example.test"})),
+            "",
+            "",
+        )
+        .await;
+    assert_eq!(unknown.status, 202);
+    assert_eq!(unknown.data["accepted"], true);
+    assert_eq!(h.mail.links.lock().unwrap().len(), previous_link_count);
+
+    let requested = h
+        .call(
+            "POST",
+            "/v1/admin/auth/email/link",
+            Some(json!({"email":"operator@example.test"})),
+            "",
+            "",
+        )
+        .await;
+    assert_eq!(requested.status, 202);
+    assert_eq!(requested.data["accepted"], true);
+    assert_eq!(unknown.data, requested.data);
+    assert!(!requested.raw.contains("operator@example.test"));
+    let token = captured_admin_link(&h);
+    let consumed = h
+        .call(
+            "POST",
+            "/v1/admin/auth/email/consume",
+            Some(json!({"token":token.clone()})),
+            "",
+            "",
+        )
+        .await;
+    assert_eq!(consumed.status, 200);
+    assert!(consumed.cookies.starts_with("dmem_admin_session="));
+    assert!(!consumed.cookies.contains("dmem_session="));
+    assert!(!requested.raw.contains(&token));
+    let admin_cookie = consumed.cookies.clone();
+    let admin_csrf = consumed.data["csrf_token"].as_str().unwrap();
+    let decision = format!("/v1/admin/contributions/{contribution_id}/decision");
+    assert_eq!(
+        h.call(
+            "POST",
+            "/v1/admin/auth/email/consume",
+            Some(json!({"token":token})),
+            "",
+            "",
+        )
+        .await
+        .status,
+        401,
+        "an administrator link can be consumed only once",
+    );
+    let session = req(
+        &h.app,
+        "GET",
+        "/v1/admin/auth/session",
+        None,
+        &admin_cookie,
+        "",
+        "",
+        "",
+    )
+    .await;
+    assert_eq!(session.status, 200);
+    assert_eq!(session.data["email"], "operator@example.test");
+
+    for (cookie, bearer, origin, csrf) in [
+        ("", "", ORIGIN, ""),
+        (member_cookie.as_str(), "", ORIGIN, ""),
+        ("", LOCAL, ORIGIN, ""),
+    ] {
+        assert_eq!(
+            req(
+                &h.app,
+                "GET",
+                "/v1/admin/contributions",
+                None,
+                cookie,
+                csrf,
+                bearer,
+                origin,
+            )
+            .await
+            .status,
+            401
+        );
+    }
+    let queue = req(
+        &h.app,
+        "GET",
+        "/v1/admin/contributions",
+        None,
+        &admin_cookie,
+        "",
+        "",
+        ORIGIN,
+    )
+    .await;
+    assert_eq!(
+        queue.status, 200,
+        "admin email session must reach the queue"
+    );
+    assert!(
+        queue.data["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|row| row["id"] == contribution_id)
+    );
+    assert_eq!(
+        req(
+            &h.app,
+            "GET",
+            "/v1/admin/contributions",
+            None,
+            &admin_cookie,
+            "",
+            "",
+            "",
+        )
+        .await
+        .status,
+        200,
+        "same-origin GET should not require an Origin header",
+    );
+
+    for (origin, csrf, bearer) in [
+        (ORIGIN, "", ""),
+        (ORIGIN, "wrong-csrf", ""),
+        ("https://evil.test", admin_csrf, ""),
+        ("", admin_csrf, ""),
+        (ORIGIN, admin_csrf, LOCAL),
+    ] {
+        assert_eq!(
+            req(
+                &h.app,
+                "POST",
+                &decision,
+                Some(json!({"decision":"approve"})),
+                &admin_cookie,
+                csrf,
+                bearer,
+                origin,
+            )
+            .await
+            .status,
+            401
+        );
+    }
+    assert_eq!(
+        h.call("GET", "/v1/me/contributions", None, &member_cookie, "",)
+            .await
+            .data["items"][0]["status"],
+        "pending"
+    );
+    assert_eq!(
+        req(
+            &h.app,
+            "GET",
+            &format!("/v1/public/templates/{public_id}"),
+            None,
+            "",
+            "",
+            "",
+            "",
+        )
+        .await
+        .status,
+        404
+    );
+    assert_eq!(
+        h.call(
+            "POST",
+            &decision,
+            Some(json!({"decision":"approve"})),
+            &admin_cookie,
+            admin_csrf,
+        )
+        .await
+        .status,
+        200
+    );
+    assert_eq!(
+        h.call(
+            "POST",
+            &decision,
+            Some(json!({"decision":"approve"})),
+            &admin_cookie,
+            admin_csrf,
+        )
+        .await
+        .status,
+        409
+    );
+    assert_eq!(
+        req(
+            &h.app,
+            "GET",
+            &format!("/v1/public/templates/{public_id}"),
+            None,
+            "",
+            "",
+            "",
+            "",
+        )
+        .await
+        .status,
+        200
+    );
+
+    let reopened = Harness::router(&h.path, h.config.clone());
+    assert_eq!(
+        req(
+            &reopened,
+            "GET",
+            "/v1/admin/contributions",
+            None,
+            &admin_cookie,
+            "",
+            "",
+            "",
+        )
+        .await
+        .status,
+        200
+    );
+    let mut revoked = h.config.clone();
+    revoked.set_admin_emails(Vec::new()).unwrap();
+    let revoked_app = Harness::router(&h.path, revoked);
+    assert_eq!(
+        req(
+            &revoked_app,
+            "GET",
+            "/v1/admin/contributions",
+            None,
+            &admin_cookie,
+            "",
+            "",
+            ORIGIN,
+        )
+        .await
+        .status,
+        401
     );
 }
