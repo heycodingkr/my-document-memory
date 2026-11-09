@@ -1,21 +1,28 @@
 <script lang="ts">
  import {onMount} from 'svelte';
  import {Api,ApiFailure} from './lib/api';
- import type {Template,Source,Document,Block,Family,Session,Contribution,Dashboard} from './lib/types';
+ import type {Template,Source,Document,Block,Family,Session,Contribution,Dashboard,ReviewReport} from './lib/types';
  import AuthPanel from './lib/AuthPanel.svelte';
  import AccountNavigation from './lib/AccountNavigation.svelte';
  import ContributePanel from './lib/ContributePanel.svelte';
  import MyPage from './lib/MyPage.svelte';
+ import MemberPanel from './lib/MemberPanel.svelte';
+ import Leaderboard from './lib/Leaderboard.svelte';
+ import PublicMember from './lib/PublicMember.svelte';
  import PublicLibrary from './lib/PublicLibrary.svelte';
+ import ContributionReview from './lib/ContributionReview.svelte';
+ import ReviewStages from './lib/ReviewStages.svelte';
  import Modal from './lib/Modal.svelte';
  import DocumentView from './lib/DocumentView.svelte';
  import AgentPrompt from './lib/AgentPrompt.svelte';
  import Landing from './lib/Landing.svelte';
 
- type View='templates'|'sources'|'documents'|'me'|'contributions'|'public';
+ type View='templates'|'sources'|'documents'|'me'|'contributions'|'public'|'review'|'signup'|'leaderboard'|'profile';
  let session=$state<Session|null>(null);let summary=$state<Dashboard|null>(null);let contributions=$state<Contribution[]>([]);
+ let contributionReport=$state<ReviewReport|null>(null);
  let contributionTemplate=$state<Template|null>(null);let publicAuthor=$state('');let publicLicense=$state('CC-BY-4.0');let rightsConfirmed=$state(false);let initialized=$state(false);
- let loginToken=$state('');let authEpoch=0;
+ let memberHandle=$state('');
+ let loginToken=$state('');let adminLinkToken=$state('');let authEpoch=0;
  let token=$state('');let connected=$state(false);let working=$state(false);let loading=$state(false);let showGuide=$state(false);
  let view=$state<View>('templates');let query=$state('');let kind=$state('all');let scope=$state('all');let templateLocale=$state('en-US');
  let templates=$state<Template[]>([]);let sources=$state<Source[]>([]);let documents=$state<Document[]>([]);
@@ -26,7 +33,7 @@
  let revisions=$state<Document[]|null>(null);let revisionPreview=$state<Document|null>(null);
  let customOpen=$state(false);let customTitle=$state('');let customType=$state('report');let customSections=$state('');
  let exportFormat=$state('md');let fileInput=$state<HTMLInputElement>();
- let api:Api|null=null;let refreshId=0;
+ let api=$state.raw<Api|null>(null);let refreshId=0;
  const dirty=$derived(doc!==null&&JSON.stringify({title:doc.title,content:doc.content})!==baseline);
  const featured=$derived(templates.find(t=>t.id==='meeting.minutes.en')??templates[0]);
  const labels:Record<Family,string>={document:'Document',deck:'Slides',sheet:'Spreadsheet'};
@@ -37,7 +44,7 @@
   try{return await fn();}catch(e){fail(e);}finally{working=false;}
  }
  async function refresh(){
-  if(!api||view==='public')return;const n=++refreshId;loading=true;
+  if(!api||['public','review','leaderboard','profile','signup'].includes(view))return;const n=++refreshId;loading=true;
   try{
    const [t,s,d]=await Promise.all([api.templates(view==='templates'?query:'',kind,view==='me'?'private':scope,view==='templates'?templateLocale:'all'),api.sources(view==='sources'?query:''),api.documents(view==='documents'?query:'')]);
    if(n===refreshId){templates=t.items;sources=s.items;documents=d.items;}
@@ -47,7 +54,7 @@
  async function connect(){
   await perform(async()=>{const candidate=new Api(token);await candidate.status();api=candidate;connected=true;sessionStorage.setItem('dmem.token',token);await refresh();});
  }
- function clearPrivate(){++refreshId;sessionStorage.removeItem('dmem.token');token='';api=null;connected=false;session=null;doc=null;templates=[];sources=[];documents=[];editorSources=[];selectedTemplate=null;selectedSource=null;contributionTemplate=null;customOpen=false;revisions=null;revisionPreview=null;summary=null;contributions=[];}
+ function clearPrivate(){++refreshId;sessionStorage.removeItem('dmem.token');token='';api=null;connected=false;session=null;doc=null;templates=[];sources=[];documents=[];editorSources=[];selectedTemplate=null;selectedSource=null;contributionTemplate=null;customOpen=false;revisions=null;revisionPreview=null;summary=null;contributions=[];contributionReport=null;}
  async function disconnect(){
   if(working||loading)return;
   if(dirty&&!window.confirm('You have unsaved changes. Sign out?'))return;
@@ -56,20 +63,29 @@
  }
  async function signedIn(value:Session){loginToken='';session=value;token='';sessionStorage.removeItem('dmem.token');api=new Api('',value.csrf_token);connected=true;setView('me');}
  function openEmailLink(){
-  const requested=location.hash.slice(1);if(!requested.startsWith('sign-in='))return false;
+  const requested=location.hash.slice(1);
+  if(requested.startsWith('admin-sign-in=')){
+   const candidate=requested.slice('admin-sign-in='.length);history.replaceState(null,'','#review');
+   if(dirty&&!window.confirm('You have unsaved changes. Continue to administrator sign-in?')){history.replaceState(null,'','#'+view);return true;}
+   ++authEpoch;adminLinkToken=/^[0-9a-f]{64}\.[0-9a-f]{64}$/i.test(candidate)?candidate:'invalid';view='review';showGuide=false;initialized=true;error='';notice='';return true;
+  }
+  if(!requested.startsWith('sign-in='))return false;adminLinkToken='';
   const candidate=requested.slice(8);history.replaceState(null,'','#me');
   if(dirty&&!window.confirm('You have unsaved changes. Continue to sign in?')){history.replaceState(null,'','#'+view);return true;}
   ++authEpoch;clearPrivate();loginToken=/^[0-9a-f]{64}\.[0-9a-f]{64}$/i.test(candidate)?candidate:'invalid';view='me';showGuide=false;initialized=true;error='';notice='';return true;
  }
+ function requestedView(hash:string,fallback:View):View{if(hash.startsWith('profile/')){try{memberHandle=decodeURIComponent(hash.slice(8));}catch{memberHandle='';}return 'profile';}const known=['me','signup','leaderboard','public','review','templates','sources','documents','contributions'];if(!known.includes(hash))return fallback;return hash==='signup'&&connected?'me':hash as View;}
+ function openMember(handle:string){memberHandle=handle;setView('profile');}
+ function hashChanged(){if(openEmailLink())return;const hash=location.hash.slice(1);if(hash.startsWith('profile/')||['me','signup','leaderboard','public','review','templates','sources','documents','contributions'].includes(hash))setView(requestedView(hash,view));}
  onMount(()=>{void (async()=>{
-  if(openEmailLink())return;const requested=location.hash.slice(1);const epoch=authEpoch;
-  try{const value=await new Api().session();if(epoch!==authEpoch)return;session=value;api=new Api('',value.csrf_token);connected=true;view=['me','contributions','public','templates','sources','documents'].includes(requested)?requested as View:'me';await refresh();}
-  catch(e){if(epoch!==authEpoch)return;token=sessionStorage.getItem('dmem.token')??'';view=requested==='public'?'public':requested==='me'?'me':'templates';if(token)await connect();else if(e instanceof ApiFailure&&e.code!=='auth_required')fail(e);}
+  if(openEmailLink())return;const epoch=authEpoch;
+  try{const value=await new Api().session();if(epoch!==authEpoch)return;session=value;api=new Api('',value.csrf_token);connected=true;view=requestedView(location.hash.slice(1),'me');await refresh();}
+  catch(e){if(epoch!==authEpoch)return;token=sessionStorage.getItem('dmem.token')??'';view=requestedView(location.hash.slice(1),'templates');if(token)await connect();else if(e instanceof ApiFailure&&e.code!=='auth_required')fail(e);}
   finally{if(epoch===authEpoch)initialized=true;}
  })();});
  function beforeUnload(e:BeforeUnloadEvent){if(dirty){e.preventDefault();e.returnValue='';}}
  function setView(next:View){
-  if(doc&&!leaveEditor())return;showGuide=false;view=next;history.replaceState(null,'','#'+next);query='';kind='all';scope='all';error='';notice='';void refresh();
+  if(doc&&!leaveEditor())return;if(next==='signup'&&connected)next='me';showGuide=false;view=next;history.replaceState(null,'','#'+(next==='profile'?'profile/'+encodeURIComponent(memberHandle):next));query='';kind='all';scope='all';error='';notice='';void refresh();
  }
  function leaveEditor(){
   if(dirty&&!window.confirm('You have unsaved changes. Return to the library?'))return false;
@@ -144,12 +160,13 @@
  function prepareContribution(t:Template){selectedTemplate=null;contributionTemplate=t;publicLicense='CC-BY-4.0';rightsConfirmed=false;error='';}
  async function submitContribution(){if(!api||!contributionTemplate)return;const result=await perform(()=>api!.contribute(contributionTemplate!.id,publicAuthor,publicLicense,rightsConfirmed));if(result){contributionTemplate=null;setView('contributions');notice='Template submitted. It will become public after review.';}}
  async function withdrawContribution(id:string){if(!api||!window.confirm('Withdraw this contribution? New searches and copies will stop.'))return;const result=await perform(()=>api!.withdraw(id));if(result){notice='Contribution withdrawn. Existing copies keep their attribution.';await refresh();}}
+ async function checkContribution(id:string){if(!api)return;const result=await perform(()=>api!.contributionReview(id));if(result)contributionReport=result;}
  function date(ts:number){return new Date(ts*1000).toLocaleDateString('en-US',{month:'long',day:'numeric'});}
 </script>
 
-<svelte:window onbeforeunload={beforeUnload} onhashchange={openEmailLink}/>
-{#if (!connected&&view!=='me'&&view!=='public')||showGuide}
- <Landing bind:token {connected} {working} {error} onconnect={connect} onreturn={()=>{showGuide=false;setView('me');}} onlogin={()=>setView('me')} onpublic={()=>setView('public')}/>
+<svelte:window onbeforeunload={beforeUnload} onhashchange={hashChanged}/>
+{#if (!connected&&!['me','signup','public','review','leaderboard','profile'].includes(view))||showGuide}
+ <Landing bind:token {connected} {working} {error} onconnect={connect} onreturn={()=>{showGuide=false;setView('me');}} onlogin={()=>setView('me')} onpublic={()=>setView('public')} onsignup={()=>setView('signup')} onleaderboard={()=>setView('leaderboard')}/>
 {:else}
 <div class:editing={doc!==null} class="app-shell">
  <aside class="sidebar">
@@ -169,15 +186,18 @@
  </aside>
 
  <div class="main-shell">
-  <header class="topbar"><span>{doc?'EDITOR':view==='me'?'MY SPACE / OVERVIEW':view==='contributions'?'MY SPACE / CONTRIBUTIONS':view==='public'?'COMMUNITY / PUBLIC':view==='templates'?'LIBRARY / TEMPLATES':view==='sources'?'LIBRARY / REFERENCES':'WORKSPACE / DOCUMENTS'}</span><div class="private-label"><span aria-hidden="true">◈</span> Private library <span class="avatar">ME</span></div></header>
+  <header class="topbar"><span>{doc?'EDITOR':view==='me'?'MY SPACE / OVERVIEW':view==='contributions'?'MY SPACE / CONTRIBUTIONS':view==='public'?'COMMUNITY / PUBLIC':view==='review'?'COMMUNITY / REVIEW':view==='leaderboard'?'COMMUNITY / LEADERBOARD':view==='profile'?'COMMUNITY / PROFILE':view==='templates'?'LIBRARY / TEMPLATES':view==='sources'?'LIBRARY / REFERENCES':'WORKSPACE / DOCUMENTS'}</span><div class="private-label"><span aria-hidden="true">◈</span> {view==='review'?'Administrator review':'Private library'} <span class="avatar">{view==='review'?'R':'ME'}</span></div></header>
   <input class="visually-hidden" type="file" accept=".txt,.md,.markdown,.docx,.pptx" bind:this={fileInput} onchange={upload} aria-label="Upload reference file"/>
-  {#if error&&!selectedTemplate&&!selectedSource&&!customOpen&&!revisions&&!contributionTemplate}<div class="alert" role="alert"><span>{error}</span>{#if errorCode==='version_conflict'&&doc}<button onclick={reloadDocument} disabled={working}>Load latest saved version</button>{/if}<button class="icon-button" aria-label="Dismiss error" onclick={()=>{error='';errorCode='';}}>✕</button></div>{/if}
+  {#if error&&!selectedTemplate&&!selectedSource&&!customOpen&&!revisions&&!contributionTemplate&&!contributionReport}<div class="alert" role="alert"><span>{error}</span>{#if errorCode==='version_conflict'&&doc}<button onclick={reloadDocument} disabled={working}>Load latest saved version</button>{/if}<button class="icon-button" aria-label="Dismiss error" onclick={()=>{error='';errorCode='';}}>✕</button></div>{/if}
   {#if notice}<div class="notice" role="status">{notice}<button class="icon-button" aria-label="Dismiss notice" onclick={()=>notice=''}>✕</button></div>{/if}
 
   {#if !initialized}<main class="library-page"><p role="status">Opening your space…</p></main>
-  {:else if !connected&&view!=='public'}<main class="library-page"><span class="eyebrow">WELCOME BACK</span><h1>Your next document starts here.</h1><AuthPanel linkToken={loginToken} onlogin={signedIn}/><button class="text-button" onclick={()=>setView('public')}>Browse public memories →</button></main>
+  {:else if view==='review'}<ContributionReview linkToken={adminLinkToken} onconsumed={()=>{adminLinkToken='';}}/>
+  {:else if view==='leaderboard'}<Leaderboard {connected} onprofile={openMember} onjoin={()=>setView('signup')} onmy={()=>setView('me')}/>
+  {:else if view==='profile'}<PublicMember handle={memberHandle} onback={()=>setView('leaderboard')} onpreview={preview}/>
+  {:else if !connected&&view!=='public'}<main class="library-page"><span class="eyebrow">WELCOME BACK</span><h1>{view==='signup'?'Create your free account.':'Sign in.'}</h1><AuthPanel linkToken={loginToken} mode={view==='signup'?'signup':'signin'} onlogin={signedIn} onswitch={(mode)=>setView(mode==='signup'?'signup':'me')}/><button class="text-button" onclick={()=>setView('public')}>Browse public memories →</button></main>
   {:else if view==='public'}<PublicLibrary {connected} onpreview={preview} onlogin={()=>setView('me')}/>
-  {:else if view==='me'||view==='contributions'}<MyPage email={session?.account.email??'Local workspace'} {summary} {contributions} {templates} {documents} loading={loading||working} onview={setView} onpreview={preview} onopen={openDocument} onwithdraw={withdrawContribution} contributionsOnly={view==='contributions'}/>
+  {:else if view==='me'||view==='contributions'}<MyPage email={session?.account.email??'Local workspace'} {summary} {contributions} {templates} {documents} loading={loading||working} onview={setView} onpreview={preview} onopen={openDocument} onwithdraw={withdrawContribution} oncheck={checkContribution} contributionsOnly={view==='contributions'}>{#snippet member()}{#if session&&api}<MemberPanel {api} revision={contributions} onleaderboard={()=>setView('leaderboard')} onprofile={openMember} onautherror={fail}/>{/if}{/snippet}</MyPage>
   {:else if doc}
    <main class="editor-shell">
     <div class="editor-toolbar"><button class="text-button back" onclick={leaveEditor}>← Library</button><span class="version-label">v{doc.version} · {dirty?'Unsaved changes':'All changes saved'}</span><div class="toolbar-actions"><button class="secondary" onclick={showRevisions} disabled={working}>Version history</button><button class="primary" onclick={save} disabled={working||!dirty}>{working?'Working…':'Save'}</button><select aria-label="Export format" bind:value={exportFormat}><option value="md">Markdown</option><option value="html">HTML</option>{#if doc.family==='document'}<option value="docx">DOCX</option>{:else}<option value="pptx">PPTX</option>{/if}<option value="pdf">PDF · Print</option></select><button class="secondary" onclick={download} disabled={working||dirty} title={dirty?'Save your changes before exporting':'Export the saved version'}>Export ↗</button></div></div>
@@ -269,6 +289,7 @@
 {/if}
 <style>@media(max-width:760px){.search-row{flex-wrap:wrap}.search-form{flex-basis:100%;min-width:0}.search-row select{flex:1;min-width:0}}</style>
 {#if contributionTemplate}<Modal {error} title="Contribute a template" onclose={()=>contributionTemplate=null}><ContributePanel template={contributionTemplate} bind:author={publicAuthor} bind:license={publicLicense} bind:rights={rightsConfirmed} {working} onsubmit={submitContribution}/></Modal>{/if}
+{#if contributionReport}<Modal {error} title="Contribution checks" onclose={()=>contributionReport=null}><div class="template-detail"><ReviewStages report={contributionReport}/></div></Modal>{/if}
 {#if revisions}
  <Modal {error} title="Version history" onclose={()=>revisions=null}><div class="revision-list">{#each revisions as r}<button class:chosen={revisionPreview?.version===r.version} onclick={()=>revisionPreview=r}><strong>v{r.version} · {r.title}</strong><span>{date(r.updated_at)}</span></button>{/each}</div>{#if revisionPreview}<div class="revision-preview"><DocumentView title={revisionPreview.title} content={revisionPreview.content}/><button class="primary" onclick={()=>applyRevision(revisionPreview!)}>Apply this version to draft</button></div>{:else}<p class="muted">Choose a version to review its content.</p>{/if}</Modal>
 {/if}

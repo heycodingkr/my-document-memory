@@ -14,3 +14,5 @@ unicode-normalization.workspace = true
 percent-encoding.workspace = true
 zip.workspace = true
 quick-xml.workspace = true
+sha2.workspace = true
+regex.workspace = true

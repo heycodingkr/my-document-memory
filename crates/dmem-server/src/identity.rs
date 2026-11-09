@@ -111,6 +111,7 @@ pub struct AuthConfig {
     pub mailer: Option<Arc<dyn EmailSender>>,
     pub secure_cookies: bool,
     pub admin_token: Option<String>,
+    pub(crate) admin_emails: std::collections::BTreeSet<String>,
     pub clock: Arc<dyn Fn() -> u64 + Send + Sync>,
 }
 impl Default for AuthConfig {
@@ -121,6 +122,7 @@ impl Default for AuthConfig {
             mailer: None,
             secure_cookies: false,
             admin_token: None,
+            admin_emails: std::collections::BTreeSet::new(),
             clock: Arc::new(|| {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -149,6 +151,7 @@ impl AuthConfig {
             .into_iter()
             .map(|email| normalize_email(&email))
             .collect::<Result<HashSet<_>, _>>()?;
+
         Ok(())
     }
     pub(crate) fn now(&self) -> u64 {

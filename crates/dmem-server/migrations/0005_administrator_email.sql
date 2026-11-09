@@ -8,3 +8,8 @@ CREATE INDEX IF NOT EXISTS admin_email_challenges_email ON admin_email_challenge
 CREATE TABLE IF NOT EXISTS admin_sessions (
  token_hash TEXT PRIMARY KEY, email TEXT NOT NULL, expires_at INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS admin_decision_audit (
+ contribution_id TEXT PRIMARY KEY REFERENCES contributions(id),
+ actor TEXT NOT NULL, decision TEXT NOT NULL CHECK(decision IN ('approve','reject')),
+ previous_status TEXT NOT NULL, next_status TEXT NOT NULL, decided_at INTEGER NOT NULL
+);

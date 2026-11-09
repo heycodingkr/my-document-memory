@@ -101,6 +101,11 @@ impl Store {
             .map_err(internal)?;
         conn.execute_batch(include_str!("../migrations/0002_accounts.sql"))
             .map_err(internal)?;
+        conn.execute_batch(include_str!("../migrations/0003_contribution_reviews.sql"))
+            .map_err(internal)?;
+        conn.execute_batch(include_str!("../migrations/0004_member_profiles.sql"))
+            .map_err(internal)?;
+
         conn.execute_batch(include_str!("../migrations/0005_administrator_email.sql"))
             .map_err(internal)?;
         let s = Self {
@@ -129,6 +134,9 @@ impl Store {
             .take(MAX_RESULTS)
             .collect();
         Ok(List { items })
+    }
+    pub fn recall_candidates(&self, owner: &str) -> Result<Vec<Template>, Fault> {
+        list::<Template>(&*self.db.lock().map_err(internal)?, owner, "template")
     }
     pub fn template(&self, owner: &str, id: &str) -> Result<Template, Fault> {
         load(&*self.db.lock().map_err(internal)?, owner, "template", id)
@@ -877,6 +885,7 @@ impl Store {
             };
             tx.execute("INSERT OR IGNORE INTO records(id,owner,kind,version,payload,updated_at) VALUES(?1,'@catalog','template',1,?2,0)",params![id,encode(&t)?]).map_err(internal)?;
         }
+        crate::starter::insert(&tx)?;
         tx.commit().map_err(internal)?;
         Ok(())
     }

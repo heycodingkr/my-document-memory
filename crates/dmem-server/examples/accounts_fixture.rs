@@ -45,14 +45,24 @@ async fn main() {
     )
     .unwrap();
     config.admin_token = Some("synthetic-e2e-admin-token-at-least-32-characters".into());
+    config
+        .set_admin_emails([
+            "reviewer@example.test".to_owned(),
+            "reviewer-blocked@example.test".to_owned(),
+            "reviewer-cross@example.test".to_owned(),
+        ])
+        .unwrap();
     let db = std::env::var("DMEM_E2E_DATABASE").unwrap();
     let web = std::env::var("DMEM_E2E_WEB_DIR").unwrap();
     let app = router_with_auth(
         Arc::new(Store::open(db).unwrap()),
-        vec![(
-            "automated-smoke-token-not-production".into(),
-            "local".into(),
-        )],
+        vec![
+            (
+                "automated-smoke-token-not-production".into(),
+                "local".into(),
+            ),
+            ("automated-bob-token-not-production".into(), "bob".into()),
+        ],
         vec![format!("http://{addr}")],
         Some(web.into()),
         config,

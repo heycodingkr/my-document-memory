@@ -1,6 +1,8 @@
 use crate::{AuthConfig, Store};
 mod account;
 mod admin;
+mod recall;
+
 use axum::{
     Extension, Json, Router,
     extract::Request,
@@ -116,6 +118,7 @@ pub fn router_with_auth(
     let api = Router::new()
         .route("/status", get(status))
         .route("/templates", get(templates).post(create_template))
+        .route("/recall", get(recall::handler))
         .route("/templates/{id}", get(template))
         .route("/templates/{id}/copy", axum::routing::post(copy_template))
         .route("/sources", get(sources).post(import_source))

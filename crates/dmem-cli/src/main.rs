@@ -1,15 +1,28 @@
-use clap::{Parser, Subcommand};
-use dmem_client::{DmemClient, safe_id, search_path};
+use clap::{Parser, Subcommand, ValueEnum};
+use dmem_client::{DmemClient, recall_path, safe_id, search_path};
+use dmem_contracts::{CreateTemplate, RecallQuery, SaveDocument};
+use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
+use std::path::{Path, PathBuf};
+
 #[derive(Parser)]
-#[command(name = "dmem", about = "My Document Memory local client")]
+#[command(name = "dmem", about = "My Document Memory client")]
 struct Args {
     #[arg(long, env = "DMEM_URL", default_value = "http://127.0.0.1:3847")]
     url: String,
     #[arg(long, env = "DMEM_TOKEN", hide_env_values = true)]
-    token: String,
+    token: Option<String>,
+    #[arg(long, env = "DMEM_ADMIN_TOKEN", hide_env_values = true)]
+    admin_token: Option<String>,
+    #[arg(long, env = "DMEM_ORIGIN")]
+    origin: Option<String>,
     #[command(subcommand)]
     command: Command,
+}
+#[derive(Clone, Copy, ValueEnum)]
+enum Decision {
+    Approve,
+    Reject,
 }
 #[derive(Subcommand)]
 enum Command {
@@ -26,11 +39,26 @@ enum Command {
         #[arg(default_value = "")]
         query: String,
     },
+    /// Save a private template from a CreateTemplate JSON file.
+    TemplateSave {
+        file: PathBuf,
+    },
+    TemplateShow {
+        template_id: String,
+    },
+    /// Search public templates without a private token.
+    PublicTemplates {
+        #[arg(default_value = "")]
+        query: String,
+    },
+    PublicTemplate {
+        template_id: String,
+    },
     Copy {
         template_id: String,
     },
     Import {
-        file: std::path::PathBuf,
+        file: PathBuf,
         #[arg(long)]
         title: Option<String>,
     },
@@ -46,13 +74,78 @@ enum Command {
     Show {
         document_id: String,
     },
+    /// Save a revision from JSON containing base_version, title and content.
+    Save {
+        document_id: String,
+        file: PathBuf,
+    },
+    /// Submit a structure snapshot; explicit rights confirmation is required.
+    Contribute {
+        template_id: String,
+        #[arg(long)]
+        author: String,
+        #[arg(long)]
+        license: String,
+        #[arg(long, required = true)]
+        rights_confirmed: bool,
+    },
+    Contributions,
+    ContributionCheck {
+        contribution_id: String,
+    },
+    Withdraw {
+        contribution_id: String,
+    },
+    /// Administrator operations require DMEM_ADMIN_TOKEN and an allowed Origin.
+    ReviewQueue,
+    Review {
+        contribution_id: String,
+    },
+    Decide {
+        contribution_id: String,
+        #[arg(long, value_enum)]
+        decision: Decision,
+    },
     Export {
         document_id: String,
         #[arg(long)]
         format: String,
         #[arg(long)]
-        output: std::path::PathBuf,
+        output: PathBuf,
     },
+    Recall {
+        #[arg(value_name = "URL", required_unless_present = "stdin")]
+        url: Option<String>,
+        #[arg(value_name = "KEYWORD")]
+        keywords: Vec<String>,
+        #[arg(long)]
+        doc_type: Option<String>,
+        #[arg(long)]
+        locale: Option<String>,
+        #[arg(long)]
+        provider: Option<String>,
+        #[arg(long)]
+        kind: Option<String>,
+        #[arg(long)]
+        scope: Option<String>,
+        #[arg(long)]
+        limit: Option<u8>,
+        #[arg(long)]
+        stdin: bool,
+    },
+}
+fn check(id: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if safe_id(id) {
+        Ok(())
+    } else {
+        Err("invalid_input".into())
+    }
+}
+fn input<T: DeserializeOwned>(path: &Path) -> Result<T, Box<dyn std::error::Error>> {
+    if std::fs::metadata(path)?.len() > dmem_contracts::MAX_CONTENT as u64 {
+        return Err("payload_too_large".into());
+    }
+    serde_json::from_slice(&std::fs::read(path)?).map_err(|_| "invalid_input".into())
 }
 #[tokio::main]
 async fn main() {
@@ -63,19 +156,46 @@ async fn main() {
 }
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    let client = DmemClient::new(&args.url, args.token)?;
-    let check = |id: &str| -> Result<(), Box<dyn std::error::Error>> {
-        if safe_id(id) {
-            Ok(())
-        } else {
-            Err("invalid_input".into())
-        }
+    let is_admin = matches!(
+        args.command,
+        Command::ReviewQueue | Command::Review { .. } | Command::Decide { .. }
+    );
+    let credential = if is_admin {
+        args.admin_token
+            .filter(|t| !t.is_empty())
+            .ok_or("auth_required")?
+    } else {
+        args.token.unwrap_or_default()
     };
+    let mut client = DmemClient::new(&args.url, credential)?;
+    if is_admin {
+        client = client.with_origin(args.origin.as_deref().unwrap_or(&args.url))?;
+    }
     let value: Value = match args.command {
         Command::Status => client.get("/v1/status").await?,
         Command::Templates { query } => client.get(&search_path("templates", &query)).await?,
         Command::Sources { query } => client.get(&search_path("sources", &query)).await?,
         Command::Documents { query } => client.get(&search_path("documents", &query)).await?,
+        Command::PublicTemplates { query } => {
+            client
+                .public_get(&search_path("public/templates", &query))
+                .await?
+        }
+        Command::PublicTemplate { template_id } => {
+            check(&template_id)?;
+            client
+                .public_get(&format!("/v1/public/templates/{template_id}"))
+                .await?
+        }
+        Command::TemplateSave { file } => {
+            client
+                .post("/v1/templates", &input::<CreateTemplate>(&file)?)
+                .await?
+        }
+        Command::TemplateShow { template_id } => {
+            check(&template_id)?;
+            client.get(&format!("/v1/templates/{template_id}")).await?
+        }
         Command::Copy { template_id } => {
             check(&template_id)?;
             client
@@ -107,13 +227,70 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         } => {
             check(&template_id)?;
             for s in &source {
-                check(s)?
+                check(s)?;
             }
-            client.post("/v1/documents",&json!({"template_id":template_id,"title":title,"source_ids":source,"outline_approved":approve_outline})).await?
+            client.post("/v1/documents", &json!({"template_id":template_id,"title":title,"source_ids":source,"outline_approved":approve_outline})).await?
         }
         Command::Show { document_id } => {
             check(&document_id)?;
             client.get(&format!("/v1/documents/{document_id}")).await?
+        }
+        Command::Save { document_id, file } => {
+            check(&document_id)?;
+            client
+                .put(
+                    &format!("/v1/documents/{document_id}"),
+                    &input::<SaveDocument>(&file)?,
+                )
+                .await?
+        }
+        Command::Contribute {
+            template_id,
+            author,
+            license,
+            rights_confirmed,
+        } => {
+            check(&template_id)?;
+            client.post("/v1/me/contributions", &json!({"template_id":template_id,"author":author,"license":license,"rights_confirmed":rights_confirmed})).await?
+        }
+        Command::Contributions => client.get("/v1/me/contributions").await?,
+        Command::ContributionCheck { contribution_id } => {
+            check(&contribution_id)?;
+            client
+                .get(&format!("/v1/me/contributions/{contribution_id}/review"))
+                .await?
+        }
+        Command::Withdraw { contribution_id } => {
+            check(&contribution_id)?;
+            client
+                .post(
+                    &format!("/v1/me/contributions/{contribution_id}/withdraw"),
+                    &json!({}),
+                )
+                .await?
+        }
+        Command::ReviewQueue => client.get("/v1/admin/contributions").await?,
+        Command::Review { contribution_id } => {
+            check(&contribution_id)?;
+            client
+                .get(&format!("/v1/admin/contributions/{contribution_id}/review"))
+                .await?
+        }
+        Command::Decide {
+            contribution_id,
+            decision,
+        } => {
+            check(&contribution_id)?;
+            let decision = match decision {
+                Decision::Approve => "approve",
+                Decision::Reject => "reject",
+            };
+            client
+                .post(
+                    &format!("/v1/admin/contributions/{contribution_id}/decision"),
+                    &json!({"decision":decision}),
+                )
+                .await?
         }
         Command::Export {
             document_id,
@@ -127,7 +304,6 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let bytes = client
                 .download(&format!("/v1/documents/{document_id}/export/{format}"))
                 .await?;
-            // create_new prevents accidentally replacing a user's existing file.
             use std::io::Write;
             let mut f = std::fs::OpenOptions::new()
                 .write(true)
@@ -136,7 +312,95 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             f.write_all(&bytes)?;
             json!({"exported":true,"bytes":bytes.len()})
         }
+        Command::Recall {
+            url,
+            keywords,
+            doc_type,
+            locale,
+            provider,
+            kind,
+            scope,
+            limit,
+            stdin,
+        } => {
+            let q = if stdin {
+                if url.is_some()
+                    || !keywords.is_empty()
+                    || doc_type.is_some()
+                    || locale.is_some()
+                    || provider.is_some()
+                    || kind.is_some()
+                    || scope.is_some()
+                    || limit.is_some()
+                {
+                    return Err("invalid_input".into());
+                }
+                use std::io::Read;
+                let mut bytes = Vec::new();
+                std::io::stdin().take(8193).read_to_end(&mut bytes)?;
+                parse_recall_stdin(&bytes)?
+            } else {
+                RecallQuery {
+                    url: url.ok_or("invalid_input")?,
+                    keywords,
+                    doc_type,
+                    locale,
+                    provider,
+                    kind,
+                    scope,
+                    limit,
+                }
+            };
+            client.get(&recall_path(&q)).await?
+        }
     };
     println!("{}", serde_json::to_string_pretty(&value)?);
     Ok(())
+}
+
+fn parse_recall_stdin(bytes: &[u8]) -> Result<RecallQuery, &'static str> {
+    if bytes.len() > 8192 {
+        return Err("invalid_input");
+    }
+    serde_json::from_slice(bytes).map_err(|_| "invalid_input")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn rv33_recall_help_has_channel_options() {
+        let err = match Args::try_parse_from(["dmem", "recall", "--help"]) {
+            Err(e) => e.to_string(),
+            Ok(_) => panic!("help should exit"),
+        };
+        for flag in [
+            "--doc-type",
+            "--locale",
+            "--provider",
+            "--kind",
+            "--scope",
+            "--limit",
+            "--stdin",
+        ] {
+            assert!(err.contains(flag), "{flag}");
+        }
+    }
+    #[test]
+    fn rv34_stdin_is_bounded_and_rejects_unknown_or_bad_json() {
+        assert_eq!(
+            parse_recall_stdin(
+                br#"{"url":"https://example.org","doc_type":"meeting_minutes","extra":1}"#
+            )
+            .unwrap_err(),
+            "invalid_input"
+        );
+        assert!(parse_recall_stdin(b"{").is_err());
+        assert!(parse_recall_stdin(&vec![b'x'; 8193]).is_err());
+        let q = parse_recall_stdin(
+            br#"{"url":"https://example.org","doc_type":"meeting_minutes","keywords":["draft"]}"#,
+        )
+        .unwrap();
+        assert_eq!(q.doc_type.as_deref(), Some("meeting_minutes"));
+    }
 }

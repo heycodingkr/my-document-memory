@@ -1,5 +1,6 @@
 use crate::Store;
 use dmem_contracts::{Fault, List, Template, Visibility};
+use dmem_core::review::{ReviewReport, review_snapshot};
 use rusqlite::{OptionalExtension, params};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -12,6 +13,8 @@ pub struct Contribution {
     pub public_id: Option<String>,
     pub created_at: u64,
     pub updated_at: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub review: Option<ReviewReport>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -37,9 +40,52 @@ fn decode(row: &rusqlite::Row<'_>) -> rusqlite::Result<Contribution> {
         public_id: row.get(4)?,
         created_at: row.get(5)?,
         updated_at: row.get(6)?,
+        review: None,
     })
 }
+fn saved_review(db: &rusqlite::Connection, id: &str) -> Result<Option<ReviewReport>, Fault> {
+    let raw: Option<String> = db
+        .query_row(
+            "SELECT report FROM contribution_reviews WHERE contribution_id=?1",
+            params![id],
+            |row| row.get(0),
+        )
+        .optional()
+        .map_err(internal)?;
+    raw.map(|text| serde_json::from_str(&text).map_err(internal))
+        .transpose()
+}
+fn check_snapshot(db: &rusqlite::Connection, c: &Contribution) -> Result<ReviewReport, Fault> {
+    // Read all catalog candidates; user-facing search is capped and is not a review oracle.
+    let mut stmt = db
+        .prepare("SELECT payload FROM records WHERE owner='@catalog' AND kind='template'")
+        .map_err(internal)?;
+    let rows = stmt
+        .query_map([], |r| r.get::<_, String>(0))
+        .map_err(internal)?;
+    let catalog: Vec<Template> = rows
+        .map(|r| serde_json::from_str(&r.map_err(internal)?).map_err(internal))
+        .collect::<Result<_, Fault>>()?;
+    Ok(review_snapshot(&c.id, &c.snapshot, &catalog))
+}
 impl Store {
+    pub(crate) fn review_contribution(
+        &self,
+        owner: Option<&str>,
+        id: &str,
+    ) -> Result<ReviewReport, Fault> {
+        let db = self.db.lock().map_err(internal)?;
+        let c = db.query_row(
+            "SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE id=?1 AND (?2 IS NULL OR owner=?2)",
+            params![id, owner], decode,
+        ).optional().map_err(internal)?.ok_or(Fault::NotFound)?;
+        if let Some(report) = saved_review(&db, id)? {
+            return Ok(report);
+        }
+        let mut report = check_snapshot(&db, &c)?;
+        report.stages[5].status = c.status;
+        Ok(report)
+    }
     pub(crate) fn dashboard(&self, owner: &str) -> Result<serde_json::Value, Fault> {
         let db = self.db.lock().map_err(internal)?;
         let count = |kind: &str| {
@@ -131,6 +177,7 @@ impl Store {
             public_id: None,
             created_at: now,
             updated_at: now,
+            review: None,
         };
         tx.execute("INSERT INTO contributions(id,owner,template_id,status,snapshot,created_at,updated_at) VALUES(?1,?2,?3,'pending',?4,?5,?5)",params![c.id,owner,c.template_id,serde_json::to_string(&c.snapshot).map_err(internal)?,now]).map_err(internal)?;
         tx.commit().map_err(internal)?;
@@ -139,11 +186,14 @@ impl Store {
     pub(crate) fn contributions(&self, owner: Option<&str>) -> Result<List<Contribution>, Fault> {
         let db = self.db.lock().map_err(internal)?;
         let mut stmt=db.prepare("SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE (?1 IS NULL OR owner=?1) ORDER BY created_at DESC,id LIMIT 100").map_err(internal)?;
-        let items = stmt
+        let mut items = stmt
             .query_map(params![owner], decode)
             .map_err(internal)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(internal)?;
+        for c in &mut items {
+            c.review = saved_review(&db, &c.id)?;
+        }
         Ok(List { items })
     }
     pub(crate) fn withdraw(&self, owner: &str, id: &str, now: u64) -> Result<Contribution, Fault> {
@@ -160,6 +210,7 @@ impl Store {
             )
             .map_err(internal)?;
         }
+        c.review = saved_review(&tx, id)?;
         c.status = "withdrawn".into();
         c.updated_at = now;
         tx.execute(
@@ -170,13 +221,34 @@ impl Store {
         tx.commit().map_err(internal)?;
         Ok(c)
     }
-    pub(crate) fn decide(&self, id: &str, approve: bool, now: u64) -> Result<Contribution, Fault> {
+    pub(crate) fn decide(
+        &self,
+        id: &str,
+        approve: bool,
+        now: u64,
+        actor: &str,
+    ) -> Result<Contribution, Fault> {
         let mut db = self.db.lock().map_err(internal)?;
         let tx = db.transaction().map_err(internal)?;
         let mut c=tx.query_row("SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE id=?1",params![id],decode).optional().map_err(internal)?.ok_or(Fault::NotFound)?;
         if c.status != "pending" {
             return Err(Fault::VersionConflict);
         }
+        // Checks and publication share the SQLite transaction, so a changed catalog or
+        // original private record cannot bypass review of this immutable snapshot.
+        let mut report = check_snapshot(&tx, &c)?;
+        if approve && report.verdict == "blocked" {
+            return Err(Fault::ReviewBlocked);
+        }
+        report.decision = Some(if approve { "approve" } else { "reject" }.into());
+        report.decided_at = Some(now);
+        report.stages[5].status = if approve { "approved" } else { "rejected" }.into();
+        tx.execute(
+            "INSERT INTO contribution_reviews(contribution_id,report,decided_at) VALUES(?1,?2,?3)",
+            params![id, serde_json::to_string(&report).map_err(internal)?, now],
+        )
+        .map_err(internal)?;
+        c.review = Some(report);
         c.status = if approve { "approved" } else { "rejected" }.into();
         c.updated_at = now;
         if approve {
@@ -188,6 +260,10 @@ impl Store {
             params![id, c.status, c.public_id, now],
         )
         .map_err(internal)?;
+        tx.execute(
+            "INSERT INTO admin_decision_audit(contribution_id,actor,decision,previous_status,next_status,decided_at) VALUES(?1,?2,?3,'pending',?4,?5)",
+            params![id, actor, if approve { "approve" } else { "reject" }, c.status, now],
+        ).map_err(internal)?;
         tx.commit().map_err(internal)?;
         Ok(c)
     }

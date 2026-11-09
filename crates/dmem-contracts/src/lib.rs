@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 use serde::{Deserialize, Serialize};
+mod recall;
+pub use recall::*;
 pub const MAX_UPLOAD: usize = 10 * 1024 * 1024;
 pub const MAX_CONTENT: usize = 1024 * 1024;
 pub const MAX_RESULTS: usize = 20;
@@ -247,9 +249,11 @@ pub enum Fault {
     NotFound,
     VersionConflict,
     LicenseForbids,
+    ReviewBlocked,
     Internal,
     ServerUnavailable,
     RateLimited,
+    HandleUnavailable,
 }
 impl Fault {
     pub fn code(&self) -> &'static str {
@@ -264,9 +268,11 @@ impl Fault {
             Self::NotFound => "not_found",
             Self::VersionConflict => "version_conflict",
             Self::LicenseForbids => "license_forbids",
+            Self::ReviewBlocked => "review_blocked",
             Self::Internal => "internal",
             Self::ServerUnavailable => "server_unavailable",
             Self::RateLimited => "rate_limited",
+            Self::HandleUnavailable => "handle_unavailable",
         }
     }
     pub fn status(&self) -> u16 {
@@ -275,9 +281,10 @@ impl Fault {
             Self::AuthRequired => 401,
             Self::LicenseForbids => 403,
             Self::NotFound => 404,
-            Self::VersionConflict => 409,
+            Self::VersionConflict | Self::HandleUnavailable => 409,
             Self::PayloadTooLarge => 413,
             Self::UnsupportedFormat => 415,
+            Self::ReviewBlocked => 422,
             Self::InvalidForm(_) | Self::UrlRejected(_) | Self::ExtractEmpty(_) => 422,
             Self::Internal => 500,
             Self::ServerUnavailable => 503,
@@ -296,9 +303,13 @@ impl Fault {
             Self::NotFound => "Resource not found.",
             Self::VersionConflict => "Document has a newer version.",
             Self::LicenseForbids => "License does not allow copying.",
+            Self::ReviewBlocked => {
+                "The contribution failed deterministic review. Read its review findings."
+            }
             Self::Internal => "Internal error.",
             Self::ServerUnavailable => "Server unavailable.",
             Self::RateLimited => "Too many requests.",
+            Self::HandleUnavailable => "This handle is unavailable.",
         };
         let reason = match self {
             Self::InvalidForm(r) | Self::UrlRejected(r) | Self::ExtractEmpty(r) => {

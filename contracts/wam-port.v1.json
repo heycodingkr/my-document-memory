@@ -1,0 +1,727 @@
+{
+  "schema_version": 1,
+  "upstream_project": "web-agentic-memory",
+  "reviewed_on": "2026-11-09",
+  "scope": [
+    "docs/spec/**/*.md",
+    "docs/test/**/*.md"
+  ],
+  "entries": [
+    {
+      "source": "docs/spec/README.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/README.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/_template.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/_template.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/admin.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/admin.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/api.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/api.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/cli.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/cli.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/client-cache.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/client-cache.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/core.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/core.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/curator/instructions.v1.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/curator/instructions.v1.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/curator.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/curator.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/database.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/database.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/dedup.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/dedup.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/diagnostics.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/diagnostics.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/email-auth.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/email-auth.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/gatekeeper.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/gatekeeper.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/install.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/install.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/link.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/link.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/mcp.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/mcp.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/memory.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/memory.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/model.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/model.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/my-page.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/my-page.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/privacy.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/privacy.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/profile.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/profile.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/provider-outage.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/provider-outage.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/queue.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/queue.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/rate-limits.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/rate-limits.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/recall.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/recall.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/release.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/release.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/score.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/score.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/search-performance.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/search-performance.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/usage-analytics.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/usage-analytics.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/spec/web.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/web.md"
+      ],
+      "reason": "WAM 기능 계약을 URL+양식·문서 메모리 도메인에 적응; 구현 완료와 구분"
+    },
+    {
+      "source": "docs/test/README.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/README.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/admin.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-account.md"
+      ],
+      "reason": "관리자 검수·takedown·권한·감사 케이스에 적응; 원본 운영 결과는 승계하지 않음"
+    },
+    {
+      "source": "docs/test/auth-network-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/benchmarks/canva.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/benchmarks/google-calendar.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/benchmarks/google-flow.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/benchmarks/notion.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/benchmarks/trip-flights.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/benchmarks.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/metrics.md",
+        "docs/test/prereg/_template.md"
+      ],
+      "reason": "통제·독립 oracle·전체 run·무효 보고 규칙만 문서 작업에 적응; WAM 성능 결과 제외"
+    },
+    {
+      "source": "docs/test/canva-report-english-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/cli-link.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-connect.md",
+        "docs/test/functional-install.md"
+      ],
+      "reason": "기기 연결·등록·해지·호스트 설정 보존 케이스에 적응"
+    },
+    {
+      "source": "docs/test/core-host-smoke-20261104.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/customer-paths.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/host-smoke.md",
+        "docs/test/user-flows.md"
+      ],
+      "reason": "비회원·연결 회원의 호스트별 여정을 URL+양식·복사·게시 동의로 적응"
+    },
+    {
+      "source": "docs/test/database.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-api.md"
+      ],
+      "reason": "DB 제약·트랜잭션·버전·격리 케이스에 적응"
+    },
+    {
+      "source": "docs/test/deployment-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/design-memories-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/email-auth-production.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/email-auth.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-ops.md"
+      ],
+      "reason": "이메일 링크·세션·실패 복구·개인정보 경계에 적응; 실메일 결과 승계 제외"
+    },
+    {
+      "source": "docs/test/environment.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/environment.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/failure-matrix.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/failure-matrix.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/feature-acceptance.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/host-smoke.md",
+        "docs/test/functional-tests.md",
+        "docs/test/functional-web.md"
+      ],
+      "reason": "웹 설치부터 저장·복사·게시·검수까지 문서 사용자 인수 기준에 적응"
+    },
+    {
+      "source": "docs/test/functional-tests.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-tests.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/harness-verification.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/harness-verification.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/host-smoke.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/host-smoke.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/hosts/README.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/README.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/hosts/arise.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/arise.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/hosts/chrome-mcp.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/matrix.md"
+      ],
+      "reason": "호스트별 등록·환경·정리 검증 경계를 매트릭스로 적응; 현재 설치·모델 실행은 미검증"
+    },
+    {
+      "source": "docs/test/hosts/claude-code.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/matrix.md"
+      ],
+      "reason": "호스트별 등록·환경·정리 검증 경계를 매트릭스로 적응; 현재 설치·모델 실행은 미검증"
+    },
+    {
+      "source": "docs/test/hosts/codex.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/matrix.md"
+      ],
+      "reason": "호스트별 등록·환경·정리 검증 경계를 매트릭스로 적응; 현재 설치·모델 실행은 미검증"
+    },
+    {
+      "source": "docs/test/hosts/meta-muse.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/hosts/matrix.md"
+      ],
+      "reason": "호스트별 등록·환경·정리 검증 경계를 매트릭스로 적응; 현재 설치·모델 실행은 미검증"
+    },
+    {
+      "source": "docs/test/integrated-seo-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/local-smoke.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/local-smoke.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/mcp-cli-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/meta-model.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-models.md"
+      ],
+      "reason": "모델 응답·사용량·예산·오류 케이스만 적응; Meta 실제 호출 결과 제외"
+    },
+    {
+      "source": "docs/test/metrics.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/metrics.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/my-page.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-account.md"
+      ],
+      "reason": "내 라이브러리·게시 상태·사용 성과·소유자 경계로 적응"
+    },
+    {
+      "source": "docs/test/post-deploy-gap-review.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-release.md",
+        "docs/test/failure-matrix.md"
+      ],
+      "reason": "배포 후 화면·서버·DB·캐시·보안 공백의 독립 수용 기준으로 적응"
+    },
+    {
+      "source": "docs/test/prereg/_template.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/prereg/_template.md"
+      ],
+      "reason": "문서 작업 조건·주 지표·독립 oracle·전체 run 기록의 사전 등록 양식으로 적응"
+    },
+    {
+      "source": "docs/test/prereg/flight-trip-20261103.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/prereg/notion-r9-20261101.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM의 개별 실험·사전 등록 기록; 문서 제품의 측정 근거로 승계하지 않음"
+    },
+    {
+      "source": "docs/test/profile.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-account.md"
+      ],
+      "reason": "프로필 공개 선택과 개인정보 경계로 적응"
+    },
+    {
+      "source": "docs/test/provider-outage.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-models.md"
+      ],
+      "reason": "provider 장애 분류·대기·복구·재시작을 문서 게시 검수에 적응"
+    },
+    {
+      "source": "docs/test/recall-invalid-input-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/recall-invalid-input-tracing.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/diagnostics.md",
+        "docs/test/functional-tests.md",
+        "docs/test/recall-v1.md"
+      ],
+      "reason": "입력 거절 이유·MCP isError·입력 비노출로 적응; 과거 운영 사건의 인수 추정 제외"
+    },
+    {
+      "source": "docs/test/release-readiness.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-release.md"
+      ],
+      "reason": "구현·더블·운영 수용을 분리하는 출시 게이트에 적응"
+    },
+    {
+      "source": "docs/test/releases.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-release.md",
+        "docs/test/functional-install.md"
+      ],
+      "reason": "패키징·설치·업그레이드·원본 설정 보존의 수용 기준에 적응"
+    },
+    {
+      "source": "docs/test/remote-oauth.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-connect.md",
+        "docs/test/tool-forms/mcp-form.md"
+      ],
+      "reason": "원격 호스트 인증·연결 경계만 설계로 적응; WAM OAuth 실행 결과 제외"
+    },
+    {
+      "source": "docs/test/retrieval-benchmark.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-release.md",
+        "docs/test/metrics.md"
+      ],
+      "reason": "URL+양식 순위·검색 라벨·규모·재현성 지표로 적응; BM25/RRF 구현과 WAM 결과 제외"
+    },
+    {
+      "source": "docs/test/security-scenarios.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/security-scenarios.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/service-abuse-performance.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-ops.md",
+        "docs/test/functional-connect.md",
+        "docs/test/functional-release.md"
+      ],
+      "reason": "요청 한도·소유자 사용량·캐시·장애·성능 케이스로 적응"
+    },
+    {
+      "source": "docs/test/support-footer-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/telemetry-traceability-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/tool-forms/README.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/tool-forms/README.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/tool-forms/cli-form.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/tool-forms/cli-form.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/tool-forms/install.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/functional-install.md"
+      ],
+      "reason": "제품 CLI·MCP 등록·계획·설정 변경·원상복구 테스트로 적응"
+    },
+    {
+      "source": "docs/test/tool-forms/mcp-form.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/tool-forms/mcp-form.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/tool-forms/snippet-form.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/tool-forms/snippet-form.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    },
+    {
+      "source": "docs/test/tracing-coverage-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/tracing-coverage.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/spec/diagnostics.md",
+        "docs/test/functional-install.md"
+      ],
+      "reason": "고정 오류 코드·trace·원문 비수집·진단 케이스로 적응; 운영 trace 승계 제외"
+    },
+    {
+      "source": "docs/test/trip-flights-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/url-memory-copy-production-4090.md",
+      "disposition": "exclude",
+      "targets": [],
+      "reason": "WAM 실서비스·특정 버전 실행 이력; DMEM 실행 증거로 사용할 수 없음"
+    },
+    {
+      "source": "docs/test/user-flows.md",
+      "disposition": "adapt",
+      "targets": [
+        "docs/test/user-flows.md"
+      ],
+      "reason": "기능 입력·기대 결과·스모크·하네스 규약을 문서 메모리 도메인에 적응"
+    }
+  ]
+}

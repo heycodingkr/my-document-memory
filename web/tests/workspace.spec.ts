@@ -53,7 +53,10 @@ test('real library → import → selected evidence → edit → revision → ex
  await page.getByRole('button',{name:new RegExp(docTitle+' Document · v3')}).click();
  await expect(page.locator('textarea[aria-label^="Paragraph"]').first()).toHaveValue('{{Needs confirmation: Purpose}}');
  await page.reload();
- await expect(page.getByRole('heading',{name:'Template library.'})).toBeVisible();
+ await expect(page).toHaveURL(/#documents$/);
+ await expect(page.getByRole('heading',{name:'My documents.'})).toBeVisible();
+ await page.getByRole('button',{name:new RegExp(docTitle+' Document · v3')}).click();
+ await expect(page.locator('textarea[aria-label^="Paragraph"]').first()).toHaveValue('{{Needs confirmation: Purpose}}');
  expect(errors).toEqual([]);
 });
 test('decks require approved outline and remain editable; mobile has no horizontal overflow',async({page})=>{

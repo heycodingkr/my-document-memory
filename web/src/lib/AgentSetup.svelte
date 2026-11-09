@@ -6,8 +6,9 @@
  const methods=$derived(t.methods);
  let selected=$state<Method>('web');
  let message=$state<'mcp'|'commands'|'manual'|''>('');
- const localCommand='git clone https://github.com/heycodingkr/my-document-memory.git\\ncd my-document-memory\\nnode scripts/dev.mjs';
- const cliCommand='cargo install --path crates/dmem-cli --locked --debug\\nset -a\\n. ./.env\\nset +a\\nexport DMEM_URL=http://127.0.0.1:3847\\ndmem status\\ndmem templates Meeting';
+ const localCommand='git clone https://github.com/heycodingkr/my-document-memory.git\ncd my-document-memory\nnode scripts/dev.mjs';
+ const cliCommand='cargo install --path crates/dmem-cli --locked --debug\nset -a\n. ./.env\nset +a\nexport DMEM_URL=http://127.0.0.1:3847\ndmem status\ndmem templates Meeting';
+
  const mcpConfig=JSON.stringify({mcpServers:{'document-memory':{command:'/absolute/path/to/dmem-mcp',env:{DMEM_URL:'http://127.0.0.1:3847',DMEM_TOKEN:'<your library token>'}}}},null,2);
  const copyValue=$derived(selected==='web'?localCommand:selected==='cli'?cliCommand:mcpConfig);
  function choose(id:Method){selected=id;message='';}

@@ -8,6 +8,7 @@
  import {landingCopy,type LandingLocale} from './landing-copy';
  type Tool='docs'|'slides'|'notion';
  let {token=$bindable(''),connected=false,working=false,error='',onconnect,onreturn,onlogin,onpublic,onsignup,onleaderboard}:{token:string;connected:boolean;working:boolean;error:string;onconnect:()=>Promise<void>;onreturn:()=>void;onlogin:()=>void;onpublic:()=>void;onsignup:()=>void;onleaderboard:()=>void;}=$props();
+
  let locale=$state<LandingLocale>('en');
  let selected=$state<Tool>('docs');
  let model=$state('Codex');
