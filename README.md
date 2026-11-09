@@ -1,6 +1,6 @@
 # My Document Memory
 
-**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
+**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public) · [Watch the 2-minute demo](https://www.youtube.com/watch?v=JAkA8PgXcOU)** — no installation needed. Sign in with an email link to save your own library.
 
 ![Templates and references connected to documents and slides](docs/assets/readme-hero.png)
 
