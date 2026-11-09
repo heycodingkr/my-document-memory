@@ -18,6 +18,8 @@ Read the actual running proxy service and binary rather than assuming caddy.serv
 
 ## Outcome
 
+The publication follow-up pushed scoped commit 1b65192b6be2efe2a5a562eda1f04fa6b42cd4e5 to GitHub main. An independent GitHub fetch matched the reviewed README exactly; hosted/CLI/MCP examples now use the public API domain and loopback instructions are confined to local development. Fresh live API and real CLI/MCP checks passed. An isolated checkout kept parallel changes and the shared staged index intact; the already-live application needed no restart.
+
 The final diff is limited to hosted onboarding, the isolated API proxy block, operational documentation and a read-only public smoke. No application binary, database, email credential or Origin configuration was changed by this rollout. The public API smoke passed on macOS and Linux; Arise and independent DNS/TLS checks confirmed the endpoint, and real CLI/MCP requests used the public URL successfully. Existing library identifiers/revisions and the apex web smoke matched their baseline. Full evidence is in ../test/public-api-v1.md.
 
 The concurrency guard caught another session deploying release 20261109T024546Z-hero. Relevant server source files were compared directly before proceeding; their contents were unchanged. That newer release was retained.

@@ -31,6 +31,15 @@ Issue: #394. Specification: ../spec/public-api-v1.md.
 
 Focused automated reproduction: python3 tests/smoke/public-api-v1.py. Run before ingress changes, then repeat after deployment. Public probes are read-only; credentials are read only from the excluded .env.production file. DNS UI save is checked by observing the saved row and by independent resolver queries.
 
+## Publication follow-up
+
+Verified 2026-11-09 at 03:03 UTC. The API was already deployed, but the GitHub main README was still blob b370c849d8ff79f1ae84e4ccac0d5c31ef3e593c and lacked the hosted API URL. The failing GitHub contents assertion reproduced that gap.
+
+- The fresh nine-group public API smoke passed; real CLI status and MCP initialize/tools-list/status also passed against https://api.mydocumentmemory.com. Artifacts: .artifacts/deploy/public-api-followup-smoke.json and .artifacts/deploy/public-api-followup-clients.json.
+- Commit 1b65192b6be2efe2a5a562eda1f04fa6b42cd4e5 published only the reviewed seven README/ingress/specification/test/design files from an isolated checkout. Parallel account, runtime and product-copy edits were excluded.
+- A new GitHub contents fetch from main matched the reviewed README blob daa1e3a2ebd9699f1993d7555ea9f3ec161d2d69 exactly. Assertions confirmed that hosted Quick start and CLI/MCP use the API domain, and loopback instructions appear only in Development. HTTPS /healthz again returned 200 with ready=true.
+- The shared checkout HEAD and staged index were preserved; the index digest was unchanged. No application restart, DNS edit or database change was needed. Publication artifact: .artifacts/deploy/public-api-followup-publication.json.
+
 ## Results
 
 Verified 2026-11-09 (UTC).
