@@ -40,4 +40,3 @@ Opt-out 즉시 새 account history와 authored-memory impact 집계를 중단하
 | F-USAGE-04 | 익명·서비스 집계 | 익명은 거친 총량만 더하며 개인/작은 cohort를 식별할 수 없다. | USAGE-04 |
 | F-USAGE-05 | opt-out·보관·삭제 | opt-out은 새 수집 중지와 연결 집계 제거를 즉시 적용하고 최대 90일 보관·계정 삭제를 지킨다. | USAGE-05 |
 | F-USAGE-06 | quota와 analytics 분리 | action quota 소진 후에도 제한 조회가 가능하며 장애·미확인 자료를 0으로 표시하지 않는다. | USAGE-06 |
-

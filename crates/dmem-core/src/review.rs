@@ -85,20 +85,26 @@ fn patterns() -> &'static Vec<(&'static str, &'static str, Regex)> {
 }
 pub fn contains_secret(text: &str) -> bool {
     let text = normalized(text);
-    patterns().iter().any(|(reason, _, pattern)| *reason == "secret" && pattern.is_match(&text))
-        || assignment().captures_iter(&text).any(|captures|credential_value_is_secret(&captures[1]))
+    patterns()
+        .iter()
+        .any(|(reason, _, pattern)| *reason == "secret" && pattern.is_match(&text))
+        || assignment()
+            .captures_iter(&text)
+            .any(|captures| credential_value_is_secret(&captures[1]))
 }
 pub fn contains_injection(text: &str) -> bool {
     let text = normalized(text);
-    patterns().iter().any(|(reason, _, pattern)| *reason == "injection" && pattern.is_match(&text))
+    patterns()
+        .iter()
+        .any(|(reason, _, pattern)| *reason == "injection" && pattern.is_match(&text))
 }
 fn assignment() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     RE.get_or_init(|| Regex::new(r"(?i)\b(?:password|passwd|secret|api_key|apikey|access_token|auth_token)\s*[:=]\s*(\S{8,})").unwrap())
 }
-fn credential_value_is_secret(value:&str)->bool {
-    !["{{", "<", "$"].iter().any(|p|value.starts_with(p))
-        && !value.chars().all(|c|"_*.-xX#".contains(c))
+fn credential_value_is_secret(value: &str) -> bool {
+    !["{{", "<", "$"].iter().any(|p| value.starts_with(p))
+        && !value.chars().all(|c| "_*.-xX#".contains(c))
 }
 fn cards() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();

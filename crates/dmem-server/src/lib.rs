@@ -9,6 +9,6 @@ mod store;
 mod web;
 mod web_store;
 pub use http::{router, router_with_auth, router_with_services};
-pub use web::WebConfig;
 pub use identity::{AuthConfig, Delivery, EmailSender, ResendEmailSender};
 pub use store::Store;
+pub use web::WebConfig;

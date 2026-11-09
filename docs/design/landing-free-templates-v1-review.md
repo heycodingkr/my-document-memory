@@ -32,4 +32,3 @@ The final middle-page section is isolated in FreeTemplates.svelte with English/K
 Reviewed the actual component, integration, scoped test change, source measurements and official account/plan pages. WAM times are rounded only on the landing; README retains 473.976 / 423.193 seconds and 123 / 106 external tool boundaries. Both surfaces identify the original project and experimental limitations; DMEM measurements remain pending.
 
 Full Svelte diagnostics ended at 0 errors/0 warnings and the production build passed. All 16 selected regression scenarios were validated (15 in the combined run and the corrected English-content case on targeted rerun). Focused QA confirmed both languages, all four viewport widths, keyboard disclosure, safe source links and public-library navigation. Parent inspected returned desktop/mobile screenshots and checked whitespace/source identity. No production activation was performed.
-

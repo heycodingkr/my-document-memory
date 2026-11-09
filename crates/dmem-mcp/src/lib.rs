@@ -2,8 +2,8 @@
 use dmem_client::{DmemClient, recall_path, safe_id, search_path};
 use dmem_contracts::{CreateDocument, CreateTemplate, RecallQuery, SaveDocument};
 use serde_json::{Value, json};
-mod web_tools;
 pub mod bridge;
+mod web_tools;
 pub const MAX_FRAME: usize = 64 * 1024;
 fn schema(properties: Value, required: Vec<&str>) -> Value {
     json!({"type":"object","properties":properties,"required":required,"additionalProperties":false})
@@ -80,7 +80,9 @@ pub async fn handle(client: &DmemClient, message: Value) -> Option<Value> {
     Some(json!({"jsonrpc":"2.0","id":id,"result":result}))
 }
 async fn invoke(client: &DmemClient, name: &str, args: Value) -> Result<Value, String> {
-    if let Some(result)=web_tools::invoke(client,name,args.clone()).await{return result;}
+    if let Some(result) = web_tools::invoke(client, name, args.clone()).await {
+        return result;
+    }
     let obj = args.as_object().ok_or("invalid_input")?;
     let allowed = match name {
         "document_memory_status" | "document_contribution_list" => vec![],

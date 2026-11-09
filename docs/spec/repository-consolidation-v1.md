@@ -15,4 +15,6 @@ Dependency-order atomic goals:
 | 5. Verify frozen integrated tree | 4 | parent | Rust/web/harness/product-smoke logs | execute real commands, inspect failures, retain evidence |
 | 6. Publish and clean merged refs/worktrees/PRs | 5 | parent | pushed main, merged/closed PRs, removed obsolete refs | fetch, compare SHAs, ancestry, clean status and live PR list |
 
+Formatting gate follow-up (#410/#405): reproduce `cargo fmt --all -- --check` and the complete integration `git diff --check` before edits. Route one mechanical Rust formatting pass and removal of redundant final blank lines to the same worker, restricted to this isolated tree. Preserve intentional Markdown hard breaks using explicit backslash line breaks where a changed line would otherwise trip whitespace checking. Parent checks the exact diff, format gate and resulting tests.
+
 Use an expected remote head check before pushing. Preserve or integrate edits arriving after the initial freeze before updating the shared checkout. Do not claim external browser-provider behavior from fixture-only tests.

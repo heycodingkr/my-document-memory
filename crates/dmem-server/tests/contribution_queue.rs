@@ -17,15 +17,33 @@ struct Fixture {
     app: Router,
 }
 
-async fn call(app: &Router, method: &str, path: &str, token: &str, input: Option<Value>) -> (u16, Value) {
-    let mut request = Request::builder().method(method).uri(path).header("Origin", ORIGIN);
+async fn call(
+    app: &Router,
+    method: &str,
+    path: &str,
+    token: &str,
+    input: Option<Value>,
+) -> (u16, Value) {
+    let mut request = Request::builder()
+        .method(method)
+        .uri(path)
+        .header("Origin", ORIGIN);
     if !token.is_empty() {
         request = request.header("Authorization", format!("Bearer {token}"));
     }
-    let response = app.clone().oneshot(request.header("Content-Type", "application/json")
-        .body(input.map_or(Body::empty(), |v| Body::from(v.to_string()))).unwrap()).await.unwrap();
+    let response = app
+        .clone()
+        .oneshot(
+            request
+                .header("Content-Type", "application/json")
+                .body(input.map_or(Body::empty(), |v| Body::from(v.to_string())))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
     let status = response.status().as_u16();
-    let value = serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    let value =
+        serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
     (status, value)
 }
 
@@ -36,12 +54,26 @@ impl Fixture {
         let store = Arc::new(Store::open(&path).unwrap());
         let mut auth = AuthConfig::default();
         auth.admin_token = Some(ADMIN.into());
-        let app = router_with_auth(store, vec![(ALICE.into(), "alice".into())], vec![ORIGIN.into()], None, auth).unwrap();
-        let (status, base) = call(&app, "POST", "/v1/templates", ALICE, Some(json!({
-            "title":"Synthetic queue fixture", "summary":"A synthetic review structure",
-            "form":{"provider":"docx","doc_type":"report","locale":"en-US"},
-            "sections":["Queue assumptions","Queue verification"],"tags":[]
-        }))).await;
+        let app = router_with_auth(
+            store,
+            vec![(ALICE.into(), "alice".into())],
+            vec![ORIGIN.into()],
+            None,
+            auth,
+        )
+        .unwrap();
+        let (status, base) = call(
+            &app,
+            "POST",
+            "/v1/templates",
+            ALICE,
+            Some(json!({
+                "title":"Synthetic queue fixture", "summary":"A synthetic review structure",
+                "form":{"provider":"docx","doc_type":"report","locale":"en-US"},
+                "sections":["Queue assumptions","Queue verification"],"tags":[]
+            })),
+        )
+        .await;
         assert_eq!(status, 200, "{base}");
         let mut db = Connection::open(&path).unwrap();
         let tx = db.transaction().unwrap();
@@ -66,7 +98,11 @@ impl Fixture {
             }
         }
         tx.commit().unwrap();
-        Self { _dir: dir, path, app }
+        Self {
+            _dir: dir,
+            path,
+            app,
+        }
     }
 
     fn expected(&self, status: &str) -> Vec<String> {
@@ -78,8 +114,15 @@ impl Fixture {
             "SELECT id FROM contributions WHERE status=?1 ORDER BY created_at DESC,id ASC"
         };
         let mut stmt = db.prepare(sql).unwrap();
-        let args: Vec<&str> = if status == "all" { vec![] } else { vec![status] };
-        stmt.query_map(rusqlite::params_from_iter(args), |r| r.get(0)).unwrap().collect::<Result<_, _>>().unwrap()
+        let args: Vec<&str> = if status == "all" {
+            vec![]
+        } else {
+            vec![status]
+        };
+        stmt.query_map(rusqlite::params_from_iter(args), |r| r.get(0))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap()
     }
 
     async fn page(&self, query: &str) -> Value {
@@ -90,14 +133,23 @@ impl Fixture {
 }
 
 fn ids(page: &Value) -> Vec<String> {
-    page["items"].as_array().unwrap().iter().map(|v| v["id"].as_str().unwrap().to_string()).collect()
+    page["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|v| v["id"].as_str().unwrap().to_string())
+        .collect()
 }
 
 #[tokio::test]
 async fn pending_filter_precedes_the_hundred_record_limit() {
     let f = Fixture::new(1, 120).await;
     let page = f.page("?status=pending").await;
-    assert_eq!(ids(&page), f.expected("pending"), "older pending contribution must remain discoverable");
+    assert_eq!(
+        ids(&page),
+        f.expected("pending"),
+        "older pending contribution must remain discoverable"
+    );
     assert!(page.get("next_cursor").unwrap().is_null());
 }
 
@@ -109,15 +161,25 @@ async fn keyset_pages_match_independent_order_with_tied_timestamps() {
     let mut sizes = Vec::new();
     loop {
         let mut query = "?status=pending&limit=25".to_string();
-        if let Some(value) = cursor { query.push_str(&format!("&cursor={value}")); }
+        if let Some(value) = cursor {
+            query.push_str(&format!("&cursor={value}"));
+        }
         let page = f.page(&query).await;
         let page_ids = ids(&page);
         assert!(!page_ids.is_empty());
-        assert!(page["items"].as_array().unwrap().iter().all(|v| v["status"] == "pending"));
+        assert!(
+            page["items"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|v| v["status"] == "pending")
+        );
         sizes.push(page_ids.len());
         actual.extend(page_ids);
         cursor = page["next_cursor"].as_str().map(str::to_owned);
-        if cursor.is_none() { break; }
+        if cursor.is_none() {
+            break;
+        }
         assert!(sizes.len() <= 6, "pagination must terminate");
     }
     assert_eq!(actual, f.expected("pending"));
@@ -141,9 +203,16 @@ async fn decision_and_withdrawal_do_not_invalidate_the_cursor_anchor() {
         };
         let (status, _) = call(&f.app, "POST", &path, token, input).await;
         assert_eq!(status, 200);
-        let query = format!("?status=pending&limit=100&cursor={}", first["next_cursor"].as_str().unwrap());
+        let query = format!(
+            "?status=pending&limit=100&cursor={}",
+            first["next_cursor"].as_str().unwrap()
+        );
         let next = f.page(&query).await;
-        let expected: Vec<_> = f.expected("pending").into_iter().filter(|id| !first_ids.contains(id)).collect();
+        let expected: Vec<_> = f
+            .expected("pending")
+            .into_iter()
+            .filter(|id| !first_ids.contains(id))
+            .collect();
         assert_eq!(ids(&next), expected);
     }
 }
@@ -157,7 +226,10 @@ async fn default_and_status_views_remain_bounded_and_compatible() {
     for status in ["all", "pending", "rejected", "approved", "withdrawn"] {
         let page = f.page(&format!("?status={status}&limit=1")).await;
         let expected = f.expected(status);
-        assert_eq!(ids(&page), expected.iter().take(1).cloned().collect::<Vec<_>>());
+        assert_eq!(
+            ids(&page),
+            expected.iter().take(1).cloned().collect::<Vec<_>>()
+        );
         assert_eq!(page["next_cursor"].is_string(), expected.len() > 1);
     }
 }
@@ -168,19 +240,38 @@ async fn invalid_queue_queries_are_rejected_after_administrator_authentication()
     let page = f.page("?status=pending&limit=1").await;
     let cursor = page["next_cursor"].as_str().unwrap();
     let mut queries: Vec<String> = [
-        "?status=unknown", "?limit=0", "?limit=101", "?limit=-1", "?limit=no",
-        "?limit=1&limit=2", "?status=pending&status=all", "?unknown=true",
-        "?cursor=", "?cursor=garbage", "?status=pending&cursor=v1:pending:999999999999999999999999:contrib_x",
+        "?status=unknown",
+        "?limit=0",
+        "?limit=101",
+        "?limit=-1",
+        "?limit=no",
+        "?limit=1&limit=2",
+        "?status=pending&status=all",
+        "?unknown=true",
+        "?cursor=",
+        "?cursor=garbage",
+        "?status=pending&cursor=v1:pending:999999999999999999999999:contrib_x",
         "?status=pending&cursor=v1:pending:1:..",
         "?status=pending&cursor=v2:pending:1:contrib_x",
-    ].iter().map(|s| s.to_string()).collect();
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect();
     queries.push(format!("?status=all&cursor={cursor}"));
     queries.push(format!("?status=pending&cursor={}", "x".repeat(200)));
     for query in queries {
         for (token, expected) in [(ADMIN, 400), (ALICE, 401), ("", 401)] {
-            let (status, error) = call(&f.app, "GET", &format!("{QUEUE}{query}"), token, None).await;
+            let (status, error) =
+                call(&f.app, "GET", &format!("{QUEUE}{query}"), token, None).await;
             assert_eq!(status, expected, "query {query}: {error}");
-            assert_eq!(error["code"], if expected == 400 { "invalid_input" } else { "auth_required" });
+            assert_eq!(
+                error["code"],
+                if expected == 400 {
+                    "invalid_input"
+                } else {
+                    "auth_required"
+                }
+            );
         }
     }
 }

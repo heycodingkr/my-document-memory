@@ -32,7 +32,10 @@ pub(super) fn routes(s: &App) -> Router<App> {
         .route("/auth/logout", axum::routing::post(logout))
         .route("/public/templates", get(public_templates))
         .route("/public/templates/{id}", get(public_template))
-        .route("/public/templates/{id}/origin", get(super::web::public_origin))
+        .route(
+            "/public/templates/{id}/origin",
+            get(super::web::public_origin),
+        )
         .route("/admin/contributions", get(queue))
         .route("/admin/contributions/{id}/review", get(review))
         .route(

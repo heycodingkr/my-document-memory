@@ -1,6 +1,8 @@
 use clap::{Parser, Subcommand, ValueEnum};
 use dmem_client::{DmemClient, contribution_queue_path, recall_path, safe_id, search_path};
-use dmem_contracts::{CreateTemplate, RecallQuery, SaveDocument, WebKind, CopyMode, FormInput, WebImportInput};
+use dmem_contracts::{
+    CopyMode, CreateTemplate, FormInput, RecallQuery, SaveDocument, WebImportInput, WebKind,
+};
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
@@ -28,11 +30,16 @@ enum Decision {
 enum Command {
     /// Forward a public browser MCP on one retained connection and add owned-tab clipping.
     BrowserMcp {
-        #[arg(long)]browser_mcp:PathBuf,
-        #[arg(long="browser-arg",allow_hyphen_values=true)]browser_arg:Vec<String>,
+        #[arg(long)]
+        browser_mcp: PathBuf,
+        #[arg(long = "browser-arg", allow_hyphen_values = true)]
+        browser_arg: Vec<String>,
     },
     /// Search, preview and privately import public document URLs.
-    Web { #[command(subcommand)] command: WebCommand },
+    Web {
+        #[command(subcommand)]
+        command: WebCommand,
+    },
     Status,
     Templates {
         #[arg(default_value = "")]
@@ -150,20 +157,38 @@ enum Command {
 }
 #[derive(Subcommand)]
 enum WebCommand {
-    Search { query:String, #[arg(long)]locale:Option<String>, #[arg(long,default_value_t=5)]limit:usize },
-    Preview { url:String },
-    Import {
-        preview_id:String,
-        #[arg(long="as",default_value="template",value_parser=["template","reference"])]kind:String,
-        #[arg(long)]title:Option<String>,
-        #[arg(long,value_parser=["structure_only","full"])]copy_mode:Option<String>,
-        #[arg(long,requires_all=["doc_type","locale"])]provider:Option<String>,
-        #[arg(long,requires_all=["provider","locale"])]doc_type:Option<String>,
-        #[arg(long,requires_all=["provider","doc_type"])]locale:Option<String>,
-        #[arg(long,requires_all=["provider","doc_type","locale"])]region:Option<String>,
-        #[arg(long,requires_all=["provider","doc_type","locale"])]variant:Option<String>,
+    Search {
+        query: String,
+        #[arg(long)]
+        locale: Option<String>,
+        #[arg(long, default_value_t = 5)]
+        limit: usize,
     },
-    Origin { id:String },
+    Preview {
+        url: String,
+    },
+    Import {
+        preview_id: String,
+        #[arg(long="as",default_value="template",value_parser=["template","reference"])]
+        kind: String,
+        #[arg(long)]
+        title: Option<String>,
+        #[arg(long,value_parser=["structure_only","full"])]
+        copy_mode: Option<String>,
+        #[arg(long,requires_all=["doc_type","locale"])]
+        provider: Option<String>,
+        #[arg(long,requires_all=["provider","locale"])]
+        doc_type: Option<String>,
+        #[arg(long,requires_all=["provider","doc_type"])]
+        locale: Option<String>,
+        #[arg(long,requires_all=["provider","doc_type","locale"])]
+        region: Option<String>,
+        #[arg(long,requires_all=["provider","doc_type","locale"])]
+        variant: Option<String>,
+    },
+    Origin {
+        id: String,
+    },
 }
 fn check(id: &str) -> Result<(), Box<dyn std::error::Error>> {
     if safe_id(id) {
@@ -203,18 +228,81 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         client = client.with_origin(args.origin.as_deref().unwrap_or(&args.url))?;
     }
     let value: Value = match args.command {
-        Command::BrowserMcp{browser_mcp,mut browser_arg}=>{
-            if browser_arg.is_empty(){browser_arg.push("--mcp-server".into());}
-            return dmem_mcp::bridge::serve(&client,browser_mcp,browser_arg,std::env::var("DMEM_CAPTURE_SECRET").ok()).await.map_err(|code|code.into());
-        },
-        Command::Web{command}=>match command {
-            WebCommand::Search{query,locale,limit}=>client.post("/v1/web/search",&json!({"query":query,"locale":locale,"limit":limit})).await?,
-            WebCommand::Preview{url}=>client.post("/v1/web/preview",&json!({"url":url})).await?,
-            WebCommand::Origin{id}=>{if !safe_id(&id){return Err("invalid_input".into());}client.get(&format!("/v1/web/origins/{id}")).await?},
-            WebCommand::Import{preview_id,kind,title,copy_mode,provider,doc_type,locale,region,variant}=>{
-                let form=provider.map(|provider|FormInput{provider,doc_type:doc_type.unwrap_or_default(),locale:locale.unwrap_or_default(),region,variant,page:None});
-                let input=WebImportInput{preview_id,kind:if kind=="template"{WebKind::Template}else{WebKind::Reference},title,form,copy_mode:copy_mode.map(|s|if s=="full"{CopyMode::Full}else{CopyMode::StructureOnly})};
-                client.post("/v1/web/import",&input).await?
+        Command::BrowserMcp {
+            browser_mcp,
+            mut browser_arg,
+        } => {
+            if browser_arg.is_empty() {
+                browser_arg.push("--mcp-server".into());
+            }
+            return dmem_mcp::bridge::serve(
+                &client,
+                browser_mcp,
+                browser_arg,
+                std::env::var("DMEM_CAPTURE_SECRET").ok(),
+            )
+            .await
+            .map_err(|code| code.into());
+        }
+        Command::Web { command } => match command {
+            WebCommand::Search {
+                query,
+                locale,
+                limit,
+            } => {
+                client
+                    .post(
+                        "/v1/web/search",
+                        &json!({"query":query,"locale":locale,"limit":limit}),
+                    )
+                    .await?
+            }
+            WebCommand::Preview { url } => {
+                client.post("/v1/web/preview", &json!({"url":url})).await?
+            }
+            WebCommand::Origin { id } => {
+                if !safe_id(&id) {
+                    return Err("invalid_input".into());
+                }
+                client.get(&format!("/v1/web/origins/{id}")).await?
+            }
+            WebCommand::Import {
+                preview_id,
+                kind,
+                title,
+                copy_mode,
+                provider,
+                doc_type,
+                locale,
+                region,
+                variant,
+            } => {
+                let form = provider.map(|provider| FormInput {
+                    provider,
+                    doc_type: doc_type.unwrap_or_default(),
+                    locale: locale.unwrap_or_default(),
+                    region,
+                    variant,
+                    page: None,
+                });
+                let input = WebImportInput {
+                    preview_id,
+                    kind: if kind == "template" {
+                        WebKind::Template
+                    } else {
+                        WebKind::Reference
+                    },
+                    title,
+                    form,
+                    copy_mode: copy_mode.map(|s| {
+                        if s == "full" {
+                            CopyMode::Full
+                        } else {
+                            CopyMode::StructureOnly
+                        }
+                    }),
+                };
+                client.post("/v1/web/import", &input).await?
             }
         },
         Command::Status => client.get("/v1/status").await?,
@@ -314,9 +402,15 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .await?
         }
-        Command::ReviewQueue { status, cursor, limit } => {
-            client.get(&contribution_queue_path(&status, cursor.as_deref(), limit)).await?
-        },
+        Command::ReviewQueue {
+            status,
+            cursor,
+            limit,
+        } => {
+            client
+                .get(&contribution_queue_path(&status, cursor.as_deref(), limit))
+                .await?
+        }
         Command::Review { contribution_id } => {
             check(&contribution_id)?;
             client

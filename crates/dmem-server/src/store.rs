@@ -143,9 +143,14 @@ impl Store {
         load(&*self.db.lock().map_err(internal)?, owner, "template", id)
     }
     pub fn create_template(&self, owner: &str, input: CreateTemplate) -> Result<Template, Fault> {
-        self.create_template_with_web_origin(owner,input,None)
+        self.create_template_with_web_origin(owner, input, None)
     }
-    fn create_template_with_web_origin(&self,owner:&str,input:CreateTemplate,web_origin:Option<WebOrigin>)->Result<Template,Fault>{
+    fn create_template_with_web_origin(
+        &self,
+        owner: &str,
+        input: CreateTemplate,
+        web_origin: Option<WebOrigin>,
+    ) -> Result<Template, Fault> {
         validate_title(&input.title)?;
         if input.summary.chars().count() > 600
             || input.sections.is_empty()
@@ -168,21 +173,27 @@ impl Store {
             sections: input.sections,
             tags: input.tags,
             author: "My library".into(),
-            license: web_origin.as_ref().map(|o|o.license.clone()).unwrap_or_else(||"All rights reserved".into()),
+            license: web_origin
+                .as_ref()
+                .map(|o| o.license.clone())
+                .unwrap_or_else(|| "All rights reserved".into()),
             visibility: Visibility::Private,
             origin: None,
             attributions: vec![],
         };
-        let mut db=self.db.lock().map_err(internal)?;
-        let tx=db.transaction().map_err(internal)?;
-        insert(&tx,owner,"template",&template.id,&template)?;
-        if let Some(mut value)=web_origin {value.record_id=template.id.clone();crate::web_store::save_origin(&tx,owner,&value)?;}
+        let mut db = self.db.lock().map_err(internal)?;
+        let tx = db.transaction().map_err(internal)?;
+        insert(&tx, owner, "template", &template.id, &template)?;
+        if let Some(mut value) = web_origin {
+            value.record_id = template.id.clone();
+            crate::web_store::save_origin(&tx, owner, &value)?;
+        }
         tx.commit().map_err(internal)?;
         Ok(template)
     }
     pub fn copy_template(&self, owner: &str, template_id: &str) -> Result<Template, Fault> {
         let mut connection = self.db.lock().map_err(internal)?;
-        let db=connection.transaction().map_err(internal)?;
+        let db = connection.transaction().map_err(internal)?;
         let original: Template = load(&db, owner, "template", template_id)?;
         if original.visibility == Visibility::Public
             && !["CC0-1.0", "CC-BY-4.0"].contains(&original.license.as_str())
@@ -230,7 +241,7 @@ impl Store {
             license: original.license,
         });
         insert(&db, owner, "template", &copy.id, &copy)?;
-        crate::web_store::clone_origin(&db,owner,template_id,&copy.id)?;
+        crate::web_store::clone_origin(&db, owner, template_id, &copy.id)?;
         db.commit().map_err(internal)?;
         Ok(copy)
     }
@@ -330,7 +341,11 @@ impl Store {
         for s in &mut sections {
             *s = s.chars().take(60).collect()
         }
-        let web_origin=match self.web_origin(owner,source_id) {Ok(value)=>Some(value),Err(Fault::NotFound)=>None,Err(e)=>return Err(e)};
+        let web_origin = match self.web_origin(owner, source_id) {
+            Ok(value) => Some(value),
+            Err(Fault::NotFound) => None,
+            Err(e) => return Err(e),
+        };
         self.create_template_with_web_origin(
             owner,
             CreateTemplate {

@@ -44,4 +44,3 @@ The English-content regression previously rejected the intentionally Korean-labe
 Evidence: `.artifacts/free-templates/{check.log,component-check.log,build.log,final-regression.log,regression-rerun.log,qa.log,qa/results.json,final-source-sha256.json}`. Source and pre-fix snapshots are under `.artifacts/free-templates/baseline/`.
 
 Reused the existing detached Vite server, PID 21195, at http://127.0.0.1:5174. Its existing log is `/private/var/folders/hn/4d_172w53_58g8kg255mlw_w0000gn/T/meshcode-detached-51535-1794191722296.log`. No new development server was started. Production activation was outside this task; the reviewed additions are in local source and the local production build.
-

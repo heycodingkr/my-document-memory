@@ -2,7 +2,7 @@
 
 상태: v2 완료 · 2026-11-09 · 요청: "문제 → 명령 → 시연 동작 → 공유를 통한 시간 절감", 구글독스·구글슬라이드·네이버 블로그를 Arise Browser에서 처리하는 4분할 화면. 실제 소재는 **각각 따로 녹화한 실행을 합성**한다. 재개 명세·원인·검증 기록: [`hackathon-resume.md`](hackathon-resume.md).
 
-기반: [`demo-video.md`](demo-video.md)(2:42 컨셉 영상)의 렌더 도구와 클레임 원장 규칙, 형제 프로젝트 `web-agentic-memory`(WAM) 영상의 구조(문제 → 실제 실행을 빠르게 → 공유 → 파급 효과 가정 → 마무리)와 실제 녹화 합성 방식  
+기반: [`demo-video.md`](demo-video.md)(2:42 컨셉 영상)의 렌더 도구와 클레임 원장 규칙, 형제 프로젝트 `web-agentic-memory`(WAM) 영상의 구조(문제 → 실제 실행을 빠르게 → 공유 → 파급 효과 가정 → 마무리)와 실제 녹화 합성 방식\
 렌더 도구: `demo/video/build.mjs --cut hackathon`, 음성: `demo/video/make-voice.py --cut hackathon`
 
 ## 한눈에

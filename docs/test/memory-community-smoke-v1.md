@@ -92,4 +92,3 @@ Arise additionally requires the actual configured browser; Playwright results al
 ### Kept local preview
 
 http://127.0.0.1:3856/ — detached PID85846; synthetic DB `target/community-arise-20261109/library.sqlite3`. Log: `/var/folders/hn/4d_172w53_58g8kg255mlw_w0000gn/T/meshcode-detached-51535-1794195760518.log`. Only owned older preview processes were stopped for binary updates; the final preview outlives the turn.
-

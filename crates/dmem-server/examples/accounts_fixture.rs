@@ -55,10 +55,12 @@ async fn main() {
     let store = Arc::new(Store::open(&db).unwrap());
     let connection = rusqlite::Connection::open(&db).unwrap();
     for owner in ["local", "bob"] {
-        connection.execute(
-            "INSERT OR IGNORE INTO accounts(id,email,created_at) VALUES(?1,?2,1)",
-            rusqlite::params![owner, format!("fixture-{owner}@example.test")],
-        ).unwrap();
+        connection
+            .execute(
+                "INSERT OR IGNORE INTO accounts(id,email,created_at) VALUES(?1,?2,1)",
+                rusqlite::params![owner, format!("fixture-{owner}@example.test")],
+            )
+            .unwrap();
     }
     drop(connection);
     let app = router_with_auth(

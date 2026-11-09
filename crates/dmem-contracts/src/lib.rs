@@ -293,7 +293,10 @@ impl Fault {
             Self::PayloadTooLarge => 413,
             Self::UnsupportedFormat => 415,
             Self::ReviewBlocked => 422,
-            Self::InvalidForm(_) | Self::UrlRejected(_) | Self::ExtractEmpty(_) | Self::FetchBlocked(_) => 422,
+            Self::InvalidForm(_)
+            | Self::UrlRejected(_)
+            | Self::ExtractEmpty(_)
+            | Self::FetchBlocked(_) => 422,
             Self::FetchFailed(_) => 502,
             Self::SearchUnavailable => 503,
             Self::Internal => 500,
@@ -320,14 +323,20 @@ impl Fault {
             Self::ServerUnavailable => "Server unavailable.",
             Self::RateLimited => "Too many requests.",
             Self::HandleUnavailable => "This handle is unavailable.",
-            Self::FetchBlocked(_) => "Cannot fetch this page. Try a file upload or an owned browser tab.",
+            Self::FetchBlocked(_) => {
+                "Cannot fetch this page. Try a file upload or an owned browser tab."
+            }
             Self::FetchFailed(_) => "The remote page could not be read.",
-            Self::SearchUnavailable => "Web search is not configured. Paste a document URL instead.",
+            Self::SearchUnavailable => {
+                "Web search is not configured. Paste a document URL instead."
+            }
         };
         let reason = match self {
-            Self::InvalidForm(r) | Self::UrlRejected(r) | Self::ExtractEmpty(r) | Self::FetchBlocked(r) | Self::FetchFailed(r) => {
-                Some((*r).into())
-            }
+            Self::InvalidForm(r)
+            | Self::UrlRejected(r)
+            | Self::ExtractEmpty(r)
+            | Self::FetchBlocked(r)
+            | Self::FetchFailed(r) => Some((*r).into()),
             _ => None,
         };
         ApiError {

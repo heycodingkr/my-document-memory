@@ -44,4 +44,3 @@ runtime-v1은 로컬 `DMEM_TOKEN` 하나로 소유자 한 명을 인증하며 �
 | F-EMAIL-07 | 기기 연결 분리 | `dmem link` 로그인 뒤 명시적 기기 승인이 있어야 연결된다. | EMAIL-08 |
 | F-EMAIL-08 | 오류·개인정보 | 주소·proof·코드·token을 로그/응답/URL에 노출하지 않는다. | EMAIL-09 |
 | F-EMAIL-09 | 세션 경계 | 다른 이메일, local owner, 계정 존재 여부가 자동 연결·노출되지 않는다. | EMAIL-10 |
-

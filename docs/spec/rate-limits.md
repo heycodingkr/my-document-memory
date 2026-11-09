@@ -47,4 +47,3 @@
 | F-RL-07 | 저장소 장애·포화 | 제한 상태와 503 서비스 상태가 구별되고 fail-closed 한다. | RL-10 |
 | F-RL-08 | 사용량·한도 조회 | 소유자만 자기 집계를 보며 별도 status quota는 남긴다. | RL-11 |
 | F-RL-09 | 제한 키 개인정보 | 원 IP·요청별 URL/body가 남지 않고 계정 ID만 short-lived bucket에 쓴다. | RL-12 |
-

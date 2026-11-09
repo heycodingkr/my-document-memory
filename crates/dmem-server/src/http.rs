@@ -88,12 +88,23 @@ pub fn router_with_auth(
     web_dir: Option<PathBuf>,
     auth: AuthConfig,
 ) -> Result<Router, Fault> {
-    router_with_services(store, credentials, origins, web_dir, auth, crate::WebConfig::default())
+    router_with_services(
+        store,
+        credentials,
+        origins,
+        web_dir,
+        auth,
+        crate::WebConfig::default(),
+    )
 }
 pub fn router_with_services(
-    store: Arc<Store>, credentials: Vec<(String,String)>, origins: Vec<String>,
-    web_dir: Option<PathBuf>, auth: AuthConfig, web: crate::WebConfig,
-) -> Result<Router,Fault> {
+    store: Arc<Store>,
+    credentials: Vec<(String, String)>,
+    origins: Vec<String>,
+    web_dir: Option<PathBuf>,
+    auth: AuthConfig,
+    web: crate::WebConfig,
+) -> Result<Router, Fault> {
     if auth
         .admin_token
         .as_ref()
