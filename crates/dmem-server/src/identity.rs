@@ -145,10 +145,14 @@ impl AuthConfig {
         &mut self,
         emails: impl IntoIterator<Item = String>,
     ) -> Result<(), Fault> {
-        self.admin_emails = emails
+        let emails = emails
             .into_iter()
             .map(|email| normalize_email(&email))
             .collect::<Result<HashSet<_>, _>>()?;
+        if emails.iter().any(|email| email.contains('*')) {
+            return Err(Fault::InvalidInput);
+        }
+        self.admin_emails = emails;
         Ok(())
     }
     pub(crate) fn now(&self) -> u64 {
@@ -199,6 +203,23 @@ pub(crate) fn normalize_email(value: &str) -> Result<String, Fault> {
         return Err(Fault::InvalidInput);
     }
     Ok(value)
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn wildcard_admin_email_is_rejected_without_replacing_valid_allowlist() {
+        let mut auth = AuthConfig::default();
+        auth.set_admin_emails(["operator@example.test".to_owned()])
+            .unwrap();
+
+        assert_eq!(
+            auth.set_admin_emails(["*@example.test".to_owned()]),
+            Err(Fault::InvalidInput)
+        );
+        assert!(auth.admin_emails.contains("operator@example.test"));
+    }
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct Account {
