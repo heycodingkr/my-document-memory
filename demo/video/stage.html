@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Document Memory — demo day video stage</title>
+<!--
+  A pure function of time: window.__render(t) draws second t of the video. build.mjs loads this page in Chrome,
+  calls __render for every frame, takes a screenshot and pipes it to ffmpeg. Nothing here depends on machine speed.
+  ?lang=en|ko picks the language (English is the default). Scene windows and captions come from script.json (single source).
+  Every product screen is a CONCEPT drawing of the flow in docs/spec/overview.md, with sample data; none is a
+  recording. See docs/demo/demo-video.md (claims ledger) before changing any word or number.
+-->
+<style>
+@font-face { font-family: Manrope; src: url('/demo/video/fonts/manrope-latin.woff2') format('woff2'); font-weight: 200 800; }
+@font-face { font-family: 'DM Sans'; src: url('/demo/video/fonts/dm-sans-latin.woff2') format('woff2'); font-weight: 100 1000; }
+@font-face { font-family: 'DM Mono'; src: url('/demo/video/fonts/dm-mono-latin-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'DM Mono'; src: url('/demo/video/fonts/dm-mono-latin-500.woff2') format('woff2'); font-weight: 500; }
+:root { --paper: #f5f3ec; --card: #fffef9; --ink: #13261f; --deep: #112c23; --green: #254b3c; --lime: #d8ef78; --line: #d7e0d1; --muted: #566a5f; --coral: #e0714f; --soft: #e8f0da; --amber: #b9791a;
+  --sans: 'DM Sans', 'Apple SD Gothic Neo', 'Nanum Gothic', system-ui, sans-serif;
+  --head: Manrope, 'Apple SD Gothic Neo', 'Nanum Gothic', system-ui, sans-serif;
+  --mono: 'DM Mono', 'Apple SD Gothic Neo', 'Nanum Gothic', ui-monospace, monospace; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+html[lang=ko] body { word-break: keep-all; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+#scenes { position: absolute; inset: 0; z-index: 1; }
+.scene { position: absolute; inset: 0; opacity: 0; display: none; }
+.scene.dark { background: var(--deep); color: #f3f1e8; }
+.abs { position: absolute; }
+.h { font-family: var(--head); font-weight: 800; letter-spacing: -.04em; line-height: 1.04; }
+html[lang=ko] .h { letter-spacing: -.03em; line-height: 1.16; }
+.mono { font-family: var(--mono); }
+.muted { color: var(--muted); }
+.dark .muted { color: #b9cabb; }
+.chip { display: inline-block; padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: 22px; line-height: 1.25; background: var(--soft); color: var(--green); border: 2px solid #c9d8b8; white-space: nowrap; }
+.chip.dark { background: var(--deep); color: var(--lime); border-color: var(--deep); }
+.chip.lime { background: var(--lime); color: var(--deep); border-color: #bfd95a; }
+.chip.coral { background: #fbe4dc; color: #a8442a; border-color: #f0bfae; }
+.chip.amber { background: #f6e7c8; color: #7a4f0b; border-color: #e6cd96; }
+.chip.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+.dark .chip { background: rgba(255,255,255,.1); color: #e6efe0; border-color: rgba(255,255,255,.2); }
+.dark .chip.lime { background: var(--lime); color: var(--deep); border-color: var(--lime); }
+.card { position: absolute; background: var(--card); border: 2px solid var(--line); border-radius: 28px; box-shadow: 0 24px 60px rgba(19, 47, 40, .10); }
+.dark .card { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16); box-shadow: none; }
+.ic { display: inline-block; flex: none; }
+.ic svg { width: 100%; height: 100%; display: block; }
+.label { font: 500 17px var(--mono); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.btn { display: inline-block; padding: 12px 28px; border-radius: 14px; font: 700 24px var(--sans); background: var(--lime); color: var(--deep); border: 2px solid #bfd95a; white-space: nowrap; }
+.btn.ghost { background: transparent; color: var(--green); border-color: var(--line); }
+.field { position: absolute; height: 54px; border-radius: 12px; background: #fff; border: 2px solid var(--line); padding: 0 18px; line-height: 50px; font-size: 24px; font-weight: 600; white-space: nowrap; overflow: hidden; }
+.row { position: absolute; display: flex; align-items: center; white-space: nowrap; }
+.bal { text-wrap: balance; }
+.hole { position: absolute; background: #0b1814; border: 2px solid #1f3a30; border-radius: 14px; box-shadow: 0 24px 60px rgba(19, 47, 40, .20); }   /* where build.mjs composites a real clip */
+.src { display: inline-block; font: 500 14px var(--mono); background: var(--lime); color: var(--deep); border-radius: 6px; padding: 1px 6px; margin-left: 4px; vertical-align: 5px; line-height: 1.3; }
+.card > .src, #logo .src { vertical-align: 0; }
+#logo { position: absolute; left: 72px; top: 36px; display: flex; align-items: center; gap: 14px; z-index: 5; font: 800 31px var(--head); letter-spacing: -.04em; color: var(--ink); opacity: 0; }
+#logo svg { width: 46px; height: 46px; }
+.g-bg { fill: var(--green); } .g-page { fill: var(--card); } .g-fold { fill: var(--lime); } .g-line { fill: var(--green); } .g-dot { fill: var(--lime); stroke: var(--green); stroke-width: 2.4; }
+.dark-logo .g-bg, #logo.dark .g-bg { fill: var(--lime); } .dark-logo .g-page, #logo.dark .g-page { fill: var(--deep); } .dark-logo .g-fold, #logo.dark .g-fold { fill: var(--lime); }
+.dark-logo .g-line, #logo.dark .g-line { fill: var(--lime); } .dark-logo .g-dot, #logo.dark .g-dot { fill: var(--deep); stroke: var(--lime); }
+#logo.dark { color: #f3f1e8; }
+#badge { position: absolute; right: 72px; top: 44px; z-index: 5; padding: 8px 20px; border-radius: 999px; font: 700 22px var(--mono); letter-spacing: .04em; background: var(--lime); color: var(--deep); opacity: 0; white-space: nowrap; }
+#badge.history { background: #efe6cf; color: #6b5524; }
+#badge.illus { background: #e3e9dd; color: #3d5247; }
+#cap { position: absolute; z-index: 6; left: 150px; right: 150px; bottom: 56px; padding: 20px 40px; border-radius: 18px; background: rgba(17, 44, 35, .94); color: #fff; font: 600 40px/1.28 var(--sans); text-align: center; opacity: 0; }
+#cap.ondark { background: rgba(255, 255, 255, .14); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="logo"></div>
+  <div id="badge"></div>
+  <div id="scenes"></div>
+  <div id="cap"></div>
+</div>
+<script src="/demo/video/stage/core.js"></script>
+<script src="/demo/video/stage/scenes-a.js"></script>
+<script src="/demo/video/stage/scenes-b.js"></script>
+<script src="/demo/video/stage/scenes-c.js"></script>
+<script src="/demo/video/stage/scenes-d.js"></script>
+<script src="/demo/video/stage/main.js"></script>
+</body>
+</html>

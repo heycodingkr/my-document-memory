@@ -1,0 +1,324 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "resume",
+      "family": "document",
+      "labels": {
+        "en": "resume",
+        "ko": "이력서"
+      },
+      "aliases": [
+        {
+          "value": "이력서"
+        },
+        {
+          "value": "resume"
+        },
+        {
+          "value": "cv",
+          "variant": "cv"
+        },
+        {
+          "value": "履歴書",
+          "variant": "jp_rirekisho"
+        }
+      ]
+    },
+    {
+      "id": "cover_letter",
+      "family": "document",
+      "labels": {
+        "en": "cover letter",
+        "ko": "자기소개서"
+      },
+      "aliases": [
+        {
+          "value": "자기소개서"
+        },
+        {
+          "value": "cover letter"
+        }
+      ]
+    },
+    {
+      "id": "invoice",
+      "family": "document",
+      "labels": {
+        "en": "invoice",
+        "ko": "인보이스"
+      },
+      "aliases": [
+        {
+          "value": "인보이스"
+        },
+        {
+          "value": "청구서"
+        },
+        {
+          "value": "세금계산서",
+          "variant": "kr_tax_invoice"
+        },
+        {
+          "value": "適格請求書",
+          "variant": "jp_qualified"
+        }
+      ]
+    },
+    {
+      "id": "quote",
+      "family": "document",
+      "labels": {
+        "en": "quote",
+        "ko": "견적서"
+      },
+      "aliases": [
+        {
+          "value": "견적서"
+        },
+        {
+          "value": "見積書"
+        },
+        {
+          "value": "angebot"
+        }
+      ]
+    },
+    {
+      "id": "contract",
+      "family": "document",
+      "labels": {
+        "en": "contract",
+        "ko": "계약서"
+      },
+      "aliases": [
+        {
+          "value": "계약서"
+        }
+      ]
+    },
+    {
+      "id": "nda",
+      "family": "document",
+      "labels": {
+        "en": "nda",
+        "ko": "비밀유지계약"
+      },
+      "aliases": [
+        {
+          "value": "비밀유지계약"
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "family": "document",
+      "labels": {
+        "en": "report",
+        "ko": "보고서"
+      },
+      "aliases": [
+        {
+          "value": "보고서"
+        },
+        {
+          "value": "업무일지"
+        },
+        {
+          "value": "주간 업무보고"
+        }
+      ]
+    },
+    {
+      "id": "proposal",
+      "family": "document",
+      "labels": {
+        "en": "proposal",
+        "ko": "제안서"
+      },
+      "aliases": [
+        {
+          "value": "제안서"
+        }
+      ]
+    },
+    {
+      "id": "meeting_minutes",
+      "family": "document",
+      "labels": {
+        "en": "meeting minutes",
+        "ko": "회의록"
+      },
+      "aliases": [
+        {
+          "value": "회의록"
+        },
+        {
+          "value": "議事録"
+        }
+      ]
+    },
+    {
+      "id": "business_plan",
+      "family": "document",
+      "labels": {
+        "en": "business plan",
+        "ko": "사업계획서"
+      },
+      "aliases": [
+        {
+          "value": "사업계획서"
+        }
+      ]
+    },
+    {
+      "id": "press_release",
+      "family": "document",
+      "labels": {
+        "en": "press release",
+        "ko": "보도자료"
+      },
+      "aliases": [
+        {
+          "value": "보도자료"
+        }
+      ]
+    },
+    {
+      "id": "memo",
+      "family": "document",
+      "labels": {
+        "en": "memo",
+        "ko": "메모"
+      },
+      "aliases": [
+        {
+          "value": "메모"
+        }
+      ]
+    },
+    {
+      "id": "official_letter",
+      "family": "document",
+      "labels": {
+        "en": "official letter",
+        "ko": "공문"
+      },
+      "aliases": [
+        {
+          "value": "공문"
+        }
+      ]
+    },
+    {
+      "id": "lesson_plan",
+      "family": "document",
+      "labels": {
+        "en": "lesson plan",
+        "ko": "수업지도안"
+      },
+      "aliases": [
+        {
+          "value": "수업지도안"
+        },
+        {
+          "value": "교안"
+        }
+      ]
+    },
+    {
+      "id": "pitch_deck",
+      "family": "deck",
+      "labels": {
+        "en": "pitch deck",
+        "ko": "피치덱"
+      },
+      "aliases": [
+        {
+          "value": "피치덱"
+        },
+        {
+          "value": "IR"
+        }
+      ]
+    },
+    {
+      "id": "report_deck",
+      "family": "deck",
+      "labels": {
+        "en": "report deck",
+        "ko": "보고 슬라이드"
+      },
+      "aliases": [
+        {
+          "value": "보고 슬라이드"
+        }
+      ]
+    },
+    {
+      "id": "proposal_deck",
+      "family": "deck",
+      "labels": {
+        "en": "proposal deck",
+        "ko": "제안 슬라이드"
+      },
+      "aliases": [
+        {
+          "value": "제안 슬라이드"
+        }
+      ]
+    },
+    {
+      "id": "lesson_deck",
+      "family": "deck",
+      "labels": {
+        "en": "lesson deck",
+        "ko": "교육 슬라이드"
+      },
+      "aliases": [
+        {
+          "value": "교육 슬라이드"
+        }
+      ]
+    },
+    {
+      "id": "budget_sheet",
+      "family": "sheet",
+      "labels": {
+        "en": "budget sheet",
+        "ko": "예산표"
+      },
+      "aliases": [
+        {
+          "value": "예산표"
+        }
+      ]
+    },
+    {
+      "id": "invoice_sheet",
+      "family": "sheet",
+      "labels": {
+        "en": "invoice sheet",
+        "ko": "청구 시트"
+      },
+      "aliases": [
+        {
+          "value": "청구 시트"
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "family": null,
+      "labels": {
+        "en": "other",
+        "ko": "기타"
+      },
+      "aliases": [
+        {
+          "value": "기타"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "google_docs",
+      "family": "document",
+      "extensions": [],
+      "hosts": [
+        "docs.google.com"
+      ]
+    },
+    {
+      "id": "google_slides",
+      "family": "deck",
+      "extensions": [],
+      "hosts": [
+        "docs.google.com"
+      ]
+    },
+    {
+      "id": "google_sheets",
+      "family": "sheet",
+      "extensions": [],
+      "hosts": [
+        "docs.google.com"
+      ]
+    },
+    {
+      "id": "notion",
+      "family": "document",
+      "extensions": [],
+      "hosts": [
+        "notion.so",
+        "www.notion.so",
+        "notion.site"
+      ]
+    },
+    {
+      "id": "docx",
+      "family": "document",
+      "extensions": [
+        ".docx"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "pptx",
+      "family": "deck",
+      "extensions": [
+        ".pptx"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "xlsx",
+      "family": "sheet",
+      "extensions": [
+        ".xlsx"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "pdf",
+      "family": "document",
+      "extensions": [
+        ".pdf"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "markdown",
+      "family": "document",
+      "extensions": [
+        ".md",
+        ".markdown"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "txt",
+      "family": "document",
+      "extensions": [
+        ".txt"
+      ],
+      "hosts": []
+    },
+    {
+      "id": "html",
+      "family": "document",
+      "extensions": [],
+      "hosts": []
+    },
+    {
+      "id": "other",
+      "family": "document",
+      "extensions": [],
+      "hosts": []
+    }
+  ]
+}

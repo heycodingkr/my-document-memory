@@ -1,0 +1,53 @@
+{
+  "about": "Single source for the 90 s hackathon cut: scene windows, burned-in captions (cap), voice-over text (vo, defaults to cap) and the footage placement. build.mjs --cut hackathon, make-voice.py --cut hackathon, stage.html and hackathon.test.mjs all read this file. Spec and claims ledger: docs/demo/hackathon-90s.md. Times are video seconds.",
+  "total_s": 90,
+  "poster_s": 50,
+  "scenes": {
+    "problem": { "start": 0, "end": 15 },
+    "command": { "start": 15, "end": 28, "dark": true },
+    "agents": { "start": 28, "end": 62, "dark": true },
+    "share": { "start": 62, "end": 75 },
+    "saved": { "start": 75, "end": 86, "dark": true },
+    "close": { "start": 86, "end": 90, "dark": true }
+  },
+  "voice": {
+    "en": {
+      "name": "Eric",
+      "voice_id": "cjVigY5qzO86Huf0OWal",
+      "model_id": "eleven_multilingual_v2",
+      "settings": { "stability": 0.55, "similarity_boost": 0.8, "style": 0.15 }
+    }
+  },
+  "beats": [
+    { "id": "h01", "scene": "problem", "start": 0.6, "end": 4.6, "en": { "cap": "Every document starts from zero." } },
+    { "id": "h02", "scene": "problem", "start": 5.0, "end": 10.2, "en": { "cap": "Find a format. Plan the outline. Gather sources. Fix the style." } },
+    { "id": "h03", "scene": "problem", "start": 10.6, "end": 14.6, "en": { "cap": "Then explain all of it to your AI. Again." } },
+    { "id": "h04", "scene": "command", "start": 15.4, "end": 19.0, "en": { "cap": "One sentence. Three documents. Three websites." } },
+    { "id": "h05", "scene": "command", "start": 19.4, "end": 23.6, "en": { "cap": "In Arise Browser, an agent works on each one." } },
+    { "id": "h06", "scene": "command", "start": 24.0, "end": 27.7, "en": { "cap": "But first, it asks Document Memory." } },
+    { "id": "h07", "scene": "agents", "start": 28.5, "end": 33.0, "en": { "cap": "Three agents. Three windows. At the same time." } },
+    { "id": "h08", "scene": "agents", "start": 33.4, "end": 39.4, "en": { "cap": "Each asks for the format, the sources and the rules." } },
+    { "id": "h09", "scene": "agents", "start": 39.8, "end": 46.6, "en": { "cap": "It returns structure, citations, and open questions.", "vo": "It returns the structure, the citations, and a flag on anything still unconfirmed." } },
+    { "id": "h10", "scene": "agents", "start": 47.0, "end": 53.6, "en": { "cap": "So they write instead of guessing.", "vo": "So they write instead of guessing. The Slides window is a real run, fast-forwarded." } },
+    { "id": "h11", "scene": "agents", "start": 54.4, "end": 61.4, "en": { "cap": "Docs, deck and post. Ready for your review.", "vo": "A one-pager, a ten-slide deck, and a blog post, ready for your review." } },
+    { "id": "h12", "scene": "share", "start": 62.4, "end": 69.2, "en": { "cap": "Templates and sources live in a shared library.", "vo": "Templates, references and rules live in a shared library, with author, version and license attached." } },
+    { "id": "h13", "scene": "share", "start": 69.6, "end": 74.6, "en": { "cap": "Copy one, and your agent starts from good work.", "vo": "Copy one, and your agent starts from someone else's good work." } },
+    { "id": "h14", "scene": "saved", "start": 75.4, "end": 77.6, "en": { "cap": "Every reuse skips the setup." } },
+    { "id": "h15", "scene": "saved", "start": 78.0, "end": 85.6, "en": { "cap": "Ten minutes saved, a thousand reuses: about 167 hours.", "vo": "Say each reuse saves ten minutes. A thousand reuses: about 167 hours. A what-if, not a measurement." } },
+    { "id": "h16", "scene": "close", "start": 86.3, "end": 89.7, "en": { "cap": "Share the memory. Save the time.", "vo": "My Document Memory. Share the memory. Save the time." } }
+  ],
+  "footage": {
+    "note": "Files are relative to demo/out/. speed is the playback factor in the video; 'from'/'to' are video seconds. Product clips are scripted clicks on the real app (capture-product.mjs); the Slides clip is a real agent run from the WAM project (prep-slides.mjs).",
+    "slides": { "file": "footage/slides-muse-x45.mp4", "speed": 45, "src_from": 73, "src_to": 1496, "from": 29.2 },
+    "memory_app": { "file": "footage/product/create-draft.mp4", "speed": 1.5, "src_from": 10.1, "from": 40.0 },
+    "share_public": { "file": "footage/product/public-memories.mp4", "speed": 1.7, "src_from": 1.5, "from": 62.5 },
+    "share_copy": { "file": "footage/product/library-preview.mp4", "speed": 1.8, "src_from": 7.0, "from": 69.6 }
+  },
+  "ledger": {
+    "mcp_calls": 8,
+    "mcp_tools": 7,
+    "whatif_minutes": 10,
+    "whatif_reuses": 1000,
+    "whatif_hours": 167
+  }
+}

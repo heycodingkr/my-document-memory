@@ -1,0 +1,19 @@
+# BEGIN MY DOCUMENT MEMORY
+mydocumentmemory.com {
+	import direct_tls
+	import rate_limit_per_ip
+	encode zstd gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		X-Robots-Tag "noindex, nofollow"
+		Cache-Control no-store
+	}
+	reverse_proxy 127.0.0.1:3848
+}
+www.mydocumentmemory.com {
+	import direct_tls
+	redir https://mydocumentmemory.com{uri} permanent
+}
+# END MY DOCUMENT MEMORY

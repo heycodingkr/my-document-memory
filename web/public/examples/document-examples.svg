@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1200 3780" role="img" aria-labelledby="examples-title examples-description">
+  <title id="examples-title">Examples of documents made with AI</title>
+  <desc id="examples-description">Illustrative weekly report, project presentation and team worklog. All names, numbers and content are sample data.</desc>
+  <defs>
+    <symbol id="report-art" viewBox="0 0 1000 1320">
+      <g font-family="Arial, Helvetica, sans-serif" fill="#263e32">
+        <rect width="1000" height="1320" fill="#edf1e7"/>
+        <rect x="54" y="48" width="916" height="1246" rx="10" fill="#d9e1d1"/>
+        <rect x="24" y="24" width="936" height="1260" rx="10" fill="#fffef9" stroke="#dce3d8" stroke-width="2"/>
+        <text x="82" y="94" font-size="17" letter-spacing="3" fill="#73816c">PRODUCT / WEEKLY UPDATE</text>
+        <text x="902" y="94" text-anchor="end" font-size="15" letter-spacing="2" fill="#73816c">EXAMPLE</text>
+        <text x="82" y="180" font-size="66" font-weight="600" letter-spacing="-3">Weekly product</text>
+        <text x="82" y="252" font-size="66" font-weight="600" letter-spacing="-3">report</text>
+        <text x="82" y="306" font-size="23" fill="#788570">Week 12 / Sample product team</text>
+        <rect x="690" y="276" width="212" height="43" rx="21" fill="#e9f0de"/>
+        <text x="796" y="304" text-anchor="middle" font-size="16" font-weight="600" fill="#5f7950">FOR TEAM REVIEW</text>
+        <path d="M82 350H902" stroke="#dce3d8" stroke-width="2"/>
+        <text x="82" y="395" font-size="17" letter-spacing="2" fill="#73816c">THE SHORT VERSION</text>
+        <text x="82" y="442" font-size="29">A focused week of product delivery.</text>
+        <text x="82" y="485" font-size="26" fill="#718069">Key tasks are complete. The next release</text>
+        <text x="82" y="523" font-size="26" fill="#718069">has clear owners and a short list of open questions.</text>
+        <rect x="82" y="565" width="250" height="145" rx="8" fill="#edf2e6"/>
+        <rect x="367" y="565" width="250" height="145" rx="8" fill="#f1f2e9"/>
+        <rect x="652" y="565" width="250" height="145" rx="8" fill="#edf2e6"/>
+        <text x="106" y="605" font-size="16" letter-spacing="1" fill="#728168">SHIPPED</text>
+        <text x="106" y="681" font-size="66" font-weight="600">12</text>
+        <text x="391" y="605" font-size="16" letter-spacing="1" fill="#728168">IN REVIEW</text>
+        <text x="391" y="681" font-size="66" font-weight="600">3</text>
+        <text x="676" y="605" font-size="16" letter-spacing="1" fill="#728168">NEXT UP</text>
+        <text x="676" y="681" font-size="66" font-weight="600">5</text>
+        <text x="82" y="781" font-size="31" font-weight="600">Progress at a glance</text>
+        <text x="82" y="841" font-size="23">Onboarding</text>
+        <rect x="328" y="821" width="444" height="21" rx="10" fill="#e9ede2"/>
+        <rect x="328" y="821" width="355" height="21" rx="10" fill="#466b4b"/>
+        <text x="902" y="842" font-size="21" text-anchor="end" fill="#73816c">80%</text>
+        <text x="82" y="901" font-size="23">Workspace</text>
+        <rect x="328" y="881" width="444" height="21" rx="10" fill="#e9ede2"/>
+        <rect x="328" y="881" width="311" height="21" rx="10" fill="#779365"/>
+        <text x="902" y="902" font-size="21" text-anchor="end" fill="#73816c">70%</text>
+        <text x="82" y="961" font-size="23">Docs &amp; handoff</text>
+        <rect x="328" y="941" width="444" height="21" rx="10" fill="#e9ede2"/>
+        <rect x="328" y="941" width="266" height="21" rx="10" fill="#a1b68b"/>
+        <text x="902" y="962" font-size="21" text-anchor="end" fill="#73816c">60%</text>
+        <path d="M82 1007H902" stroke="#dce3d8" stroke-width="2"/>
+        <text x="82" y="1063" font-size="31" font-weight="600">Next week</text>
+        <rect x="82" y="1097" width="22" height="22" rx="3" fill="none" stroke="#91a57f" stroke-width="2"/>
+        <text x="125" y="1119" font-size="24">Review the release checklist</text>
+        <rect x="82" y="1145" width="22" height="22" rx="3" fill="none" stroke="#91a57f" stroke-width="2"/>
+        <text x="125" y="1167" font-size="24">Confirm owners for remaining tasks</text>
+        <path d="M82 1210H902" stroke="#dce3d8" stroke-width="2"/>
+        <text x="82" y="1246" font-size="16" fill="#7e8c73">Illustrative report / All figures are sample data</text>
+        <text x="902" y="1246" text-anchor="end" font-size="16" fill="#7e8c73">01</text>
+      </g>
+    </symbol>
+    <symbol id="deck-art" viewBox="0 0 1200 900">
+      <g font-family="Arial, Helvetica, sans-serif">
+        <rect width="1200" height="900" fill="#edf1e7"/>
+        <rect x="46" y="51" width="1126" height="636" rx="12" fill="#d4dec9"/>
+        <rect x="28" y="28" width="1144" height="644" rx="12" fill="#294f3d"/>
+        <text x="90" y="99" font-size="17" letter-spacing="3" fill="#baccaa">NORTHSTAR / PROJECT KICKOFF</text>
+        <text x="1108" y="99" text-anchor="end" font-size="17" fill="#baccaa">01</text>
+        <text x="90" y="225" font-size="83" font-weight="600" letter-spacing="-3" fill="#fffef4">A shared plan</text>
+        <text x="90" y="319" font-size="83" font-weight="600" letter-spacing="-3" fill="#fffef4">for the next launch.</text>
+        <text x="90" y="402" font-size="27" fill="#d1dfc4">Goals, owners and milestones</text>
+        <text x="90" y="446" font-size="27" fill="#d1dfc4">in a format the team can reuse.</text>
+        <path d="M90 500H164" stroke="#b1c78f" stroke-width="4"/>
+        <text x="90" y="554" font-size="21" fill="#baccaa">Project Northstar / Sample team</text>
+        <path d="M800 535H1052" stroke="#86a37a" stroke-width="2"/>
+        <circle cx="800" cy="535" r="17" fill="#a9c18e"/>
+        <circle cx="926" cy="535" r="17" fill="#a9c18e"/>
+        <circle cx="1052" cy="535" r="17" fill="#a9c18e"/>
+        <text x="800" y="583" text-anchor="middle" font-size="19" fill="#d1dfc4">Scope</text>
+        <text x="926" y="583" text-anchor="middle" font-size="19" fill="#d1dfc4">Owners</text>
+        <text x="1052" y="583" text-anchor="middle" font-size="19" fill="#d1dfc4">Review</text>
+        <rect x="28" y="708" width="560" height="159" rx="10" fill="#fffef9" stroke="#dce3d8" stroke-width="2"/>
+        <rect x="612" y="708" width="560" height="159" rx="10" fill="#fffef9" stroke="#dce3d8" stroke-width="2"/>
+        <text x="62" y="747" font-size="14" letter-spacing="1.5" fill="#73816c">02 / WHAT WE ARE SOLVING</text>
+        <text x="62" y="790" font-size="24" font-weight="600" fill="#263e32">A clearer customer onboarding flow</text>
+        <text x="62" y="832" font-size="19" fill="#73816c">Fewer handoffs. Clear owners.</text>
+        <text x="647" y="747" font-size="14" letter-spacing="1.5" fill="#73816c">03 / DELIVERY PLAN</text>
+        <text x="647" y="790" font-size="24" font-weight="600" fill="#263e32">One shared timeline for the team</text>
+        <path d="M678 823H1084" stroke="#a7ba94" stroke-width="2"/>
+        <circle cx="678" cy="823" r="7" fill="#466b4b"/>
+        <circle cx="881" cy="823" r="7" fill="#779365"/>
+        <circle cx="1084" cy="823" r="7" fill="#a1b68b"/>
+        <text x="678" y="851" text-anchor="middle" font-size="15" fill="#73816c">Align</text>
+        <text x="881" y="851" text-anchor="middle" font-size="15" fill="#73816c">Build</text>
+        <text x="1084" y="851" text-anchor="middle" font-size="15" fill="#73816c">Review</text>
+        <text x="600" y="891" text-anchor="middle" font-size="14" fill="#7e8c73">Illustrative presentation / Sample project</text>
+      </g>
+    </symbol>
+    <symbol id="worklog-art" viewBox="0 0 1000 1320">
+      <g font-family="Arial, Helvetica, sans-serif" fill="#263e32">
+        <rect width="1000" height="1320" fill="#f0f0e7"/>
+        <rect x="50" y="47" width="922" height="1249" rx="10" fill="#dedfd2"/>
+        <rect x="24" y="24" width="936" height="1260" rx="10" fill="#fffef9" stroke="#dce3d8" stroke-width="2"/>
+        <text x="80" y="92" font-size="17" letter-spacing="3" fill="#73816c">TEAM SPACE / PRODUCT</text>
+        <text x="904" y="92" text-anchor="end" font-size="15" letter-spacing="2" fill="#73816c">EXAMPLE</text>
+        <text x="80" y="179" font-size="66" font-weight="600" letter-spacing="-3">Team worklog</text>
+        <text x="80" y="230" font-size="25" fill="#73816c">The week, captured as it happened.</text>
+        <rect x="80" y="260" width="824" height="53" rx="7" fill="#edf2e5"/>
+        <circle cx="108" cy="286" r="6" fill="#799563"/>
+        <text x="130" y="294" font-size="21" fill="#607452">Week 12 / 3 completed / 2 next</text>
+        <text x="80" y="361" font-size="18" letter-spacing="2" fill="#73816c">COMPLETED</text>
+        <rect x="80" y="391" width="31" height="31" rx="5" fill="#466b4b"/>
+        <path d="m88 406 7 7 10-14" fill="none" stroke="#fffef4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="132" y="416" font-size="26" font-weight="600">Ship the onboarding update</text>
+        <rect x="80" y="455" width="31" height="31" rx="5" fill="#466b4b"/>
+        <path d="m88 470 7 7 10-14" fill="none" stroke="#fffef4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="132" y="480" font-size="26" font-weight="600">Review the launch draft</text>
+        <rect x="80" y="519" width="31" height="31" rx="5" fill="#466b4b"/>
+        <path d="m88 534 7 7 10-14" fill="none" stroke="#fffef4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="132" y="544" font-size="26" font-weight="600">Share notes with the support team</text>
+        <path d="M80 589H904" stroke="#dce3d8" stroke-width="2"/>
+        <text x="80" y="637" font-size="18" letter-spacing="2" fill="#73816c">IN PROGRESS</text>
+        <rect x="80" y="670" width="29" height="29" rx="5" fill="none" stroke="#91a57f" stroke-width="2"/>
+        <text x="132" y="695" font-size="25" font-weight="600">Plan the next customer interviews</text>
+        <text x="132" y="734" font-size="21" fill="#73816c">Owner: Product / Due: next week</text>
+        <rect x="80" y="779" width="824" height="251" rx="9" fill="#f0f3e9"/>
+        <text x="111" y="823" font-size="18" letter-spacing="1.5" fill="#73816c">NOTES &amp; DECISIONS</text>
+        <path d="M116 863V972" stroke="#c4d2b7" stroke-width="2"/>
+        <circle cx="116" cy="870" r="6" fill="#6f8a5c"/>
+        <circle cx="116" cy="918" r="6" fill="#6f8a5c"/>
+        <circle cx="116" cy="966" r="6" fill="#6f8a5c"/>
+        <text x="144" y="878" font-size="23">Mon / Feedback reviewed</text>
+        <text x="144" y="926" font-size="23">Tue / Draft revised with sources</text>
+        <text x="144" y="974" font-size="23">Wed / Next actions assigned</text>
+        <text x="80" y="1083" font-size="18" letter-spacing="2" fill="#73816c">NEXT UP</text>
+        <rect x="80" y="1118" width="22" height="22" rx="3" fill="none" stroke="#91a57f" stroke-width="2"/>
+        <text x="132" y="1141" font-size="25">Confirm the interview list</text>
+        <rect x="80" y="1170" width="22" height="22" rx="3" fill="none" stroke="#91a57f" stroke-width="2"/>
+        <text x="132" y="1193" font-size="25">Publish the release notes</text>
+        <text x="80" y="1252" font-size="16" fill="#7e8c73">Illustrative worklog / Sample team and tasks</text>
+      </g>
+    </symbol>
+  </defs>
+  <view id="report" viewBox="100 0 1000 1320"/>
+  <view id="deck" viewBox="0 1400 1200 900"/>
+  <view id="worklog" viewBox="100 2380 1000 1320"/>
+  <use href="#report-art" x="100" y="0" width="1000" height="1320"/>
+  <use href="#deck-art" x="0" y="1400" width="1200" height="900"/>
+  <use href="#worklog-art" x="100" y="2380" width="1000" height="1320"/>
+</svg>

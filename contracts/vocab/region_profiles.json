@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "profiles": {
+    "KR": {
+      "paper": "A4",
+      "date_order": "YMD",
+      "currency": {
+        "code": "KRW",
+        "minor_digits": 0
+      },
+      "name_order": "family_given"
+    },
+    "US": {
+      "paper": "Letter",
+      "date_order": "MDY",
+      "currency": {
+        "code": "USD",
+        "minor_digits": 2
+      },
+      "name_order": "given_family"
+    },
+    "GB": {
+      "paper": "A4",
+      "date_order": "DMY",
+      "currency": {
+        "code": "GBP",
+        "minor_digits": 2
+      },
+      "name_order": "given_family"
+    },
+    "JP": {
+      "paper": "A4",
+      "date_order": "YMD",
+      "currency": {
+        "code": "JPY",
+        "minor_digits": 0
+      },
+      "name_order": "family_given"
+    },
+    "CN": {
+      "paper": "A4",
+      "date_order": "YMD",
+      "currency": {
+        "code": "CNY",
+        "minor_digits": 2
+      },
+      "name_order": "family_given"
+    },
+    "DE": {
+      "paper": "A4",
+      "date_order": "DMY",
+      "currency": {
+        "code": "EUR",
+        "minor_digits": 2
+      },
+      "name_order": "given_family"
+    },
+    "FR": {
+      "paper": "A4",
+      "date_order": "DMY",
+      "currency": {
+        "code": "EUR",
+        "minor_digits": 2
+      },
+      "name_order": "given_family"
+    }
+  }
+}

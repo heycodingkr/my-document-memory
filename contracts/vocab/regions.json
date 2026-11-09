@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "locales": [
+    "ko-KR",
+    "en-US",
+    "en-GB",
+    "ja-JP",
+    "zh-CN",
+    "de-DE",
+    "fr-FR"
+  ],
+  "regions": [
+    "KR",
+    "US",
+    "GB",
+    "JP",
+    "CN",
+    "DE",
+    "FR"
+  ]
+}

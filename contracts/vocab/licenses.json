@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "CC0-1.0",
+      "copy_policy_max": "full",
+      "republish": "allowed",
+      "requires": [],
+      "urls": [
+        "https://creativecommons.org/publicdomain/zero/1.0/"
+      ]
+    },
+    {
+      "id": "CC-BY-4.0",
+      "copy_policy_max": "full",
+      "republish": "allowed",
+      "requires": [
+        "attribution"
+      ],
+      "urls": [
+        "https://creativecommons.org/licenses/by/4.0/"
+      ]
+    },
+    {
+      "id": "CC-BY-SA-4.0",
+      "copy_policy_max": "full",
+      "republish": "same_license",
+      "requires": [
+        "attribution",
+        "share_alike"
+      ],
+      "urls": [
+        "https://creativecommons.org/licenses/by-sa/4.0/"
+      ]
+    },
+    {
+      "id": "MIT",
+      "copy_policy_max": "full",
+      "republish": "allowed",
+      "requires": [
+        "notice"
+      ],
+      "urls": [
+        "https://opensource.org/license/mit",
+        "https://opensource.org/licenses/MIT"
+      ]
+    },
+    {
+      "id": "Apache-2.0",
+      "copy_policy_max": "full",
+      "republish": "allowed",
+      "requires": [
+        "notice"
+      ],
+      "urls": [
+        "https://www.apache.org/licenses/LICENSE-2.0"
+      ]
+    },
+    {
+      "id": "proprietary-structure-only",
+      "copy_policy_max": "structure_only",
+      "republish": "denied",
+      "requires": [
+        "attribution"
+      ],
+      "urls": []
+    },
+    {
+      "id": "unknown",
+      "copy_policy_max": "structure_only",
+      "republish": "denied",
+      "requires": [],
+      "urls": []
+    }
+  ]
+}

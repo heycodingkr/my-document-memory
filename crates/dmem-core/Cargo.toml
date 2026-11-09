@@ -1,0 +1,16 @@
+[package]
+name = "dmem-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+dmem-contracts.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+url.workspace = true
+unicode-normalization.workspace = true
+percent-encoding.workspace = true
+zip.workspace = true
+quick-xml.workspace = true

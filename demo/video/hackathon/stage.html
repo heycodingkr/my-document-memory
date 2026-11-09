@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Document Memory — hackathon cut stage (90 s)</title>
+<!--
+  A pure function of time: window.__render(t) draws second t of the video. build.mjs --cut hackathon loads this page in Chrome,
+  calls __render for every frame, takes a screenshot and pipes it to ffmpeg. Real footage is composited afterwards from
+  window.__overlays (see stage/scenes.js); this page only draws the dark "hole" where each clip goes.
+  Spec and claims ledger: docs/demo/hackathon-90s.md. Scenes and captions come from hackathon/script.json (single source).
+  What is real and what is drawn is stated on screen: ILLUSTRATION, REAL APP, REAL RUN, REAL · MCP, WHAT-IF.
+-->
+<style>
+@font-face { font-family: Manrope; src: url('/demo/video/fonts/manrope-latin.woff2') format('woff2'); font-weight: 200 800; }
+@font-face { font-family: 'DM Sans'; src: url('/demo/video/fonts/dm-sans-latin.woff2') format('woff2'); font-weight: 100 1000; }
+@font-face { font-family: 'DM Mono'; src: url('/demo/video/fonts/dm-mono-latin-400.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'DM Mono'; src: url('/demo/video/fonts/dm-mono-latin-500.woff2') format('woff2'); font-weight: 500; }
+:root { --paper: #f5f3ec; --card: #fffef9; --ink: #13261f; --deep: #112c23; --green: #254b3c; --lime: #d8ef78; --line: #d7e0d1; --muted: #566a5f; --coral: #e0714f; --soft: #e8f0da; --amber: #b9791a;
+  --sans: 'DM Sans', system-ui, sans-serif; --head: Manrope, system-ui, sans-serif; --mono: 'DM Mono', ui-monospace, monospace; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+#scenes { position: absolute; inset: 0; z-index: 1; }
+.scene { position: absolute; inset: 0; opacity: 0; display: none; }
+.scene.dark { background: var(--deep); color: #f3f1e8; }
+.abs { position: absolute; }
+.h { font-family: var(--head); font-weight: 800; letter-spacing: -.04em; line-height: 1.04; }
+.mono { font-family: var(--mono); }
+.muted { color: var(--muted); }
+.dark .muted { color: #b9cabb; }
+.chip { display: inline-block; padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: 22px; line-height: 1.25; background: var(--soft); color: var(--green); border: 2px solid #c9d8b8; white-space: nowrap; }
+.chip.dark { background: var(--deep); color: var(--lime); border-color: var(--deep); }
+.chip.lime { background: var(--lime); color: var(--deep); border-color: #bfd95a; }
+.chip.coral { background: #fbe4dc; color: #a8442a; border-color: #f0bfae; }
+.chip.amber { background: #f6e7c8; color: #7a4f0b; border-color: #e6cd96; }
+.chip.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+.dark .chip { background: rgba(255,255,255,.1); color: #e6efe0; border-color: rgba(255,255,255,.2); }
+.dark .chip.lime { background: var(--lime); color: var(--deep); border-color: var(--lime); }
+.dark .chip.amber { background: #f6e7c8; color: #6a4308; border-color: #e6cd96; }
+.card { position: absolute; background: var(--card); border: 2px solid var(--line); border-radius: 28px; box-shadow: 0 24px 60px rgba(19, 47, 40, .10); }
+.dark .card { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16); box-shadow: none; color: #f3f1e8; }
+.ic { display: inline-block; flex: none; }
+.ic svg { width: 100%; height: 100%; display: block; }
+.btn { display: inline-block; padding: 12px 28px; border-radius: 14px; font: 700 24px var(--sans); background: var(--lime); color: var(--deep); border: 2px solid #bfd95a; white-space: nowrap; }
+.label { font: 500 17px var(--mono); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.dark .label { color: #9fb7a6; }
+.hole { position: absolute; background: #0b1814; }   /* where build.mjs composites a real clip */
+#logo { position: absolute; left: 72px; top: 36px; display: flex; align-items: center; gap: 14px; z-index: 5; font: 800 31px var(--head); letter-spacing: -.04em; color: var(--ink); opacity: 0; }
+#logo svg { width: 46px; height: 46px; }
+.g-bg { fill: var(--green); } .g-page { fill: var(--card); } .g-fold { fill: var(--lime); } .g-line { fill: var(--green); } .g-dot { fill: var(--lime); stroke: var(--green); stroke-width: 2.4; }
+#logo.dark .g-bg, .biglogo .g-bg { fill: var(--lime); } #logo.dark .g-page, .biglogo .g-page { fill: var(--deep); } #logo.dark .g-fold, .biglogo .g-fold { fill: var(--lime); }
+#logo.dark .g-line, .biglogo .g-line { fill: var(--lime); } #logo.dark .g-dot, .biglogo .g-dot { fill: var(--deep); stroke: var(--lime); }
+#logo.dark { color: #f3f1e8; }
+#badge { position: absolute; right: 72px; top: 44px; z-index: 5; padding: 8px 20px; border-radius: 999px; font: 700 22px var(--mono); letter-spacing: .04em; background: var(--lime); color: var(--deep); opacity: 0; white-space: nowrap; }
+#badge.illus { background: #e3e9dd; color: #3d5247; }
+#badge.whatif { background: #f6e7c8; color: #7a4f0b; }
+#cap { position: absolute; z-index: 6; left: 150px; right: 150px; bottom: 56px; padding: 20px 40px; border-radius: 18px; background: rgba(17, 44, 35, .94); color: #fff; font: 600 40px/1.28 var(--sans); text-align: center; opacity: 0; }
+#cap.ondark { background: rgba(255, 255, 255, .14); }
+
+/* browser-like windows used by the four-window scene and the product window */
+.pane { position: absolute; border-radius: 14px; overflow: hidden; background: #0d1b16; outline: 2px solid #2a4a3c; outline-offset: -2px; box-shadow: 0 18px 44px rgba(0,0,0,.35); }   /* outline, not border: children keep exact pixel offsets for the composited clips */
+.pbar { position: absolute; left: 0; right: 0; top: 0; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #173025; }
+.pbar i { width: 10px; height: 10px; border-radius: 50%; background: #3f6252; flex: none; }
+.pbar .ptitle { font: 600 14px var(--sans); color: #e6efe0; white-space: nowrap; margin-left: 6px; }
+.pbar .chip { font-size: 12px; padding: 2px 10px; border-width: 1px; font-family: var(--mono); font-weight: 500; letter-spacing: .02em; }
+.pbar .pstatus { margin-left: auto; }
+.pbar .ptag { margin-left: 8px; }
+.pbody { position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden; }
+.plog { position: absolute; left: 0; top: 0; bottom: 0; width: 230px; background: #0f1d17; border-right: 1px solid #2a4a3c; }
+.ll { position: absolute; left: 14px; right: 10px; font: 400 12px var(--mono); color: #cfe0d3; white-space: nowrap; line-height: 20px; }
+.ll b { color: var(--lime); font-weight: 500; margin-right: 6px; }
+.sheet { position: absolute; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.18); color: #22303a; }
+.sheet .t { position: absolute; left: 34px; right: 30px; white-space: nowrap; font-family: var(--sans); }
+.sheet .p { position: absolute; left: 34px; right: 30px; font: 400 12px/17px var(--sans); color: #34424c; }
+.sheet .hd { position: absolute; left: 34px; right: 30px; font: 700 13px/17px var(--sans); color: #1b2a35; white-space: nowrap; }
+.tbstrip { position: absolute; left: 0; right: 0; top: 0; height: 24px; background: #f6f8fa; border-bottom: 1px solid #dde3e8; }
+.tbstrip u { position: absolute; top: 7px; height: 10px; border-radius: 3px; background: #cfd6dc; text-decoration: none; }
+.trow { position: absolute; left: 14px; right: 12px; height: 40px; }
+.trow .tn { position: absolute; left: 22px; top: 2px; font: 500 13px var(--mono); color: #e6efe0; white-space: nowrap; }
+.trow .tm { position: absolute; right: 0; top: 3px; font: 500 12px var(--mono); color: var(--lime); white-space: nowrap; }
+.trow .td { position: absolute; left: 22px; top: 21px; font: 400 11.5px var(--mono); color: #9fb7a6; white-space: nowrap; }
+.trow .tk { position: absolute; left: 0; top: 1px; font: 700 13px var(--mono); color: var(--lime); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="logo"></div>
+  <div id="badge"></div>
+  <div id="scenes"></div>
+  <div id="cap"></div>
+</div>
+<script src="/demo/video/stage/core.js"></script>
+<script src="/demo/video/hackathon/stage/scenes.js"></script>
+<script src="/demo/video/stage/main.js"></script>
+</body>
+</html>

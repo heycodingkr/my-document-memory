@@ -1,0 +1,23 @@
+[Unit]
+Description=My Document Memory single owner library
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dmem
+Group=dmem
+WorkingDirectory=/srv/my-document-memory/current
+EnvironmentFile=/etc/my-document-memory/server.env
+ExecStart=/srv/my-document-memory/current/target/release/dmem-server
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/my-document-memory
+
+[Install]
+WantedBy=multi-user.target

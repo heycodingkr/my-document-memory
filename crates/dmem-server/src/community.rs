@@ -1,0 +1,194 @@
+use crate::Store;
+use dmem_contracts::{Fault, List, Template, Visibility};
+use rusqlite::{OptionalExtension, params};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Contribution {
+    pub id: String,
+    pub template_id: String,
+    pub status: String,
+    pub snapshot: Template,
+    pub public_id: Option<String>,
+    pub created_at: u64,
+    pub updated_at: u64,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Submission {
+    pub template_id: String,
+    pub author: String,
+    pub license: String,
+    pub rights_confirmed: bool,
+}
+fn internal(_: impl std::fmt::Debug) -> Fault {
+    Fault::Internal
+}
+fn decode(row: &rusqlite::Row<'_>) -> rusqlite::Result<Contribution> {
+    let raw: String = row.get(3)?;
+    let snapshot = serde_json::from_str(&raw).map_err(|e| {
+        rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(e))
+    })?;
+    Ok(Contribution {
+        id: row.get(0)?,
+        template_id: row.get(1)?,
+        status: row.get(2)?,
+        snapshot,
+        public_id: row.get(4)?,
+        created_at: row.get(5)?,
+        updated_at: row.get(6)?,
+    })
+}
+impl Store {
+    pub(crate) fn dashboard(&self, owner: &str) -> Result<serde_json::Value, Fault> {
+        let db = self.db.lock().map_err(internal)?;
+        let count = |kind: &str| {
+            db.query_row(
+                "SELECT count(*) FROM records WHERE owner=?1 AND kind=?2",
+                params![owner, kind],
+                |r| r.get::<_, u64>(0),
+            )
+            .map_err(internal)
+        };
+        let contributions: u64 = db
+            .query_row(
+                "SELECT count(*) FROM contributions WHERE owner=?1",
+                params![owner],
+                |r| r.get(0),
+            )
+            .map_err(internal)?;
+        Ok(
+            serde_json::json!({"templates":count("template")?,"sources":count("source")?,"documents":count("document")?,"contributions":contributions}),
+        )
+    }
+    pub(crate) fn submit(
+        &self,
+        owner: &str,
+        input: Submission,
+        now: u64,
+    ) -> Result<Contribution, Fault> {
+        let author = input.author.trim();
+        if !input.rights_confirmed
+            || !["CC0-1.0", "CC-BY-4.0"].contains(&input.license.as_str())
+            || author.is_empty()
+            || author.chars().count() > 80
+            || author.contains(['@', '\r', '\n'])
+        {
+            return Err(Fault::InvalidInput);
+        }
+        let mut db = self.db.lock().map_err(internal)?;
+        let tx = db.transaction().map_err(internal)?;
+        let raw: Option<String> = tx
+            .query_row(
+                "SELECT payload FROM records WHERE id=?1 AND owner=?2 AND kind='template'",
+                params![input.template_id, owner],
+                |r| r.get(0),
+            )
+            .optional()
+            .map_err(internal)?;
+        let mut snapshot: Template =
+            serde_json::from_str(&raw.ok_or(Fault::NotFound)?).map_err(internal)?;
+        if (snapshot
+            .origin
+            .as_ref()
+            .is_some_and(|o| o.license == "CC-BY-4.0")
+            || snapshot
+                .attributions
+                .iter()
+                .any(|o| o.license == "CC-BY-4.0"))
+            && input.license != "CC-BY-4.0"
+        {
+            return Err(Fault::LicenseForbids);
+        }
+        let active:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM contributions WHERE owner=?1 AND template_id=?2 AND status IN ('pending','approved'))",params![owner,input.template_id],|r|r.get(0)).map_err(internal)?;
+        if active {
+            return Err(Fault::VersionConflict);
+        }
+        // Only reusable structure enters the snapshot; source files and document content never do.
+        snapshot.id = format!("public_{}", Uuid::new_v4().simple());
+        snapshot.visibility = Visibility::Public;
+        snapshot.author = author.into();
+        snapshot.license = input.license;
+        if let Some(o) = &snapshot.origin {
+            if !crate::store::public_origin(&tx, o)? {
+                snapshot.origin = None;
+            }
+        }
+        let lineage = std::mem::take(&mut snapshot.attributions);
+        for o in lineage {
+            if crate::store::public_origin(&tx, &o)? {
+                snapshot.attributions.push(o);
+            }
+        }
+        if snapshot.attributions.len() > 16 {
+            return Err(Fault::LicenseForbids);
+        }
+        let c = Contribution {
+            id: format!("contrib_{}", Uuid::new_v4().simple()),
+            template_id: input.template_id,
+            status: "pending".into(),
+            snapshot,
+            public_id: None,
+            created_at: now,
+            updated_at: now,
+        };
+        tx.execute("INSERT INTO contributions(id,owner,template_id,status,snapshot,created_at,updated_at) VALUES(?1,?2,?3,'pending',?4,?5,?5)",params![c.id,owner,c.template_id,serde_json::to_string(&c.snapshot).map_err(internal)?,now]).map_err(internal)?;
+        tx.commit().map_err(internal)?;
+        Ok(c)
+    }
+    pub(crate) fn contributions(&self, owner: Option<&str>) -> Result<List<Contribution>, Fault> {
+        let db = self.db.lock().map_err(internal)?;
+        let mut stmt=db.prepare("SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE (?1 IS NULL OR owner=?1) ORDER BY created_at DESC,id LIMIT 100").map_err(internal)?;
+        let items = stmt
+            .query_map(params![owner], decode)
+            .map_err(internal)?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(internal)?;
+        Ok(List { items })
+    }
+    pub(crate) fn withdraw(&self, owner: &str, id: &str, now: u64) -> Result<Contribution, Fault> {
+        let mut db = self.db.lock().map_err(internal)?;
+        let tx = db.transaction().map_err(internal)?;
+        let mut c=tx.query_row("SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE id=?1 AND owner=?2",params![id,owner],decode).optional().map_err(internal)?.ok_or(Fault::NotFound)?;
+        if !["pending", "approved"].contains(&c.status.as_str()) {
+            return Err(Fault::VersionConflict);
+        }
+        if let Some(public_id) = &c.public_id {
+            tx.execute(
+                "DELETE FROM records WHERE id=?1 AND owner='@catalog'",
+                params![public_id],
+            )
+            .map_err(internal)?;
+        }
+        c.status = "withdrawn".into();
+        c.updated_at = now;
+        tx.execute(
+            "UPDATE contributions SET status='withdrawn',updated_at=?2 WHERE id=?1",
+            params![id, now],
+        )
+        .map_err(internal)?;
+        tx.commit().map_err(internal)?;
+        Ok(c)
+    }
+    pub(crate) fn decide(&self, id: &str, approve: bool, now: u64) -> Result<Contribution, Fault> {
+        let mut db = self.db.lock().map_err(internal)?;
+        let tx = db.transaction().map_err(internal)?;
+        let mut c=tx.query_row("SELECT id,template_id,status,snapshot,public_id,created_at,updated_at FROM contributions WHERE id=?1",params![id],decode).optional().map_err(internal)?.ok_or(Fault::NotFound)?;
+        if c.status != "pending" {
+            return Err(Fault::VersionConflict);
+        }
+        c.status = if approve { "approved" } else { "rejected" }.into();
+        c.updated_at = now;
+        if approve {
+            tx.execute("INSERT INTO records(id,owner,kind,version,payload,updated_at) VALUES(?1,'@catalog','template',?2,?3,?4)",params![c.snapshot.id,c.snapshot.version,serde_json::to_string(&c.snapshot).map_err(internal)?,now]).map_err(internal)?;
+            c.public_id = Some(c.snapshot.id.clone());
+        }
+        tx.execute(
+            "UPDATE contributions SET status=?2,public_id=?3,updated_at=?4 WHERE id=?1",
+            params![id, c.status, c.public_id, now],
+        )
+        .map_err(internal)?;
+        tx.commit().map_err(internal)?;
+        Ok(c)
+    }
+}

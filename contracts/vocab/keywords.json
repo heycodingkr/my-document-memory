@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "draft",
+      "aliases": [
+        "초안",
+        "draft",
+        "下書き"
+      ]
+    },
+    {
+      "id": "resume",
+      "aliases": [
+        "이력서",
+        "resume",
+        "履歴書"
+      ]
+    },
+    {
+      "id": "experience",
+      "aliases": [
+        "경력",
+        "experience",
+        "職歴"
+      ]
+    },
+    {
+      "id": "education",
+      "aliases": [
+        "학력",
+        "education",
+        "学歴"
+      ]
+    },
+    {
+      "id": "skills",
+      "aliases": [
+        "기술",
+        "skills",
+        "スキル"
+      ]
+    },
+    {
+      "id": "invoice",
+      "aliases": [
+        "청구서",
+        "invoice",
+        "請求書"
+      ]
+    },
+    {
+      "id": "tax",
+      "aliases": [
+        "세금",
+        "tax",
+        "税"
+      ]
+    },
+    {
+      "id": "payment",
+      "aliases": [
+        "결제",
+        "payment",
+        "支払"
+      ]
+    },
+    {
+      "id": "quote",
+      "aliases": [
+        "견적",
+        "quote",
+        "見積"
+      ]
+    },
+    {
+      "id": "contract",
+      "aliases": [
+        "계약",
+        "contract",
+        "契約"
+      ]
+    },
+    {
+      "id": "nda",
+      "aliases": [
+        "비밀유지",
+        "nda"
+      ]
+    },
+    {
+      "id": "report",
+      "aliases": [
+        "보고서",
+        "report",
+        "報告"
+      ]
+    },
+    {
+      "id": "weekly",
+      "aliases": [
+        "주간",
+        "weekly"
+      ]
+    },
+    {
+      "id": "monthly",
+      "aliases": [
+        "월간",
+        "monthly"
+      ]
+    },
+    {
+      "id": "minutes",
+      "aliases": [
+        "회의록",
+        "minutes",
+        "議事録"
+      ]
+    },
+    {
+      "id": "agenda",
+      "aliases": [
+        "안건",
+        "agenda"
+      ]
+    },
+    {
+      "id": "decision",
+      "aliases": [
+        "결정",
+        "decision"
+      ]
+    },
+    {
+      "id": "action-items",
+      "aliases": [
+        "할일",
+        "action items"
+      ]
+    },
+    {
+      "id": "proposal",
+      "aliases": [
+        "제안서",
+        "proposal",
+        "提案"
+      ]
+    },
+    {
+      "id": "pricing",
+      "aliases": [
+        "가격",
+        "pricing"
+      ]
+    },
+    {
+      "id": "schedule",
+      "aliases": [
+        "일정",
+        "schedule"
+      ]
+    },
+    {
+      "id": "risk",
+      "aliases": [
+        "위험",
+        "risk",
+        "リスク"
+      ]
+    },
+    {
+      "id": "summary",
+      "aliases": [
+        "요약",
+        "summary"
+      ]
+    },
+    {
+      "id": "metrics",
+      "aliases": [
+        "지표",
+        "metrics",
+        "KPI"
+      ]
+    },
+    {
+      "id": "deck",
+      "aliases": [
+        "슬라이드",
+        "deck",
+        "スライド"
+      ]
+    },
+    {
+      "id": "pitch",
+      "aliases": [
+        "피치",
+        "pitch"
+      ]
+    },
+    {
+      "id": "market",
+      "aliases": [
+        "시장",
+        "market"
+      ]
+    },
+    {
+      "id": "team",
+      "aliases": [
+        "팀",
+        "team"
+      ]
+    },
+    {
+      "id": "ask",
+      "aliases": [
+        "요청",
+        "ask"
+      ]
+    },
+    {
+      "id": "lesson",
+      "aliases": [
+        "수업",
+        "lesson"
+      ]
+    },
+    {
+      "id": "objectives",
+      "aliases": [
+        "학습목표",
+        "objectives"
+      ]
+    },
+    {
+      "id": "press",
+      "aliases": [
+        "보도",
+        "press"
+      ]
+    },
+    {
+      "id": "memo",
+      "aliases": [
+        "메모",
+        "memo"
+      ]
+    },
+    {
+      "id": "official",
+      "aliases": [
+        "공문",
+        "official"
+      ]
+    },
+    {
+      "id": "formal",
+      "aliases": [
+        "격식",
+        "formal"
+      ]
+    },
+    {
+      "id": "refund",
+      "aliases": [
+        "환불",
+        "refund"
+      ]
+    },
+    {
+      "id": "policy",
+      "aliases": [
+        "정책",
+        "policy"
+      ]
+    },
+    {
+      "id": "handover",
+      "aliases": [
+        "인수인계",
+        "handover"
+      ]
+    },
+    {
+      "id": "onboarding",
+      "aliases": [
+        "온보딩",
+        "onboarding"
+      ]
+    },
+    {
+      "id": "blog",
+      "aliases": [
+        "블로그",
+        "blog"
+      ]
+    },
+    {
+      "id": "seo",
+      "aliases": [
+        "seo"
+      ]
+    },
+    {
+      "id": "shipping",
+      "aliases": [
+        "배송",
+        "shipping",
+        "配送"
+      ]
+    }
+  ]
+}

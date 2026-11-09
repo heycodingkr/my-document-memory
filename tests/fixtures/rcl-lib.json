@@ -1,0 +1,508 @@
+[
+ {
+  "fx_id": "fx_m1",
+  "kind": "template",
+  "title": "이력서 양식 (한국어)",
+  "summary": "한국어 이력서의 기본 섹션과 제출 전 점검 항목을 제공한다.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "resume",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/d/:id/edit"
+  ],
+  "keywords": [
+   "resume"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 인적사항\n이름과 연락처를 기재합니다.\n## 경력\n최근 경력부터 작성합니다.\n## 학력\n최종 학력부터 작성합니다.\n## 기술\n직무 관련 기술을 정리합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-09-01T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m2",
+  "kind": "template",
+  "title": "US Resume Template",
+  "summary": "A concise US resume with a Letter page and reverse-chronological experience.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "resume",
+   "locale": "en-US",
+   "page": {
+    "size": "Letter",
+    "orientation": "portrait"
+   }
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [
+   "resume"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## Contact\nName, email, and city.\n## Experience\nStart with the most recent role.\n## Education\nList relevant degrees."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-10-01T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m3",
+  "kind": "template",
+  "title": "履歴書テンプレート",
+  "summary": "日本向け履歴書の基本項目と写真欄を含む。",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "resume",
+   "locale": "ja-JP",
+   "variant": "jp_rirekisho"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [
+   "resume"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 基本情報\n氏名と連絡先を記入します。\n## 学歴・職歴\n年月順に記載します。"
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-10-02T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m4",
+  "kind": "template",
+  "title": "팀 이력서 표준",
+  "summary": "팀에서 공유하는 한국어 이력서 구조와 검토 순서를 안내한다.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "resume",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [
+   "resume"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 경력\n팀 표준에 따라 최신 경력부터 작성합니다.\n## 검토\n동료 검토 후 제출합니다."
+  },
+  "owner": "alice",
+  "visibility": "team",
+  "workspace": "acme",
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-08-01T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m5",
+  "kind": "template",
+  "title": "공개 이력서 양식",
+  "summary": "공개된 한국어 이력서 템플릿으로 출처 표시가 필요한 자료다.",
+  "form": {
+   "provider": "html",
+   "doc_type": "resume",
+   "locale": "ko-KR"
+  },
+  "site_host": "www.example.org",
+  "url_patterns": [
+   "/templates/*"
+  ],
+  "keywords": [
+   "resume"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 경력\n주요 성과와 담당 업무를 간결하게 적습니다.\n## 학력\n전공과 졸업 연도를 기재합니다."
+  },
+  "owner": "alice",
+  "visibility": "public",
+  "workspace": null,
+  "license": "CC-BY-4.0",
+  "origin": "fetched",
+  "updated_at": "2026-07-01T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m6",
+  "kind": "reference",
+  "title": "환불 정책",
+  "summary": "미개봉 상품의 환불 신청 조건과 기한.",
+  "form": {
+   "provider": "markdown",
+   "doc_type": "other",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [
+   "refund"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "환불은 미개봉 상품에 한해 구매 후 7일 이내 신청 가능"
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-02T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m6b",
+  "kind": "reference",
+  "title": "배송 안내",
+  "summary": "배송 처리에 관한 별도 사실로 환불 문장과 섞이면 안 된다.",
+  "form": {
+   "provider": "markdown",
+   "doc_type": "other",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [
+   "shipping"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "배송은 영업일 기준 3일 이내"
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-02T00:00:01Z"
+ },
+ {
+  "fx_id": "fx_m7",
+  "kind": "style_rule",
+  "title": "공문 문체 규칙",
+  "summary": "공문은 합니다체를 사용하고 날짜는 지정된 형식으로 쓴다.",
+  "form": {
+   "provider": "other",
+   "doc_type": "official_letter",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [
+   "formal"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 문체\n합니다체를 사용합니다.\n## 날짜\nYYYY. M. D. 형식으로 씁니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-03T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m8",
+  "kind": "template",
+  "title": "Pitch Deck Starter",
+  "summary": "A five-part investor deck outline with a wide 16:9 page.",
+  "form": {
+   "provider": "google_slides",
+   "doc_type": "pitch_deck",
+   "locale": "en-US",
+   "page": {
+    "size": "16:9",
+    "orientation": "landscape"
+   }
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/presentation/*"
+  ],
+  "keywords": [
+   "pitch",
+   "deck"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "# Cover\nCompany and date.\n# Problem\nCustomer pain.\n# Solution\nProduct value.\n# Market\nMarket size.\n# Ask\nFunding request."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-04T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m9",
+  "kind": "template",
+  "title": "한국 세금계산서 양식",
+  "summary": "공급자와 거래 항목, 공급가액 및 세액을 기록한다.",
+  "form": {
+   "provider": "notion",
+   "doc_type": "invoice",
+   "locale": "ko-KR",
+   "variant": "kr_tax_invoice"
+  },
+  "site_host": "www.notion.so",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [
+   "invoice",
+   "tax"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 공급자\n상호와 사업자 정보를 적습니다.\n## 거래 내역\n품목, 수량, 공급가액을 기재합니다.\n## 합계\n세액과 총액을 표시합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-05T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m10",
+  "kind": "template",
+  "title": "DOCX 이력서 양식",
+  "summary": "문서 파일로 저장한 간결한 한국어 이력서 구조.",
+  "form": {
+   "provider": "docx",
+   "doc_type": "memo",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [],
+  "content": {
+   "format": "markdown",
+   "data": "## 경력\n기간과 주요 성과를 적습니다.\n## 학력\n관련 학력을 기재합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-06T12:00:00Z"
+ },
+ {
+  "fx_id": "fx_m11",
+  "kind": "template",
+  "title": "Markdown 이력서 양식",
+  "summary": "Markdown으로 작성한 간결한 한국어 이력서 구조.",
+  "form": {
+   "provider": "markdown",
+   "doc_type": "memo",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/*"
+  ],
+  "keywords": [],
+  "content": {
+   "format": "markdown",
+   "data": "## 경력\n기간과 주요 성과를 적습니다.\n## 학력\n관련 학력을 기재합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-06T12:00:00Z"
+ },
+ {
+  "fx_id": "fx_m12",
+  "kind": "template",
+  "title": "주간 보고서 양식",
+  "summary": "주간 주요 업무와 다음 주 계획을 정리한다.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "report",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [
+   "weekly"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 이번 주\n완료한 업무를 적습니다.\n## 다음 주\n예정 업무를 정리합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-07T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m13",
+  "kind": "template",
+  "title": "보고서 초안",
+  "summary": "초안 검토를 위한 보고서의 기본 구조.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "report",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [
+   "draft"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 배경\n보고 목적을 적습니다.\n## 제안\n검토할 내용을 정리합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-08T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m14",
+  "kind": "template",
+  "title": "제안서 기본 양식",
+  "summary": "fixtures 표에 정의되지 않은 ID를 위한 최소 한국어 제안서 양식.",
+  "form": {
+   "provider": "markdown",
+   "doc_type": "proposal",
+   "locale": "ko-KR"
+  },
+  "site_host": "example.com",
+  "url_patterns": [
+   "/templates/proposal/*"
+  ],
+  "keywords": [
+   "proposal"
+  ],
+  "content": {
+   "format": "markdown",
+   "data": "## 목적\n제안 목적을 요약합니다.\n## 일정\n주요 일정을 기재합니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-09T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m15",
+  "kind": "template",
+  "title": "수업지도안 (개인)",
+  "summary": "수업 목표와 활동 흐름을 기록하는 개인 양식.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "lesson_plan",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [],
+  "content": {
+   "format": "markdown",
+   "data": "## 학습 목표\n수업 후 성취할 목표를 씁니다.\n## 활동\n도입, 전개, 정리 순서를 씁니다."
+  },
+  "owner": "local",
+  "visibility": "private",
+  "workspace": null,
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-10T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m16",
+  "kind": "template",
+  "title": "수업지도안 (팀)",
+  "summary": "acme 팀이 공유하는 수업지도안 양식.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "lesson_plan",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [],
+  "content": {
+   "format": "markdown",
+   "data": "## 학습 목표\n팀의 공통 목표를 작성합니다.\n## 평가\n학습 결과를 확인합니다."
+  },
+  "owner": "alice",
+  "visibility": "team",
+  "workspace": "acme",
+  "license": null,
+  "origin": "user",
+  "updated_at": "2026-07-10T00:00:00Z"
+ },
+ {
+  "fx_id": "fx_m17",
+  "kind": "template",
+  "title": "수업지도안 (공개)",
+  "summary": "CC0로 공개된 수업지도안 기본 구조.",
+  "form": {
+   "provider": "google_docs",
+   "doc_type": "lesson_plan",
+   "locale": "ko-KR"
+  },
+  "site_host": "docs.google.com",
+  "url_patterns": [
+   "/document/*"
+  ],
+  "keywords": [],
+  "content": {
+   "format": "markdown",
+   "data": "## 학습 목표\n학생이 달성할 목표를 적습니다.\n## 준비물\n수업 자료를 정리합니다."
+  },
+  "owner": "alice",
+  "visibility": "public",
+  "workspace": null,
+  "license": "CC0-1.0",
+  "origin": "user",
+  "updated_at": "2026-07-10T00:00:00Z"
+ }
+]

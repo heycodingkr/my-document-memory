@@ -1,0 +1,325 @@
+{
+ "seed": "dmem-sentinels-v1",
+ "families": [
+  "api_key",
+  "jwt",
+  "bearer",
+  "private_key",
+  "email",
+  "phone",
+  "national_id",
+  "card",
+  "account",
+  "capability",
+  "url_parts",
+  "prose",
+  "hidden"
+ ],
+ "items": [
+  {
+   "id": "api_key-01",
+   "family": "api_key",
+   "value": "sk-test-RRjGd64WVFkrvdmYxinEaFrDCn9NK3ga"
+  },
+  {
+   "id": "api_key-02",
+   "family": "api_key",
+   "value": "AKIAFPTUCJU7FNMKYYRJ"
+  },
+  {
+   "id": "api_key-03",
+   "family": "api_key",
+   "value": "ghp_jHB3SsNSpAWLH7gJUy6qanyZtMDf764MavwH"
+  },
+  {
+   "id": "api_key-04",
+   "family": "api_key",
+   "value": "sk-test-bSW4FLKWTFztYtbw4LuJpxFMH7nVm82K"
+  },
+  {
+   "id": "api_key-05",
+   "family": "api_key",
+   "value": "AKIAG24HY8RNUKFHHSNS"
+  },
+  {
+   "id": "api_key-06",
+   "family": "api_key",
+   "value": "ghp_XX7tkddhb2jt6qdP4hZgBbdpYA5S4Ak9GfQa"
+  },
+  {
+   "id": "jwt-01",
+   "family": "jwt",
+   "value": "eyJaGRyYzY2OD.eyJcGF5ODc5OTlmOD.qXKMK5ceKKeuT5LWZCHgE8"
+  },
+  {
+   "id": "jwt-02",
+   "family": "jwt",
+   "value": "eyJaGRyY2IyZD.eyJcGF5M2MxM2QzOW.a7LQxhwFqYeFjKBXy9VVcd"
+  },
+  {
+   "id": "jwt-03",
+   "family": "jwt",
+   "value": "eyJaGRyN2Y0ZD.eyJcGF5YTQxOThhMm.eqSwKLkhkPnP4jYGcC2D4L"
+  },
+  {
+   "id": "jwt-04",
+   "family": "jwt",
+   "value": "eyJaGRyODU5OG.eyJcGF5M2Y1Y2JkOT.tAKnDCwa7P4dfRhGKqShC7"
+  },
+  {
+   "id": "jwt-05",
+   "family": "jwt",
+   "value": "eyJaGRyNTkzOW.eyJcGF5MmMzOWY2NT.4VRnrCH89Kti3fXk6ybL23"
+  },
+  {
+   "id": "jwt-06",
+   "family": "jwt",
+   "value": "eyJaGRyMjU1Nz.eyJcGF5NTIyMDQ4Zm.KxcsEY9yUyYYGjBuXiYryF"
+  },
+  {
+   "id": "bearer-01",
+   "family": "bearer",
+   "value": "Bearer H9vpJbAZrACzSPa5VNPfTZCmg4D4"
+  },
+  {
+   "id": "bearer-02",
+   "family": "bearer",
+   "value": "Bearer syJeXx4HnfWEL4pE8JeGNyMbArYs"
+  },
+  {
+   "id": "bearer-03",
+   "family": "bearer",
+   "value": "Bearer zEmUaXEcDmUJXuekEj3XkCxLtaUE"
+  },
+  {
+   "id": "bearer-04",
+   "family": "bearer",
+   "value": "Bearer VCWy4gSXrJT9ir22uMVPYQa4UFTx"
+  },
+  {
+   "id": "bearer-05",
+   "family": "bearer",
+   "value": "Bearer uXec46NygXsje7cAZpAHm6U6A8EN"
+  },
+  {
+   "id": "bearer-06",
+   "family": "bearer",
+   "value": "Bearer WKHa37ZDaMt2sZAVtCKTSjbwrXhh"
+  },
+  {
+   "id": "private_key-01",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\nAaWaB9KUDsUsJdydkDKM6WLH7iBn4rL9AMC3XFW6\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "private_key-02",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\nzRaxZhpppH83xWifCL2CD6B3EP6ExraUz8PXKqbT\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "private_key-03",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\nMahQqQa358Zb3r6vLcjhXHNVD22wBdpa4Z5u9uzt\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "private_key-04",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\nXtLuGxJprkBaR47zxwmVAGCa65XqvpuV8m9whYip\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "private_key-05",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\nBP9QdZF5nRi5aFdvn3T9YfJnqnCfLTsqQVmMfqYg\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "private_key-06",
+   "family": "private_key",
+   "value": "-----BEGIN PRIVATE KEY-----\niEHgD5zJAmgV5QmKd6bp8mfZhvBTrNqNKPCnyTVH\n-----END PRIVATE KEY-----"
+  },
+  {
+   "id": "email-01",
+   "family": "email",
+   "value": "user5962f8@example.test"
+  },
+  {
+   "id": "email-02",
+   "family": "email",
+   "value": "user575f69@example.test"
+  },
+  {
+   "id": "email-03",
+   "family": "email",
+   "value": "userd4dab4@example.test"
+  },
+  {
+   "id": "email-04",
+   "family": "email",
+   "value": "userfdae72@example.test"
+  },
+  {
+   "id": "email-05",
+   "family": "email",
+   "value": "user68c8a1@example.test"
+  },
+  {
+   "id": "email-06",
+   "family": "email",
+   "value": "user20d6f1@example.test"
+  },
+  {
+   "id": "phone-01",
+   "family": "phone",
+   "value": "010-0000-6325"
+  },
+  {
+   "id": "phone-02",
+   "family": "phone",
+   "value": "+1 (555) 010-0175"
+  },
+  {
+   "id": "phone-03",
+   "family": "phone",
+   "value": "090-0000-3601"
+  },
+  {
+   "id": "phone-04",
+   "family": "phone",
+   "value": "010-0000-3853"
+  },
+  {
+   "id": "phone-05",
+   "family": "phone",
+   "value": "+1 (555) 010-0103"
+  },
+  {
+   "id": "phone-06",
+   "family": "phone",
+   "value": "090-0000-4166"
+  },
+  {
+   "id": "national_id-01",
+   "family": "national_id",
+   "value": "000000-0000000"
+  },
+  {
+   "id": "national_id-02",
+   "family": "national_id",
+   "value": "000-00-0000"
+  },
+  {
+   "id": "card-01",
+   "family": "card",
+   "value": "4111 1111 1111 1111"
+  },
+  {
+   "id": "account-01",
+   "family": "account",
+   "value": "DE00 0000 0000 0000 0000 00"
+  },
+  {
+   "id": "capability-01",
+   "family": "capability",
+   "value": "GDOC_ID_SENTINEL_wPGHwdaHRKzsgxUE4kWfEDwq"
+  },
+  {
+   "id": "capability-02",
+   "family": "capability",
+   "value": "RK_SENTINEL_xWKBgYiszWfC"
+  },
+  {
+   "id": "capability-03",
+   "family": "capability",
+   "value": "GDOC_ID_SENTINEL_ymieuBZRWAcZzJEPXt5r8wXq"
+  },
+  {
+   "id": "capability-04",
+   "family": "capability",
+   "value": "RK_SENTINEL_Ekz593554L4V"
+  },
+  {
+   "id": "capability-05",
+   "family": "capability",
+   "value": "GDOC_ID_SENTINEL_eZBuctwiLdWrdxRHi4g9sSm4"
+  },
+  {
+   "id": "capability-06",
+   "family": "capability",
+   "value": "RK_SENTINEL_KmDgRkPdmftV"
+  },
+  {
+   "id": "url_parts-01",
+   "family": "url_parts",
+   "value": "Q_SENTINEL_cFtdU4cq6j"
+  },
+  {
+   "id": "url_parts-02",
+   "family": "url_parts",
+   "value": "F_SENTINEL_4upLihcFLH"
+  },
+  {
+   "id": "url_parts-03",
+   "family": "url_parts",
+   "value": "USERINFO_SENTINEL_SRarVqMLsT"
+  },
+  {
+   "id": "url_parts-04",
+   "family": "url_parts",
+   "value": "Q_SENTINEL_DRhKgfQ4PA"
+  },
+  {
+   "id": "url_parts-05",
+   "family": "url_parts",
+   "value": "F_SENTINEL_66DHmVVqcb"
+  },
+  {
+   "id": "url_parts-06",
+   "family": "url_parts",
+   "value": "USERINFO_SENTINEL_PCLtx32sA8"
+  },
+  {
+   "id": "prose-01",
+   "family": "prose",
+   "value": "PROSE_SENTINEL_1"
+  },
+  {
+   "id": "prose-02",
+   "family": "prose",
+   "value": "PROSE_SENTINEL_2"
+  },
+  {
+   "id": "prose-03",
+   "family": "prose",
+   "value": "PROSE_SENTINEL_3"
+  },
+  {
+   "id": "prose-04",
+   "family": "prose",
+   "value": "PROSE_SENTINEL_4"
+  },
+  {
+   "id": "prose-05",
+   "family": "prose",
+   "value": "PROSE_SENTINEL_5"
+  },
+  {
+   "id": "prose-06",
+   "family": "prose",
+   "value": "L2_ONLY_SENTINEL"
+  },
+  {
+   "id": "hidden-01",
+   "family": "hidden",
+   "value": "HIDDEN_SENTINEL_1"
+  },
+  {
+   "id": "hidden-02",
+   "family": "hidden",
+   "value": "HIDDEN_SENTINEL_2"
+  },
+  {
+   "id": "hidden-03",
+   "family": "hidden",
+   "value": "HIDDEN_SENTINEL_3"
+  }
+ ]
+}

@@ -1,0 +1,259 @@
+[
+  {
+    "fx_id": "fx_s1",
+    "kind": "template",
+    "title": "공개 한국어 이력서",
+    "summary": "재사용할 수 있는 한국어 이력서 구조와 안내.",
+    "form": {
+      "provider": "html",
+      "doc_type": "resume",
+      "locale": "ko-KR"
+    },
+    "site_host": "www.example.org",
+    "url_patterns": [
+      "/pages/resume-ko.html"
+    ],
+    "keywords": [
+      "resume"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 이력서\n\nPROSE_SENTINEL_S1\n\n## 경력\n주요 역할과 성과를 기재합니다.\n## 학력\n관련 학력을 기록합니다."
+    },
+    "owner": "alice",
+    "visibility": "public",
+    "workspace": null,
+    "license": "CC-BY-4.0",
+    "origin": "user",
+    "updated_at": "2026-10-01T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s2",
+    "kind": "template",
+    "title": "회의록 템플릿",
+    "summary": "회의 안건, 결정, 담당자별 후속 조치를 기록한다.",
+    "form": {
+      "provider": "markdown",
+      "doc_type": "meeting_minutes",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.com",
+    "url_patterns": [
+      "/templates/minutes"
+    ],
+    "keywords": [
+      "minutes",
+      "agenda",
+      "decision",
+      "action-items"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 회의록\n\n## 안건\n논의할 주제를 기록합니다.\n## 결정 사항\n합의 내용을 적습니다.\n## 후속 조치\n담당자와 기한을 정합니다."
+    },
+    "owner": "alice",
+    "visibility": "public",
+    "workspace": null,
+    "license": "CC-BY-SA-4.0",
+    "origin": "user",
+    "updated_at": "2026-10-02T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s3",
+    "kind": "template",
+    "title": "구조 전용 견적서 양식",
+    "summary": "본문 문장은 없고 제목과 표 머리글만 있는 가져온 구조 양식.",
+    "form": {
+      "provider": "html",
+      "doc_type": "quote",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.org",
+    "url_patterns": [
+      "/forms/quote"
+    ],
+    "keywords": [
+      "quote"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 견적서\n\nPROSE_SENTINEL_S3 견적 유효 기간은 발행일로부터 30일입니다.\n\n## 공급자\n\n| 항목 | 내용 |\n|---|---|\n| 품목 | |\n| 수량 | |\n| 금액 | |"
+    },
+    "owner": "alice",
+    "visibility": "public",
+    "workspace": null,
+    "license": "unknown",
+    "origin": "fetched",
+    "updated_at": "2026-10-03T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s4",
+    "kind": "template",
+    "title": "팀 전용 견적서",
+    "summary": "acme 구성원끼리 공유하는 견적서 기본 항목.",
+    "form": {
+      "provider": "markdown",
+      "doc_type": "quote",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.com",
+    "url_patterns": [
+      "/team/quote"
+    ],
+    "keywords": [
+      "quote",
+      "pricing"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 견적서\n\n## 공급자\n상호와 연락처를 적습니다.\n## 비용\n항목별 금액과 유효 기간을 작성합니다."
+    },
+    "owner": "alice",
+    "visibility": "team",
+    "workspace": "acme",
+    "license": null,
+    "origin": "user",
+    "updated_at": "2026-10-04T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s5",
+    "kind": "template",
+    "title": "비공개 양식",
+    "summary": "비공개 검증용 합성 본문 센티널이 포함된 양식.",
+    "form": {
+      "provider": "markdown",
+      "doc_type": "resume",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.com",
+    "url_patterns": [
+      "/private/resume"
+    ],
+    "keywords": [
+      "resume"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 내부 이력서\n\nPRIVATE_SENTINEL_S5\n\n## 경력\n비공개 시험 데이터입니다."
+    },
+    "owner": "alice",
+    "visibility": "private",
+    "workspace": "acme",
+    "license": null,
+    "origin": "user",
+    "updated_at": "2026-10-05T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s6",
+    "kind": "reference",
+    "title": "비공개 업무 참고자료",
+    "summary": "bob 소유의 개인 참고자료로 다른 사용자에게 노출되면 안 된다.",
+    "form": {
+      "provider": "markdown",
+      "doc_type": "other",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.com",
+    "url_patterns": [
+      "/private/notes"
+    ],
+    "keywords": [
+      "memo"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 업무 메모\n\n분기별 검토 일정과 담당 범위를 정리한다."
+    },
+    "owner": "bob",
+    "visibility": "private",
+    "workspace": null,
+    "license": null,
+    "origin": "user",
+    "updated_at": "2026-10-06T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s7",
+    "kind": "template",
+    "title": "구조만 허용된 견적서",
+    "summary": "구조 재사용만 허용되는 공개 견적서 양식.",
+    "form": {
+      "provider": "html",
+      "doc_type": "quote",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.org",
+    "url_patterns": [
+      "/forms/quote-structure"
+    ],
+    "keywords": [
+      "quote"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 견적서\n\n## 품목\n\n| 항목 | 단가 | 수량 |\n|---|---:|---:|\n| | | |"
+    },
+    "owner": "alice",
+    "visibility": "public",
+    "workspace": null,
+    "license": "proprietary-structure-only",
+    "origin": "user",
+    "updated_at": "2026-10-07T00:00:00Z"
+  },
+  {
+    "fx_id": "fx_s8",
+    "kind": "reference",
+    "title": "개인정보 포함 참고자료",
+    "summary": "개인정보 취급 경로를 확인하는 합성 reference.",
+    "form": {
+      "provider": "markdown",
+      "doc_type": "other",
+      "locale": "ko-KR"
+    },
+    "site_host": "example.com",
+    "url_patterns": [
+      "/private/contact-note"
+    ],
+    "keywords": [
+      "memo"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "연락 메모: {{name}}, {{email}}, {{phone}}."
+    },
+    "owner": "alice",
+    "visibility": "private",
+    "workspace": "acme",
+    "license": null,
+    "origin": "user",
+    "updated_at": "2026-10-08T00:00:00Z",
+    "contains_personal_data": true
+  },
+  {
+    "fx_id": "fx_s9",
+    "kind": "template",
+    "title": "공개 한국어 이력서 (프로젝트 중심)",
+    "summary": "목표, 경험, 프로젝트 순서로 구성한 한국어 이력서 구조.",
+    "form": {
+      "provider": "html",
+      "doc_type": "resume",
+      "locale": "ko-KR"
+    },
+    "site_host": "www.example.org",
+    "url_patterns": [
+      "/pages/resume-ko.html"
+    ],
+    "keywords": [
+      "resume"
+    ],
+    "content": {
+      "format": "markdown",
+      "data": "# 이력서\n\nPROSE_SENTINEL_S9\n\n## 목표\n지원 동기와 목표를 적습니다.\n## 경험\n핵심 경험을 시간순으로 적습니다.\n## 프로젝트\n대표 프로젝트와 역할을 적습니다."
+    },
+    "owner": "bob",
+    "visibility": "private",
+    "workspace": null,
+    "license": "CC-BY-4.0",
+    "origin": "user",
+    "updated_at": "2026-10-09T00:00:00Z"
+  }
+]

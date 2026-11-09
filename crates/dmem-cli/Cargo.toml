@@ -1,0 +1,17 @@
+[package]
+name = "dmem-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+dmem-client.workspace = true
+dmem-contracts.workspace = true
+clap.workspace = true
+tokio.workspace = true
+serde_json.workspace = true
+
+[[bin]]
+name = "dmem"
+path = "src/main.rs"
