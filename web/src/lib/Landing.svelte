@@ -2,6 +2,7 @@
  import {onDestroy,onMount} from 'svelte';
  import AgentSetup from './AgentSetup.svelte';
  import DocumentPreview from './DocumentPreview.svelte';
+ import DemoVideo from './DemoVideo.svelte';
  import FreeTemplates from './FreeTemplates.svelte';
  import ServiceLogo from './ServiceLogo.svelte';
  import WorkflowDemo from './WorkflowDemo.svelte';
@@ -104,7 +105,7 @@
     <h1 id="hero-title">{page.hero.title} <br/><span>{page.hero.subtitle}</span></h1>
     <p class="hero-description">{page.hero.description}<br class="desktop-break"/> {page.hero.descriptionNext}</p>
     <p class="hero-detail">{page.hero.detail}<br class="desktop-break"/> {page.hero.detailNext}</p>
-    <div class="hero-actions"><a class="action action-primary" href="#get-started">{page.hero.getStarted} →</a><a class="action action-text" href="#workflow-demo">{page.hero.watchDemo} <span aria-hidden="true">↓</span></a></div>
+    <div class="hero-actions"><a class="action action-primary" href="#get-started">{page.hero.getStarted} →</a><a class="action action-text" href="#product-demo">{page.hero.watchDemo} <span aria-hidden="true">↓</span></a></div>
     <div class="hero-resources"><button onclick={connected?onreturn:onlogin}>{connected?page.hero.openSpace+' →':page.hero.startEmail+' →'}</button><a href="https://github.com/heycodingkr/my-document-memory" target="_blank" rel="noreferrer noopener">{page.hero.viewGithub} ↗</a><span>{page.hero.resources}</span></div>
     <div class="model-picker"><label for="example-model">{page.hero.modelLabel}</label><select id="example-model" aria-label={page.hero.modelAria} bind:value={model}><option>Codex</option><option>Claude</option><option>Muse</option></select><span class="ai-brands" aria-label={page.hero.brandsAria}><span><ServiceLogo service="codex"/>OpenAI</span><span><ServiceLogo service="claude"/>Claude</span><span>Muse</span></span></div>
    </div>
@@ -123,6 +124,8 @@
     <p class="example-disclosure">{page.workflowExample.previewNote}</p>
    </div>
   </section>
+
+  <div class="section-width"><DemoVideo {locale}/></div>
 
   <section class="about-section section-width" id="about" aria-labelledby="about-title">
    <div class="section-heading about-heading"><div><span class="kicker">{page.about.kicker}</span><h2 id="about-title">{page.about.title}<br/>{page.about.titleNext}</h2></div><p>{page.about.summary}</p></div>

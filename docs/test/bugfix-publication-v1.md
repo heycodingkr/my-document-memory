@@ -1,39 +1,35 @@
-# Bugfix publication candidate verification v1
+# Responsive bugfix publication verification v1
 
-Date: 2026-11-09. User authorized commit, push and production deployment after the initial bugfix review.
+Date:2026-11-09. User authorized push and production deployment.
 
-The publication checkout starts at origin/main `964a39faa478e9f6eef29f83a032715f47898a3a`. Its untouched frontend matches all13 production frontend files byte-for-byte in release `20261109T050859Z-18544`. The candidate adds only #398's two responsive CSS corrections, six regression cases/default smoke registration, #411's fixture/member contract clarification and these task records. Ongoing shared web-memory, administrator-queue, formatting, demo and landing-UX work is excluded.
+The final frontend preserves the currently deployed landing and demo video in release `20261109T054829Z-demo-video`. Its baseline is landing source `e229b8481982e3c82b3dcc67fa811bb61c4c2aac` plus the deployed DemoVideo/Landing dependency changes. The parent rebuilt that exact source and matched all13 non-media production files. The three existing media files are retained from the live release and checked against their known hashes.
 
-## Order, outputs and independent verification
+The same two #398 CSS fixes, original six regression cases and initial spec/test/review records are already on origin/main in integration `4cf5635`. The explicit `release/bugfix-navigation-20261109` branch publishes the compatible frontend snapshot, including the already-deployed compact menu/demo and the responsive corrections. The integrated backend/web-memory feature set on main is outside this frontend-only rollout.
 
-| Order / route | Output | Parent check |
+## Dependency order and independent checks
+
+| Order / route | Output | Parent verification |
 |---|---|---|
-| 1 / parent | Isolated current-main checkout and live baseline | Direct git/source review and13-file SHA-256 match |
-| 2 / parent; document copy attempted on codex:gpt-6-luna | Two CSS changes, regression/contract docs | Worker made no changes; parent finished the bounded copy and independently checked bytes; complete candidate diff review |
-| 3 / parent | Frozen validated frontend and candidate fixture | Actual Rust, Svelte and browser results below |
-| 4 / parent | Commit and normal fast-forward push | Staged paths exclude private env, DBs and artifacts; origin SHA checked |
-| 5 / parent | Frontend-only immutable release | Live current/index/backend guards under existing deploy lock; verified SQLite backup; retained backend/config; atomic switch and rollback checks |
-| 6 / parent | Hosted verification evidence | Public health, asset-byte identity, read-only navigation/viewport checks, active release and unchanged service PID |
+| 1 / parent | Inspect live/source/git and freeze latest baseline | Direct source review and reproducible13-file build |
+| 2 / parent | Two CSS corrections, six regressions and member-fixture note | Exact source delta; compact menu return flow; deployed demo preserved |
+| 3 / parent | Validated frontend/fixture | Rust source identity, Svelte and actual browser results below |
+| 4 / parent | Publish release branch and main verification record | Normal pushes, remote SHA checks, shared index/source preserved |
+| 5 / parent | Guarded immutable release | Existing deploy lock; expected release/index/backend guards; SQLite backup; retained old assets/media; atomic symlink with rollback |
+| 6 / parent | Hosted evidence | Public byte hashes, read-only navigation/viewport checks, auth/library smoke, unchanged PID/backend/config |
 
-## Inputs and expected results
+## Inputs and parent-run results
 
-- Four desktop sizes1416×614,1024×500,720×614,701×500: real pointer wheel reaches Getting started and exactly one Sign out; guide opens, My space returns, sign-out revokes the session; no horizontal page overflow.
-- Two mobile sizes700×844,390×844: exactly one visible Sign out; session becomes401; no horizontal page overflow.
-- Temporary actual Rust accounts fixture with explicitly registered local/bob owners: member contribution, admin approval/rejection, private boundaries, points, withdrawal and replay controls remain intact. Existing Rust nonmember contribution denial checks remain enabled.
-- Production serving path resolves through current/web/dist: activation preserves the live backend binary and configuration, retains prior hashed assets and must return healthy loopback/API endpoints plus exact frozen frontend bytes.
-
-## Parent-run candidate results
+Desktop sizes1416×614,1024×500,720×614,701×500 require pointer scrolling to reach Getting started and a unique Sign out; guide opens and My space returns, opening the compact menu when needed. Mobile sizes700×844 and390×844 require a unique reachable Sign out. Every case requires no horizontal overflow and actual session401 after sign-out.
 
 | Check | Result |
 |---|---|
-| cargo test --workspace --locked |95 passed |
-| cargo build --workspace --examples --bins --locked |Passed |
-| pnpm --dir web check |0 errors,0 warnings |
-| pnpm --dir web build |Passed |
-| python3 -B tests/smoke/accounts-v1.py |20 browser cases passed, including all6 responsive cases |
-| Exact source delta |Both CSS files equal upstream plus the intended single replacement each |
-| Untouched baseline versus production |All13 frontend files match SHA-256 |
+| Rust workspace --locked |95 passed; exact crates/Cargo.toml/Cargo.lock identity proved between tested source and deployed landing base |
+| Workspace fixtures/binaries --locked |Passed |
+| Final Svelte check/build |0 errors,0 warnings / passed |
+| Final real account/member/admin browser regression |20 passed, including all6 responsive cases and contribution review/member-denial controls |
+| Current demo baseline rebuild |13 non-media file hashes match;3 existing media hashes preserved |
+| Before-switch read-only production smoke |Healthy HTTPS, credential/Origin boundaries, linked assets and private library reads pass |
 
-These candidate results are separate from the initial shared-checkout investigation, which had118 Rust tests and19+2 browser runs. The candidate excludes the unrelated unmerged administrator-queue case and other ongoing backend work.
+Initial shared-checkout counts118 Rust and19+2 browser tests belong to that separate snapshot; they are not substituted for this final candidate's results.
 
-Local excluded evidence directory: `.artifacts/bugfix-publication-20261109/` (`baseline-manifest.json`, `candidate-rust.log`, `candidate-browser.log`, `candidate-check.log`, `candidate-build.log`, activation script and subsequent publication evidence). This document records the candidate verification; the actual pushed commit, activated release, backup and public verification are recorded in that publication evidence.
+Excluded evidence directory: `.artifacts/bugfix-publication-20261109/` records source/build manifests, final test logs, guarded activation script, publication-state.json and post-deployment evidence. It contains no source-control changes to production credentials or data. The backend binary/configuration/database remain outside the frontend archive.
