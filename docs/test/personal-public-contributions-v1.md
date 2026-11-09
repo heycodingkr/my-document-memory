@@ -22,7 +22,7 @@ cargo build -p dmem-cli -p dmem-mcp
 python3 tests/smoke/community-v1.py
 ```
 
-이메일 인증은 격리된 임시 SQLite DB와 합성 메일 캡처를 사용한다. 실제 개인 이메일 발송이나 운영 배포를 검증한 결과는 아니다. 브라우저 스크린샷은 각 실행의 `target/e2e-logs/accounts-*`에 저장한다.
+이메일 인증은 격리된 임시 SQLite DB와 합성 메일 캡처를 사용한다. 실제 개인 이메일 발송은 검증하지 않았으며, 운영 배포 결과는 아래에 별도로 기록한다. 브라우저 스크린샷은 각 실행의 `target/e2e-logs/accounts-*`에 저장한다.
 
 편집기 회귀는 새 fixture로 따로 실행한다. 대량 검수 큐 fixture와 공개 기여가 누적된 DB에서 함께 실행하면 기본 목록의 20개 제한 때문에 편집기 테스트가 기대하는 seed 양식이 첫 페이지에서 밀려난다.
 
@@ -34,3 +34,14 @@ python3 tests/smoke/community-v1.py
 현재 운영 중인 `20261109T034500Z-admin-starters` 릴리스의 기준 커밋 `2a693b5`에서 별도 작업 트리를 만들고 가입·익명 열람·회원 기여 권한 및 상태 화면 변경을 반영했다. 운영 소스와 커밋 사이의 차이 8개를 확인해 관리자 allowlist 설정의 중복 선언과 호출 형식을 운영 코드에 맞췄다. 기존 관리자 회귀 테스트도 새 설정 입력 형식으로 유지했다.
 
 배포본 검증 결과: `cargo test --workspace --locked` 94개 통과, `pnpm --dir web check` 오류/경고 0개, 웹 빌드 통과. 격리된 계정·공개 열람·기여·관리자 브라우저 테스트 14개 및 별도 문서 편집 회귀 3개가 통과했다. 원본 작업 폴더에서 검증한 별도 진행 기능은 이 배포본의 테스트 수에 포함하지 않는다. 운영 개인 이메일 발송은 검증 요청을 하지 않았다.
+
+
+## 운영 배포 결과 (2026-11-09)
+
+- 소스 커밋: `b0a27e51a654e17c7c514255c438c3907edf2be6`, GitHub `main` 푸시 확인.
+- 운영 릴리스: `/srv/my-document-memory/releases/20261109T050859Z-18544`. 기존 배포 스크립트의 호스트 배포 잠금 아래 Rust 1.95.0 release 빌드와 서비스 전환을 완료했다.
+- SQLite 백업: `/var/backups/my-document-memory/20261109T050848Z-personal-public.sqlite3`, 권한 0600, 무결성 검사 통과. 이전 릴리스는 `20261109T034500Z-admin-starters`다.
+- HTTPS 웹·API 양쪽에서 익명 공개 목록·상세·리더보드를 확인했다. 이메일 가입 기능이 켜져 있으며, 익명 및 가입되지 않은 local Bearer의 기여 조회·제출·검수 조회·철회는 모두 401이다.
+- 운영 HTML과 연결된 JS/CSS 세 파일의 SHA-256이 로컬에서 브라우저 검증한 배포 빌드와 일치한다.
+- `public-api-v1.py` 9개 그룹 및 `deployed-v1.py` 4개 그룹 통과. 서비스 active, DB quick_check 통과. 기존 56개 record의 owner/kind/version/payload 해시가 모두 일치하고 계정 1개·기여 0개도 유지됐다. 비공개 서버 설정 파일 해시도 동일하다.
+- 배포·권한 검증 증거: 원본 작업 폴더의 `.artifacts/deploy/personal-public-{api,web,policy}-live.json`. 운영에서 개인에게 인증 메일을 보내거나 기여 데이터를 생성하지 않았다.

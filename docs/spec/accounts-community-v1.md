@@ -2,7 +2,7 @@
 
 상태: 구현·검증·운영 배포 완료 (2026-11-09). 실행 근거: [검증 결과](../test/accounts-community-v1-results.md). 기본 웹 이메일 로그인은 동시 작업 [이메일 링크 명세](landing-email-links-v1.md)로 확장됐으며, 본 명세의 OTP API도 호환 유지한다. 기존 runtime-v1의 Rust/Axum/SQLite/Svelte와 Bearer 기반 CLI/MCP 호환성을 유지한다. 테스트 정의: [accounts-community-v1](../test/accounts-community-v1.md).
 
-일반 개인 가입·익명 열람·회원 기여 권한 및 상태 화면 보강은 로컬 구현·검증 완료다. [추가 검증 결과](../test/personal-public-contributions-v1.md)는 운영 배포와 구분한다.
+일반 개인 가입·익명 열람·회원 기여 권한 및 상태 화면 보강은 운영 배포·검증까지 완료했다. [추가 검증 결과](../test/personal-public-contributions-v1.md)에 개발 검증과 운영 확인을 구분해 기록했다.
 
 ## 의존 순서와 원자 목표
 
