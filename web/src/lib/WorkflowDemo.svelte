@@ -1,51 +1,40 @@
 <script lang="ts">
  import {onMount} from 'svelte';
  import ServiceLogo from './ServiceLogo.svelte';
- let {model='Codex'}:{model?:string}=$props();
+ import {landingCopy,type LandingLocale} from './landing-copy';
+ let {model='Codex',locale='en'}:{model?:string;locale?:LandingLocale}=$props();
+ const t=$derived(landingCopy[locale].workflow);
  const modelService=$derived(model==='Codex'?'codex':model==='Claude'?'claude':'muse');
-
  const duration=22000;
  const writingStart=4200;
- const request='Using my saved templates and source notes, create a 10-slide deck in Google Slides, a one-page summary in Google Docs, and a promotional post about this project for Naver Blog.';
- const slides=[
-  {title:'A better start for every document.',body:'My Document Memory\nYour AI. Your tools. Your standard.',kind:'THE IDEA'},
-  {title:'The blank page is only half the work.',body:'Finding the format. Gathering the facts. Explaining the same writing rules again.',kind:'THE PROBLEM'},
-  {title:'Keep the format. Write something new.',body:'Remember the outline, voice, references, and review criteria for the next task.',kind:'THE APPROACH'},
-  {title:'Give your next draft a useful memory.',body:'A reusable structure. Selected source notes. Clear requirements.',kind:'THE CONTEXT'},
-  {title:'Choose the AI you want to work with.',body:'Codex, Claude, Muse. Carry the same document standards across models.',kind:'YOUR AI'},
-  {title:'Finish in the tools you already know.',body:'Google Docs, Google Slides, Notion, and the places you publish.',kind:'YOUR WORKSPACE'},
-  {title:'One brief. Three useful drafts.',body:'A 10-slide deck. A one-page summary. A project launch post.',kind:'THE WORKFLOW'},
-  {title:'Ground the story in your references.',body:'Keep sources attached. Leave unknown facts open for confirmation.',kind:'THE EVIDENCE'},
-  {title:'Make review part of the process.',body:'Check the outline, claims, and voice before sharing the work.',kind:'THE REVIEW'},
-  {title:'Your next great document starts here.',body:'Save a useful format. Add this project’s notes. Make it your own.',kind:'THE NEXT STEP'}
- ];
- const summary='THE PROJECT\nMy Document Memory keeps reusable document formats, writing rules, and selected references together.\n\nTHE OPPORTUNITY\nGive your preferred AI a useful starting point for reports, decks, project pages, and posts.\n\nTHE WORKFLOW\nChoose a template and source notes. Review the draft. Continue in the tools you already use.\n\nNEXT STEP\nSave your first format and build from it. Confirm any missing facts before sharing.';
- const blog='A good document starts long before the first sentence. There is a format to find, a tone to remember, and a stack of notes to bring together.\n\nMeet My Document Memory: a place to keep that useful starting point for the next time you ask AI to write.\n\nOne project can become a presentation, a concise summary, and a post—each with its own format, all working from the same references.\n\nBring your outline and source notes. Choose your AI. Review the result and make it your own.\n\nStart with a format worth remembering.';
- const stages=['Your brief','Your memory','Three drafts','Your review'];
- const clamp=(value:number)=>Math.max(0,Math.min(1,value));
+ const request=$derived(t.request);
+ const slides=$derived(t.slides);
+ const summary=$derived(t.documentSummary);
+ const blog=$derived(t.blog);
+ const stages=$derived(t.stages);
  let elapsed=$state(0);
  let paused=$state(false);
  let inView=$state(false);
  let pageVisible=$state(true);
  let reducedMotion=$state(false);
  let previewSlide=$state<number|null>(null);
- let copyMessage=$state('');
+ let copyStatus=$state<'success'|'manual'|''>('');
  let root=$state<HTMLElement>();
  let requestElement=$state<HTMLParagraphElement>();
  const stage=$derived(elapsed<2200?0:elapsed<writingStart?1:elapsed<16600?2:3);
- const phase=$derived(['Reading your brief','Remembering your format','Writing three drafts','Ready for your review'][stage]);
+ const phase=$derived(t.phases[stage]);
  const slideCount=$derived(Math.min(10,Math.max(0,Math.floor((elapsed-writingStart)/1100))));
  const activeSlide=$derived(previewSlide??Math.min(9,slideCount));
  const currentSlide=$derived(slides[activeSlide]);
- const slideFraction=$derived(previewSlide!==null||slideCount===10?1:clamp((elapsed-writingStart-slideCount*1100)/900));
+ const slideFraction=$derived(previewSlide!==null||slideCount===10?1:Math.max(0,Math.min(1,(elapsed-writingStart-slideCount*1100)/900)));
  const slideBody=$derived(currentSlide.body.slice(0,Math.floor(currentSlide.body.length*slideFraction)));
- const summaryFraction=$derived(clamp((elapsed-5500)/7500));
- const blogFraction=$derived(clamp((elapsed-7600)/8500));
+ const summaryFraction=$derived(Math.max(0,Math.min(1,(elapsed-5500)/7500)));
+ const blogFraction=$derived(Math.max(0,Math.min(1,(elapsed-7600)/8500)));
  const writing=$derived(elapsed>=writingStart);
  const playing=$derived(!paused&&inView&&pageVisible);
 
  function seek(){paused=true;previewSlide=null;}
- function replay(){elapsed=0;previewSlide=null;paused=false;}
+ function replay(){elapsed=0;previewSlide=null;paused=false;copyStatus='';}
  function toggle(){
   if(elapsed>=duration){replay();return;}
   paused=!paused;
@@ -54,13 +43,13 @@
   try{
    if(!navigator.clipboard?.writeText)throw new Error('clipboard_unavailable');
    await navigator.clipboard.writeText(request);
-   copyMessage='Brief copied. Paste it into your connected AI.';
+   copyStatus='success';
   }catch{
    if(requestElement){
     const range=document.createRange();range.selectNodeContents(requestElement);
     const selection=window.getSelection();selection?.removeAllRanges();selection?.addRange(range);
    }
-   copyMessage='Select the brief and copy it manually.';
+   copyStatus='manual';
   }
  }
  onMount(()=>{
@@ -82,41 +71,41 @@
 </script>
 
 <section class="workflow-demo" id="workflow-demo" aria-labelledby="demo-title" bind:this={root} data-playing={playing} data-reduced-motion={reducedMotion}>
- <div class="demo-heading"><div><span class="demo-kicker">ONE REQUEST. THREE PLACES TO GO.</span><h2 id="demo-title">Ask once.<br class="mobile-break"/> Watch it take shape.</h2></div><p>One project. The same memory.<br/>A different format for every destination.</p></div>
+ <div class="demo-heading"><div><span class="demo-kicker">{t.kicker}</span><h2 id="demo-title">{t.title}<br class="mobile-break"/> {t.titleNext}</h2></div><p>{t.summary}<br/>{t.summaryNext}</p></div>
 
- <div class="request-bar"><div class="request-top"><span class="request-label"><span aria-hidden="true">↳</span> YOU ASK</span><button class="copy-request" onclick={copyRequest} aria-label="Copy multi-output request">Copy brief <span aria-hidden="true">⧉</span></button></div><p class="multi-request" aria-label="Multi-output request" bind:this={requestElement}>{request}</p><div class="request-bottom"><span class="brief-chip"><ServiceLogo service="slides"/>10 slides</span><span class="brief-chip"><ServiceLogo service="docs"/>1-page summary</span><span class="brief-chip"><ServiceLogo service="naver"/>1 launch post</span><span class="one-memory">↳ from the same saved context</span></div><p class="copy-feedback" aria-live="polite">{copyMessage}</p></div>
+ <div class="request-bar"><div class="request-top"><span class="request-label"><span aria-hidden="true">↳</span> {t.askLabel}</span><button class="copy-request" onclick={copyRequest} aria-label={t.copyAria}>{t.copyButton} <span aria-hidden="true">⧉</span></button></div><p class="multi-request" aria-label={t.requestAria} bind:this={requestElement}>{request}</p><div class="request-bottom"><span class="brief-chip"><ServiceLogo service="slides"/>10 {locale==='en'?'slides':'장'}</span><span class="brief-chip"><ServiceLogo service="docs"/>1-page {locale==='en'?'summary':'요약'}</span><span class="brief-chip"><ServiceLogo service="naver"/>1 {locale==='en'?'launch post':'소개 글'}</span><span class="one-memory">{t.oneMemory}</span></div><p class="copy-feedback" aria-live="polite">{copyStatus==='success'?t.copySuccess:copyStatus==='manual'?t.copyFallback:''}</p></div>
 
- <div class="memory-flow"><span class="memory-label"><span aria-hidden="true">✳</span> YOUR DOCUMENT MEMORY</span><div class="memory-chips"><span>Pitch outline</span><span>Project notes</span><span>My writing style</span></div><span class="memory-to" aria-hidden="true">→</span><span class="memory-agent"><ServiceLogo service={modelService}/>{model}</span><span class="flow-arrow" aria-hidden="true">↓</span></div>
+ <div class="memory-flow"><span class="memory-label"><span aria-hidden="true">✳</span> {t.memoryLabel}</span><div class="memory-chips">{#each t.memoryChips as chip}<span>{chip}</span>{/each}</div><span class="memory-to" aria-hidden="true">→</span><span class="memory-agent"><ServiceLogo service={modelService}/>{model}</span><span class="flow-arrow" aria-hidden="true">↓</span></div>
 
  <div class="output-grid">
-  <article class="output-app slides-app" aria-label="Google Slides demo: a ten-slide project deck">
-   <header class="app-title"><ServiceLogo service="slides"/><div><strong>Google Slides</strong><span>Project introduction</span></div><span class:ready={slideCount===10} class="app-state">{slideCount===10?'Draft ready':writing?'Writing…':'Waiting'}</span></header>
-   <div class="app-menu" aria-hidden="true"><span>File</span><span>Edit</span><span>View</span><span>Insert</span><span class="menu-end">Present ▷</span></div>
+  <article class="output-app slides-app" aria-label={t.slidesAppAria}>
+   <header class="app-title"><ServiceLogo service="slides"/><div><strong>Google Slides</strong><span>{t.projectIntro}</span></div><span class:ready={slideCount===10} class="app-state">{slideCount===10?t.states.ready:writing?t.states.writing:t.states.waiting}</span></header>
+   <div class="app-menu" aria-hidden="true">{#each t.menus as menu}<span>{menu}</span>{/each}<span class="menu-end">{t.present}</span></div>
    <div class="slides-editor">
-    <ol class="slide-filmstrip" aria-label="Deck slides">{#each slides as slide,i}<li><button class:selected={activeSlide===i} class:filled={slideCount>i} disabled={slideCount<i+1} aria-label={'Preview slide '+(i+1)+': '+slide.title} aria-pressed={activeSlide===i} onclick={()=>{previewSlide=i;paused=true;}}><span>{i+1}</span><span class="thumb-paper"><i></i><i></i></span></button></li>{/each}</ol>
-    <div class="slide-workspace"><span class="slide-position">{writing?'SLIDE '+String(activeSlide+1).padStart(2,'0')+' / 10':'OUTLINE FIRST'}</span><div class="demo-slide" class:cover={activeSlide===0||activeSlide===9}><span class="slide-kind">{writing?currentSlide.kind:'MY DOCUMENT MEMORY'}</span>{#if writing}<h3>{currentSlide.title}</h3><p>{slideBody}<span class="writing-caret" class:invisible={slideFraction>=1} aria-hidden="true"></span></p>{:else}<div class="waiting-content"><span class="waiting-symbol" aria-hidden="true">▧</span><p>Your story, in ten slides.</p><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>{/if}<footer><span>MY DOCUMENT MEMORY</span><span>{activeSlide+1}</span></footer></div><div class="slide-notes"><strong>{slideCount}/10 slides</strong><span>{slideCount===10?'Outline and draft complete. Ready to review.':writing?'Building the story, one slide at a time.':'Review the outline before writing.'}</span></div></div>
+    <ol class="slide-filmstrip" aria-label={t.deckSlidesAria}>{#each slides as slide,i}<li><button class:selected={activeSlide===i} class:filled={slideCount>i} disabled={slideCount<i+1} aria-label={t.previewSlide(i+1,slide.title)} aria-pressed={activeSlide===i} onclick={()=>{previewSlide=i;paused=true;}}><span>{i+1}</span><span class="thumb-paper"><i></i><i></i></span></button></li>{/each}</ol>
+    <div class="slide-workspace"><span class="slide-position">{writing?t.slidePosition(activeSlide+1):t.outlineFirst}</span><div class="demo-slide" class:cover={activeSlide===0||activeSlide===9}><span class="slide-kind">{writing?currentSlide.kind:'MY DOCUMENT MEMORY'}</span>{#if writing}<h3>{currentSlide.title}</h3><p>{slideBody}<span class="writing-caret" class:invisible={slideFraction>=1} aria-hidden="true"></span></p>{:else}<div class="waiting-content"><span class="waiting-symbol" aria-hidden="true">▧</span><p>{t.waitingSlide}</p><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>{/if}<footer><span>MY DOCUMENT MEMORY</span><span>{activeSlide+1}</span></footer></div><div class="slide-notes"><strong>{t.slideCount(slideCount)}</strong><span>{slideCount===10?t.slideDone:writing?t.slideBuilding:t.slideReview}</span></div></div>
    </div>
-   <footer class="app-footer"><span class="state-dot" class:done={slideCount===10}></span>{slideCount===10?'10 slides · editable draft':'Remembered structure → presentation'}</footer>
+   <footer class="app-footer"><span class="state-dot" class:done={slideCount===10}></span>{slideCount===10?t.editableDraft:t.rememberedStructure}</footer>
   </article>
 
-  <article class="output-app docs-app" aria-label="Google Docs demo: a one-page executive summary">
-   <header class="app-title"><ServiceLogo service="docs"/><div><strong>Google Docs</strong><span>Project summary</span></div><span class:ready={summaryFraction===1} class="app-state">{summaryFraction===1?'Draft ready':summaryFraction>0?'Writing…':'Waiting'}</span></header>
-   <div class="app-menu" aria-hidden="true"><span>File</span><span>Edit</span><span>View</span><span>Insert</span><span class="menu-end">A &nbsp; 11 &nbsp; B</span></div>
-   <div class="docs-editor"><div class="ruler" aria-hidden="true"></div><div class="summary-page"><span class="document-kicker">MY DOCUMENT MEMORY / OVERVIEW</span><h3>Executive summary</h3><div class="document-rule"></div>{#if summaryFraction>0}<p class="summary-text">{summary.slice(0,Math.floor(summary.length*summaryFraction))}<span class="writing-caret" class:invisible={summaryFraction>=1} aria-hidden="true"></span></p>{:else}<div class="document-skeleton" aria-hidden="true"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div><p class="waiting-note">The same project, on one clear page.</p>{/if}<span class="page-number">1</span></div></div>
-   <footer class="app-footer"><span class="state-dot" class:done={summaryFraction===1}></span>{summaryFraction===1?'1 page · ready for your review':'Selected references → concise summary'}</footer>
+  <article class="output-app docs-app" aria-label={t.docsAppAria}>
+   <header class="app-title"><ServiceLogo service="docs"/><div><strong>Google Docs</strong><span>{t.projectSummary}</span></div><span class:ready={summaryFraction===1} class="app-state">{summaryFraction===1?t.states.ready:summaryFraction>0?t.states.writing:t.states.waiting}</span></header>
+   <div class="app-menu" aria-hidden="true">{#each t.menus as menu}<span>{menu}</span>{/each}<span class="menu-end">A &nbsp; 11 &nbsp; B</span></div>
+   <div class="docs-editor"><div class="ruler" aria-hidden="true"></div><div class="summary-page"><span class="document-kicker">{t.documentKicker}</span><h3>{t.summaryTitle}</h3><div class="document-rule"></div>{#if summaryFraction>0}<p class="summary-text">{summary.slice(0,Math.floor(summary.length*summaryFraction))}<span class="writing-caret" class:invisible={summaryFraction>=1} aria-hidden="true"></span></p>{:else}<div class="document-skeleton" aria-hidden="true"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></div><p class="waiting-note">{t.waitingSummary}</p>{/if}<span class="page-number">1</span></div></div>
+   <footer class="app-footer"><span class="state-dot" class:done={summaryFraction===1}></span>{summaryFraction===1?t.summaryFooterReady:t.summaryFooterWaiting}</footer>
   </article>
 
-  <article class="output-app blog-app" aria-label="Naver Blog demo: an unpublished project promotional post">
-   <header class="app-title"><ServiceLogo service="naver"/><div><strong>Naver Blog</strong><span>Project launch post</span></div><span class:ready={blogFraction===1} class="app-state">{blogFraction===1?'Draft ready':blogFraction>0?'Writing…':'Waiting'}</span></header>
-   <div class="app-menu blog-menu" aria-hidden="true"><strong>MY PROJECT JOURNAL</strong><span class="menu-end">Draft · not published</span></div>
-   <div class="blog-editor"><div class="blog-cover"><span>MEET MY DOCUMENT MEMORY</span><strong>Less starting over.<br/>More getting it written.</strong><div class="cover-lines" aria-hidden="true"><i></i><i></i><i></i></div></div><div class="blog-copy"><span class="blog-category">PROJECTS & IDEAS</span><h3>{blogFraction>0?'A better start for your next document.':'A story worth sharing.'}</h3><span class="blog-byline"><span aria-hidden="true">m.</span> My Document Memory · Draft</span>{#if blogFraction>0}<p class="blog-text">{blog.slice(0,Math.floor(blog.length*blogFraction))}<span class="writing-caret" class:invisible={blogFraction>=1} aria-hidden="true"></span></p>{:else}<div class="document-skeleton" aria-hidden="true"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>{/if}{#if blogFraction===1}<div class="blog-tags">#DocumentMemory &nbsp; #AIWriting</div>{/if}</div></div>
-   <footer class="app-footer"><span class="state-dot" class:done={blogFraction===1}></span>{blogFraction===1?'Launch post · unpublished draft':'Your writing style → project story'}</footer>
+  <article class="output-app blog-app" aria-label={t.blogAppAria}>
+   <header class="app-title"><ServiceLogo service="naver"/><div><strong>Naver Blog</strong><span>{t.projectPost}</span></div><span class:ready={blogFraction===1} class="app-state">{blogFraction===1?t.states.ready:blogFraction>0?t.states.writing:t.states.waiting}</span></header>
+   <div class="app-menu blog-menu" aria-hidden="true"><strong>{t.blogMenu}</strong><span class="menu-end">{t.blogDraft}</span></div>
+   <div class="blog-editor"><div class="blog-cover"><span>{t.blogCover}</span><strong>{t.blogCoverTitle}<br/>{t.blogCoverNext}</strong><div class="cover-lines" aria-hidden="true"><i></i><i></i><i></i></div></div><div class="blog-copy"><span class="blog-category">{t.blogCategory}</span><h3>{blogFraction>0?t.blogTitleReady:t.blogTitleWaiting}</h3><span class="blog-byline"><span aria-hidden="true">m.</span> {t.blogByline}</span>{#if blogFraction>0}<p class="blog-text">{blog.slice(0,Math.floor(blog.length*blogFraction))}<span class="writing-caret" class:invisible={blogFraction>=1} aria-hidden="true"></span></p>{:else}<div class="document-skeleton" aria-hidden="true"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>{/if}{#if blogFraction===1}<div class="blog-tags">{t.blogTags}</div>{/if}</div></div>
+   <footer class="app-footer"><span class="state-dot" class:done={blogFraction===1}></span>{blogFraction===1?t.blogFooterReady:t.blogFooterWaiting}</footer>
   </article>
  </div>
 
- <div class="playback"><div class="playback-status"><span class="play-indicator" class:complete={stage===3}></span><p aria-live="polite" aria-label="Demo stage">{phase}</p><span class="demo-badge">ILLUSTRATIVE DEMO</span></div><div class="playback-controls"><button class="play-button" onclick={toggle} aria-label={paused?'Play demo':'Pause demo'}><span aria-hidden="true">{paused?'▷':'Ⅱ'}</span>{paused?'Play':'Pause'}</button><input class="demo-progress" type="range" min="0" max={duration} step="100" bind:value={elapsed} oninput={seek} aria-label="Demo progress" aria-valuetext={phase}/><button class="replay-button" onclick={replay} aria-label="Replay demo"><span aria-hidden="true">↺</span> Replay</button></div></div>
- <ol class="phase-track" aria-label="Demo stages">{#each stages as label,i}<li class:reached={stage>=i} aria-current={stage===i?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{label}</li>{/each}</ol>
- <p class="demo-disclosure">A product concept in motion. No live accounts are connected, and nothing is published.</p>
+ <div class="playback"><div class="playback-status"><span class="play-indicator" class:complete={stage===3}></span><p aria-live="polite" aria-label={t.stageAria}>{phase}</p><span class="demo-badge">{t.badge}</span></div><div class="playback-controls"><button class="play-button" onclick={toggle} aria-label={paused?t.playAria:t.pauseAria}><span aria-hidden="true">{paused?'▷':'Ⅱ'}</span>{paused?t.play:t.pause}</button><input class="demo-progress" type="range" min="0" max={duration} step="100" bind:value={elapsed} oninput={seek} aria-label={t.progressAria} aria-valuetext={phase}/><button class="replay-button" onclick={replay} aria-label={t.replayAria}><span aria-hidden="true">↺</span> {t.replay}</button></div></div>
+ <ol class="phase-track" aria-label={t.stagesAria}>{#each stages as label,i}<li class:reached={stage>=i} aria-current={stage===i?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{label}</li>{/each}</ol>
+ <p class="demo-disclosure">{t.disclosure}</p>
 </section>
 
 <style>

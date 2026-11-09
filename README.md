@@ -8,7 +8,7 @@
 
 Keep useful structures, writing rules, and ways to use references as reusable memory. One person's writing experience can become a better starting point for another person and their AI.
 
-[The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
+[The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
 
 ## The Problem
 
@@ -47,6 +47,19 @@ Keep the templates and writing practices you use on the web as document memory, 
 Carry the same template, tone, required sections, references, and review criteria across AI models. The intended flow is: choose a template and references, let your connected AI work from that memory, then review and finish in a familiar web workspace.
 
 Direct work inside each external service depends on the connected host and browser tools. The runtime's built-in creation tool currently creates an editable outline; provider synchronization and publishing are separate work.
+
+## Expected Time and Tool-Call Savings
+
+**Less repeated setup: approximately 46% less task time and 34% fewer tool calls, as an illustrative planning estimate.**
+
+For repeat work such as Google Slides decks, Google Docs reports, and Notion project pages, reuse the structure, writing rules, and references instead of asking your AI to rediscover the same workflow each time.
+
+| Illustrative task | Starting point | With reusable memory (estimate) |
+|---|---:|---:|
+| Task time | 10 minutes | About 5 minutes 24 seconds |
+| Tool calls | 100 | About 66 |
+
+These estimates take inspiration from [WAM's 2026-10-16 editor pilot](https://github.com/heycodingkr/web-agentic-memory/blob/f0fdcb434916cb5ed6819546ac12ce00a3fe5e0d/web/src/lib/landing.ts#L63): the three English editor scenarios averaged about 46% less time and 34% fewer calls, with one run per condition. The example above applies those rounded percentages to a hypothetical task. Actual savings depend on the task and connected tools; **My Document Memory has not yet been benchmarked.**
 
 ## How it works
 
