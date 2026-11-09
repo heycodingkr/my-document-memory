@@ -205,6 +205,23 @@ pub(crate) fn normalize_email(value: &str) -> Result<String, Fault> {
     }
     Ok(value)
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn wildcard_admin_email_is_rejected_without_replacing_valid_allowlist() {
+        let mut auth = AuthConfig::default();
+        auth.set_admin_emails(" Operator@Example.Test ").unwrap();
+
+        assert_eq!(
+            auth.set_admin_emails("other@example.test,*@example.test"),
+            Err(Fault::InvalidInput)
+        );
+        assert_eq!(auth.admin_emails.len(), 1);
+        assert!(auth.admin_emails.contains("operator@example.test"));
+    }
+}
 #[derive(Debug, Clone, Serialize)]
 pub struct Account {
     pub id: String,
