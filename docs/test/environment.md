@@ -1,5 +1,7 @@
 # 테스트 환경 (ENV)
 
+URL intake·CLI/MCP·실제 소유 Arise 탭·웹 저장의 최신 제품 검증은 [`web-memory-v1.md`](web-memory-v1.md)에 있다: Rust 120개, intake 33개, recall 44개, 하네스 138개 통과. 아래 초기 환경/포팅 실행과 별도 기록이다.
+
 상태: 실행 기록. 아래 수치는 모두 2026-11-09에 이 저장소에서 직접 실행해 얻은 값이고, 실행하지 않은 것은 "미실행"이라고 적었다. 1~4절은 초기 **테스트 더블**(`tests/env/dmem-double`) 실행 기록이며, 최신 제품·하네스 검증은 6절과 [`wam-port-completion-v1.md`](wam-port-completion-v1.md)에 있다. 더블이 통과한다는 사실은 "테스트가 계약대로 쓰였고 실제 결함에 반응한다"는 근거이지 "제품이 맞다"는 근거가 아니다([`harness-verification.md`](harness-verification.md)).
 
 ## 1. 이 실행의 환경

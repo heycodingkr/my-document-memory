@@ -4,6 +4,8 @@
 영역 / 테스트 ID 접두사: `DISC`(검색), `IMP`(미리보기·가져오기·클립) (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`core.md`](core.md), [`formats.md`](formats.md), [`memory.md`](memory.md) 5절, [`sharing.md`](sharing.md) 4절
 
+실제 로컬 제품의 이름·한도·출처·Arise 브리지 구현은 [`web-memory-v1.md`](web-memory-v1.md), 실행 결과는 [`../test/web-memory-v1.md`](../test/web-memory-v1.md)를 따른다. 이 문서의 전체 목표 도구/필드와는 별도 계약이다.
+
 ## 1. 네 가지 동작
 
 | 동작 | 도구·명령 | 저장 | 네트워크 |
