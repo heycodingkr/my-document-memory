@@ -44,6 +44,7 @@ test('About link explains the product and fits narrow screens',async({page})=>{
  }
  await expect(about).toContainText('Your memories stay private unless you choose to share them.');
  await page.setViewportSize({width:320,height:844});
+ await page.getByRole('button',{name:'Menu',exact:true}).click();
  await expect(aboutLink).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
@@ -60,6 +61,8 @@ test('connection examples copy exactly and remain usable on narrow screens',asyn
  }
  for(const width of [390,320]){
   await page.setViewportSize({width,height:844});
+  const menu=page.getByRole('button',{name:'Menu',exact:true});
+  if(await menu.getAttribute('aria-expanded')==='false')await menu.click();
   await expect(page.getByRole('navigation',{name:'Product guide'}).getByRole('link',{name:'GitHub',exact:true})).toBeVisible();
   for(const name of ['Web app','CLI','MCP']){
    await tabs.getByRole('tab',{name,exact:true}).click();
