@@ -16,6 +16,10 @@ Administrator email challenges and sessions are stored separately from member ch
 
 The existing operator Bearer approval test remains in the accounts integration suite. This preserves the older CLI/operator path while sharing the decision endpoint.
 
+## Wildcard allowlist root cause
+
+`AuthConfig::set_admin_emails` normalized each address and immediately replaced the allowlist. The email normalizer accepts `*` in the local part, so a configured wildcard pattern was treated as an exact email. Reject wildcard characters after normalization and before assignment; that keeps the previous valid set intact when configuration is invalid.
+
 ## Verification
 
 The regression test failed before the route change at the queue request with status 401 (expected 200). After the fix:
