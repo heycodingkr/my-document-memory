@@ -2,7 +2,7 @@
 
 ![Templates and references connected to documents and slides](docs/assets/readme-hero.png)
 
-> Any model. Your standard.
+> The era of writing documents yourself is ending.
 
 **We are building a service where people share document memory, so anyone can create the document they need with AI, easily and for free.**
 
