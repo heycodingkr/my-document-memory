@@ -19,6 +19,7 @@
 | [`environment.md`](environment.md) | 이 머신에서 확인한 도구와 실행 결과 |
 | [`metrics.md`](metrics.md), [`prereg/_template.md`](prereg/_template.md) | 제품/더블의 수치 기준과 문서 작업 A/B 사전 등록. WAM 결과를 이 제품의 성능으로 승계하지 않음 |
 | [`wam-port-completion-v1.md`](wam-port-completion-v1.md) | 원본 전체 처분, CLI/MCP·Arise·변이·실제 Rust 제품 실행 결과 (`PORT`, `HARN-17`) |
+| [`web-memory-v1.md`](web-memory-v1.md) | 실제 Rust URL 검색·미리보기·가져오기·출처, CLI/MCP, 소유 Arise 탭 클립·웹 입력 (`WI-01~24`) |
 | [`../../tests/README.md`](../../tests/README.md) | 테스트 코드 구성, 대상 어댑터, 하네스 API, 변이 목록 |
 
 ## 1. 원칙
@@ -94,6 +95,7 @@
 | 내 메모리 저장·가져오기 | LIB-01~16, TPL-01 | SMK-07 | SEC-A01, SEC-A03 |
 | 다른 사람 메모리 찾기·복사·게시·라이선스 | SHR-01~21, TPL-02~08 | SMK-08, SMK-11, BEH-07~08 | SEC-C01, SEC-D |
 | 웹 검색·미리보기·가져오기·클립 | DISC-01~08, IMP-01~20 | SMK-09~10, BEH-09, HOST-09 | SEC-E, SEC-B02 |
+| 실제 intake v1 부분집합 | WI-01~24 (`web-memory-v1.md`) | `web-memory-v1.py --browser --arise` | SSRF·타 소유자·외부 권리·서명/탭 음성 대조 |
 | 개인정보·동의·삭제 | PRIV-01~10 | SMK-11, SMK-16 | SEC-G, SEC-A |
 | MCP 계약·호스트 연결 | MCP-01~24, MCPF-01~27 | SMK-02, HOST-01~12, CUST-01~06 | SEC-H |
 | CLI 계약 | CLI-01~33, SNIP-01~04 | SMK-01, SMK-13 | SEC-F, SEC-H02 |
@@ -130,7 +132,7 @@
 | 2 | 레코드 종류 | `template`·`reference`·`style_rule` | DB `template`·`source`·`document` | `source`↔`reference` 대응(문서화됨). 공개 CLI·MCP의 `kind` 이름은 이 명세가 기준 |
 | 3 | 가시성 | `private`·`team`·`public` | `Private`·`Public` | team은 다중 사용자 단계(문서화됨) |
 | 4 | CLI·MCP 표면 | `cli.md`·`mcp.md`·`contracts/mcp-tools.v1.json`의 `doc_memory_*` 12개 | 실제 Rust CLI·`document_*` stdio MCP가 구현되어 별도 제품 스모크로 검증됨 | `runtime-v1.md`, `recall-v1.md`, `memory-community-smoke-v1.md`의 구현 계약을 사용. 이름·오류·입력이 다른 full 계약을 그대로 제품에 연결하지 않음 |
-| 5 | recall·게시·웹 가져오기·클립 | 전체 계약 | recall v1·계정별 공개 기여·검수·복사는 별도 구현. 웹 검색·원격 URL fetch·현재 탭 clip은 전체 목표 | `runtime-v1` 프로필의 `F`는 여전히 `SKIP(profile)`; 실제 부분집합은 `recall-v1.py`·`community-v1.py`로 검증 |
+| 5 | recall·게시·웹 가져오기·클립 | 전체 계약 | recall·계정별 공개 기여·검수·복사에 이어 intake v1의 검색·URL fetch·preview/import·소유 탭 clip 구현 | `runtime-v1` 프로필의 `F`는 여전히 `SKIP(profile)`; 실제 부분집합은 `recall-v1.py`·`community-v1.py`·`web-memory-v1.py`로 검증 |
 
 ### 하네스가 드러낸 명세 결함과 조치 (2026-11-09)
 

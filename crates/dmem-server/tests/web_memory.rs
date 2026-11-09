@@ -392,6 +392,25 @@ async fn wi09_expired_previews_and_wi13_promoted_sources_keep_boundaries() {
     assert_eq!(post(&f.app,"/v1/me/contributions",A,json!({"template_id":template.id,"author":"Synthetic author","license":"CC0-1.0","rights_confirmed":true})).await.0,403);
 }
 #[tokio::test]
+async fn wi11_reference_form_survives_reload_and_template_extraction() {
+    let tmp = tempfile::tempdir().unwrap();
+    let f = fixture(&tmp.path().join("db")).await;
+    let (_, p) = post(&f.app, "/v1/web/preview", A, json!({"url":format!("{}/doc",f.url)})).await;
+    let (status, source) = post(&f.app, "/v1/web/import", A, json!({"preview_id":p["preview_id"],"kind":"reference","form":{"provider":"google_docs","doc_type":"resume","locale":"ja-JP","variant":"jp_rirekisho"}})).await;
+    assert_eq!(status, 200);
+    let id = source["id"].as_str().unwrap();
+    let origin = serde_json::to_value(f.store.web_origin("alice", id).unwrap()).unwrap();
+    assert_eq!(origin["form"]["locale"], "ja-JP");
+    assert_eq!(origin["form"]["region"], "JP");
+    let reopened = Store::open(&tmp.path().join("db")).unwrap();
+    let template = reopened.template_from_source("alice", id).unwrap();
+    assert_eq!(template.form.provider, dmem_contracts::Provider::GoogleDocs);
+    assert_eq!(template.form.doc_type, "resume");
+    assert_eq!(template.form.locale, "ja-JP");
+    assert_eq!(template.form.region.as_deref(), Some("JP"));
+    assert_eq!(template.form.variant.as_deref(), Some("jp_rirekisho"));
+}
+#[tokio::test]
 async fn wi11_detected_british_locale_keeps_its_region() {
     let tmp = tempfile::tempdir().unwrap();
     let f = fixture(&tmp.path().join("db")).await;

@@ -1,6 +1,6 @@
 # 기능 명세 (Feature Spec)
 
-상태: 전체 목표 계약과 구현 단계 명세의 색인. 실제 Rust 제품은 `runtime-v1`·`recall-v1`·계정/기여 명세의 부분집합을 구현한다. 기능 명세는 "무엇을 만들고 어떤 상태가 되면 끝인가"의 단일 출처다. 설계([`../design/`](../design/architecture.md))는 "어떻게 만드는가", 테스트([`../test/`](../test/README.md))는 "어떻게 검증하는가"를 다룬다. 명세가 있다는 것은 구현이나 검증이 끝났다는 뜻이 아니다.
+상태: 전체 목표 계약과 구현 단계 명세의 색인. 실제 Rust 제품은 `runtime-v1`·`recall-v1`·`web-memory-v1`·계정/기여 명세의 부분집합을 구현한다. 기능 명세는 "무엇을 만들고 어떤 상태가 되면 끝인가"의 단일 출처다. 설계([`../design/`](../design/architecture.md))는 "어떻게 만드는가", 테스트([`../test/`](../test/README.md))는 "어떻게 검증하는가"를 다룬다. 명세가 있다는 것은 구현이나 검증이 끝났다는 뜻이 아니다.
 
 제품 범위의 상위 문서는 [`overview.md`](overview.md)(v0.3)이며 이 저장소의 다른 작업이 함께 편집한다. 이 색인의 문서들은 그 범위 안에서 **계약**(CLI·MCP·정규화·저장·공유·가져오기)과 **테스트 ID**를 고정한다. 초기 양식 목록은 `template-library.md`(별도 작성 중)가 맡고 [`form.md`](form.md)의 `doc_types` 어휘와 맞춘다.
 
@@ -57,6 +57,7 @@
 | `FLOW` | 유저 플로우 | user-flows.md | 01~12 | 핵심 |
 | `HARN` | 테스트 하네스 자체 검증 | harness-verification.md(01~16), wam-port-completion-v1.md(17) | 01~17 | 핵심 |
 | `PORT` | WAM 전체 이식·제품/더블/호스트 검증 범위 | wam-port-completion-v1.md | 01~08 | 포팅 보완 |
+| `WI` | 실제 URL 검색·preview/import·출처·소유 Arise 탭 클립 | web-memory-v1.md | 01~24 | intake v1 |
 | `FAIL` | 교차 계층 실패·복구 | failure-matrix.md | 01~24 | 핵심 |
 | `API` `DB` | HTTP API·저장 | functional-api.md | API 01~40, DB 01~27 | P1 |
 | `DEDUP` `LINK` `CACHE` | 중복·기기 연결·캐시 | functional-connect.md | DEDUP 01~14, LINK 01~11, CACHE 01~11 | P1 |
@@ -75,6 +76,7 @@
 |---|---|---|
 | [`overview.md`](overview.md) | 제품 개요(상위 문서, 별도 편집 중) | v0.3 |
 | [`runtime-v1.md`](runtime-v1.md) | 구현 단계 계약(Rust·Axum·SQLite·Svelte의 로컬 부분집합) | 구현 |
+| [`web-memory-v1.md`](web-memory-v1.md) | 실제 URL 검색·미리보기·비공개 가져오기·서명된 소유 Arise 탭 클립 (`WI`) | 로컬 구현; 결과는 `docs/test/web-memory-v1.md` |
 | [`wam-port-completion-v1.md`](wam-port-completion-v1.md) | 원본 93개 처분·CLI/MCP·Arise·하네스 검증 (`PORT`, `HARN-17`) | 계약·검사 구현; 결과는 `docs/test/wam-port-completion-v1.md` |
 | [`accounts-community-v1.md`](accounts-community-v1.md) | 이메일 계정·마이페이지·공개 기여·검수·철회 | 구현·운영 검증 |
 | [`accounts-operations-v1.md`](accounts-operations-v1.md) | Resend/Cloudflare·자격 증명·서버 운영 | 운영 검증 |

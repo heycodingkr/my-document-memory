@@ -82,7 +82,7 @@ WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하
 | `tool-forms/{cli,mcp,snippet}-form.md` | [`../test/tool-forms/`](../test/tool-forms/README.md) |
 | `user-flows.md`, `failure-matrix.md`, `metrics.md`, `environment.md` | 같은 이름. A/B 사전 등록은 [`../test/prereg/_template.md`](../test/prereg/_template.md) |
 | `tests/lib/wamtest/{doctrace,evidence,procs,sentinels}.py`, `tests/env/fixture-sites/fixture_server.py` | `tests/lib/dmtest/`(일반화), `tests/env/fixture-sites/` |
-| `tests/env/check_browser_mcp_bridge.py`(Arise 공개 MCP + 현재 탭 recall) | `tests/smoke/arise_smoke.py`는 **브라우저 환경 부분만** 실행. 제품 브리지·현재 탭 clip 수용 기준은 `HOST-09`, `SMK-10`이며 미실행. 동등한 제품 브리지 검증으로 세지 않음 |
+| `tests/env/check_browser_mcp_bridge.py`(Arise 공개 MCP + 현재 탭 recall) | `tests/smoke/arise_smoke.py`는 **브라우저 환경 부분만** 실행. 실제 제품 브리지는 `dmem browser-mcp`, 소유 탭 clip·음성 대조·실제 Arise 웹 입력은 `tests/smoke/web-memory-v1.py --browser --arise`로 별도 검증. [intake 입력·기대 결과](../test/web-memory-v1.md) |
 | (WAM 실제 서버·바이너리) | `tests/env/dmem-double/`(**목표 계약 참조 구현**, 제품 아님); 실제 Rust 제품은 `runtime-v1.py`, `recall-v1.py`, `community-v1.py`로 따로 검증 |
 
 ## 5. 확정한 결정과 열어 둔 결정
@@ -104,9 +104,9 @@ WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하
 
 확인함: WAM 명세·테스트 문서·하네스 코드를 직접 읽었다. Google Drive API 내보내기 MIME 표(최종 갱신 2026-09-03)를 읽었다. 이 머신에 Python 3.14.7, Node 26.5.0, Arise 0.1.76이 있다.
 
-현재 확인한 것: Rust 6개 crate·Axum·SQLite·Svelte 제품, 실제 CLI·stdio MCP, URL+양식 recall 부분집합, 계정별 공개 기여·검수·복사가 있다. `runtime-v1.md`는 최초 단계 계약이며 이후 `recall-v1.md`·`accounts-community-v1.md`·`memory-community-smoke-v1.md`가 확장한다. 전체 목표의 `doc_memory_*` 12개와 실제 제품 `document_*`는 이름·입력·인증·오류 계약이 달라 별도 테스트한다. 차이와 대응은 [`../test/README.md`](../test/README.md) 7절이다.
+현재 확인한 것: Rust 6개 crate·Axum·SQLite·Svelte 제품, 실제 CLI·stdio MCP, URL+양식 recall 부분집합, 계정별 공개 기여·검수·복사가 있다. `runtime-v1.md`는 최초 단계 계약이며 이후 `recall-v1.md`·`accounts-community-v1.md`·`memory-community-smoke-v1.md`가 확장한다. 실제 intake 구현은 [`web-memory-v1.md`](../spec/web-memory-v1.md)의 URL 검색·미리보기·비공개 저장·출처와 `dmem browser-mcp`의 소유 Arise 탭 클립이다. 전체 목표의 `doc_memory_*` 12개와 실제 제품 `document_*`는 이름·입력·인증·오류 계약이 달라 별도 테스트한다. 차이와 대응은 [`../test/README.md`](../test/README.md) 7절이다.
 
-확인하지 못함: Google 웹 UI 내보내기 URL과 `/copy` 링크 형태, Docs·Slides API 구조, Notion 공식 문서 본문, WAM의 호스트별(Claude Code·Codex) 사실의 현재 유효성. 해당 항목은 "미검증" 또는 "WAM 승계(재확인 필요)"로 표시했다. Google의 export MIME·API 제한·Sheets locale 문서는 별도 공식 출처를 재확인했으며 제품 OAuth·동기화 검증을 뜻하지 않는다. 웹 검색·미리보기·원격 URL 가져오기·clip 전체 기능은 목표 계약/더블 단계다.
+확인하지 못함: 실제 계정에서 Google 웹 UI 내보내기 URL과 `/copy` 링크를 이용하는 흐름, Docs·Slides API 구조, Notion 공식 문서 본문, WAM의 호스트별(Claude Code·Codex) 사실의 현재 유효성. 해당 항목은 "미검증" 또는 "WAM 승계(재확인 필요)"로 표시했다. Google의 export MIME·API 제한·Sheets locale 문서는 별도 공식 출처를 재확인했으며 제품 OAuth·동기화 검증을 뜻하지 않는다. Google-shaped DOCX/PPTX export와 Brave 응답은 합성 fixture로 검증하며 실사이트·실제 키 검증으로 세지 않는다.
 
 ## 7. 위임 작성 규약 (병렬 작업자용)
 

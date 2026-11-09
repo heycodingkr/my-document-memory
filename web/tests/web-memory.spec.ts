@@ -13,7 +13,7 @@ test('preview a public document, choose country, save privately and read provena
  await page.getByLabel('Import title').fill('Web smoke structure');
  await page.getByLabel('Import locale').selectOption('en-US');
  await page.getByRole('button',{name:'Save privately',exact:true}).click();
- await expect(page.getByRole('status')).toContainText('Saved to your private library.');
+ await expect(page.locator('.web-import').getByRole('status')).toContainText('Saved to your private library.');
  const response=await page.request.get('/v1/templates?q=Web%20smoke%20structure',{headers:{Authorization:'Bearer '+process.env.DMEM_E2E_TOKEN}});
  const stored=(await response.json()).items.find((t:{title:string})=>t.title==='Web smoke structure');
  expect(stored.form.locale).toBe('en-US');expect(stored.form.region).toBe('US');
@@ -32,7 +32,7 @@ test('a Korean import becomes visible in the matching private library language',
  await page.getByRole('button',{name:'Preview URL',exact:true}).click();
  await page.getByLabel('Import title').fill('Korean web structure');
  await page.getByRole('button',{name:'Save privately',exact:true}).click();
- await expect(page.getByRole('status')).toContainText('Saved to your private library.');
+ await expect(page.locator('.web-import').getByRole('status')).toContainText('Saved to your private library.');
  await expect(page.getByLabel('Template language',{exact:true})).toHaveValue('ko-KR');
  await expect(page.getByLabel('Visibility',{exact:true})).toHaveValue('private');
  await expect(page.getByRole('button',{name:'Korean web structure preview',exact:true})).toBeVisible();

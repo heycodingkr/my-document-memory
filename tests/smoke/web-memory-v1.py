@@ -180,6 +180,22 @@ def run_arise(env, site, base, out, cli, http):
     session = "dmem-web-arise-" + str(time.time_ns())
     tab = None
     with McpSession([str(BIN / "dmem"), "browser-mcp", "--browser-mcp", "/Applications/Arise.app/Contents/MacOS/agent_browser"], env) as browser:
+        def wait_eval(js, accept, label):
+            # Navigation can invalidate an in-flight CEF evaluation. A successful
+            # evaluation of the actual expected state is still mandatory.
+            last = None
+            for _ in range(60):
+                reply = browser.call("browser_eval", {"session_id": session, "js": js})
+                if reply is not None and not reply.is_error:
+                    last = value(reply)
+                    if accept(last.get("result")):
+                        return last
+                elif reply is not None:
+                    last = reply.json
+                time.sleep(.15)
+            (out / ("arise-" + label + "-error.json")).write_text(json.dumps(last))
+            raise AssertionError("Arise state did not become ready: " + label)
+
         assert browser.initialize() is not None
         browser.list_tools()
         before = value(browser.call("browser_tabs", {"session_id": session}))
@@ -187,11 +203,7 @@ def run_arise(env, site, base, out, cli, http):
         try:
             opened = value(browser.call("browser_new_tab", {"session_id": session, "url": site + "/pages/resume-ko.html?ARISE_QUERY_SENTINEL=1#ARISE_FRAGMENT_SENTINEL", "activate": False}))
             tab = opened["tab_id"]
-            for _ in range(40):
-                ready = value(browser.call("browser_eval", {"session_id": session, "js": "location.pathname"}))
-                if ready.get("result") == "/pages/resume-ko.html":
-                    break
-                time.sleep(.15)
+            wait_eval("location.pathname", lambda result: result == "/pages/resume-ko.html", "source")
             result = value(browser.call("document_memory_clip_current_tab", {"session_id": session, "form": {"provider": "google_docs", "doc_type": "resume", "locale": "ko-KR"}}))
             template = cli("template-show", result["id"])
             check("WI-23 actual Arise clip persists correct structure", result["origin"]["provenance"] == "captured" and "경력" in template["sections"] and template["form"]["locale"] == "ko-KR")
@@ -201,33 +213,21 @@ def run_arise(env, site, base, out, cli, http):
                 if block.get("type") == "image":
                     (out / "arise-source.png").write_bytes(base64.b64decode(block["data"]))
             value(browser.call("browser_navigate", {"session_id": session, "url": site + "/pages/hostile-static.html"}))
-            for _ in range(40):
-                ready = value(browser.call("browser_eval", {"session_id": session, "js": "location.pathname"}))
-                if ready.get("result") == "/pages/hostile-static.html":
-                    break
-                time.sleep(.15)
+            wait_eval("location.pathname", lambda result: result == "/pages/hostile-static.html", "hostile")
             hostile = value(browser.call("document_memory_clip_current_tab", {"session_id": session}))
             saved = cli("template-show", hostile["id"])
             check("WI-23 actual hostile page is sanitized", "Real section" in saved["sections"] and "HIDDEN_SENTINEL" not in json.dumps(saved) and "ignore all previous" not in json.dumps(saved).lower())
             value(browser.call("browser_navigate", {"session_id": session, "url": base + "/#templates"}))
-            for _ in range(40):
-                ready=value(browser.call("browser_eval",{"session_id":session,"js":"location.origin"}))
-                if ready.get("result")==base:break
-                time.sleep(.15)
+            wait_eval("location.origin", lambda result: result == base, "app-origin")
             value(browser.call("browser_eval",{"session_id":session,"js":"(()=>{sessionStorage.setItem('dmem.token',"+json.dumps(TOKEN)+");setTimeout(()=>location.reload(),0);return 'prepared';})()"}))
-            for _ in range(60):
-                ready=value(browser.call("browser_eval",{"session_id":session,"js":"Boolean(document.querySelector('details.web-import'))"}))
-                if str(ready.get("result")).lower()=="true":break
-                time.sleep(.15)
+            wait_eval("Boolean(document.querySelector('details.web-import'))", lambda result: str(result).lower() == "true", "app-panel")
             value(browser.call("browser_select_tab",{"session_id":session,"tab_id":tab}))
             value(browser.call("browser_snapshot",{"session_id":session}))
             value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import > summary"}))
             value(browser.call("browser_type",{"session_id":session,"selector":"input[aria-label='Document URL']","text":site+"/pages/resume-ko.html"}))
+            wait_eval("document.querySelector('input[aria-label=\"Document URL\"]')?.value||''", lambda result: result == site+"/pages/resume-ko.html", "url-input")
             value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import form:has(input[aria-label='Document URL']) button"}))
-            for _ in range(60):
-                ready=value(browser.call("browser_eval",{"session_id":session,"js":"Boolean(document.querySelector('.web-preview'))"}))
-                if str(ready.get("result")).lower()=="true":break
-                time.sleep(.15)
+            wait_eval("Boolean(document.querySelector('.web-preview'))", lambda result: str(result).lower() == "true", "url-preview")
             value(browser.call("browser_type",{"session_id":session,"selector":"input[aria-label='Import title']","text":"Arise web UI structure"}))
             value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import button.primary"}))
             for _ in range(60):

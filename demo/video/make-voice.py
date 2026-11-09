@@ -23,7 +23,7 @@ cache = os.environ.get('MDM_VOICE_CACHE', os.path.join(repo, 'demo', 'out', 'voi
 
 ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 ap.add_argument('--lang', choices=['ko', 'en'], default='en', help='voice-over language (default: en)')
-ap.add_argument('--cut', choices=['demo-day', 'hackathon'], default='demo-day', help='which video: the 2:42 concept video (default) or the 90 s hackathon cut (English only)')
+ap.add_argument('--cut', choices=['demo-day', 'hackathon', 'hackathon-120'], default='demo-day', help='which video: concept, 90 s hackathon, or 120 s hackathon (English only)')
 ap.add_argument('--dry-run', action='store_true', help='print the beats and the character count; no network, no key needed')
 ap.add_argument('video_in', nargs='?')
 ap.add_argument('video_out', nargs='?')
@@ -31,9 +31,13 @@ args = ap.parse_args()
 if not args.dry_run and not (args.video_in and args.video_out):
     ap.error('video_in and video_out are required unless --dry-run')
 
-if args.cut == 'hackathon' and args.lang != 'en':
-    ap.error('the hackathon cut is English only')
-script_path = os.path.join(here, 'script.json') if args.cut == 'demo-day' else os.path.join(here, 'hackathon', 'script.json')
+if args.cut != 'demo-day' and args.lang != 'en':
+    ap.error('the hackathon cuts are English only')
+script_path = {
+    'demo-day': os.path.join(here, 'script.json'),
+    'hackathon': os.path.join(here, 'hackathon', 'script.json'),
+    'hackathon-120': os.path.join(here, 'hackathon-120', 'script.json'),
+}[args.cut]
 spec = json.load(open(script_path, encoding='utf-8'))
 voice = spec['voice'][args.lang]
 beats = [{'id': b['id'], 'start': b['start'], 'end': b['end'], 'text': b[args.lang].get('vo') or b[args.lang]['cap']} for b in spec['beats']]

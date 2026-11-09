@@ -199,6 +199,8 @@ Call `document_memory_status` to verify the connection. Select a template and re
 | `document_public_template_search` · `document_public_template_get` | Search and read approved public structures without a token |
 | `document_contribution_submit` · `document_contribution_list` | Explicitly submit a structure snapshot and follow its review |
 | `document_contribution_check` · `document_contribution_withdraw` | Read safe review findings or withdraw your contribution |
+| `document_web_search` · `document_web_preview` | Discover URLs and preview document structure (local intake v1) |
+| `document_web_import` · `document_web_origin` | Save a private structure/reference and read its source rights |
 
 Copying a template and copying a prompt are separate actions. Copying a prompt does not create a document. Deck requests remain disabled until their outline is approved.
 
@@ -210,7 +212,7 @@ Administrator access is separate from ordinary member sign-in and CLI/MCP librar
 
 ## Contribute and review a structure
 
-The local review runtime supports private save/read and the public contribution lifecycle from the web, CLI, and 17 stdio MCP tools. Public search/read works without `DMEM_TOKEN`; private operations use the token's library owner. Browser email accounts and separately provisioned library tokens remain distinct identities.
+The local review runtime supports private save/read and the public contribution lifecycle from the web, CLI, and 21 stdio MCP tools. Public search/read works without `DMEM_TOKEN`; private operations use the token's library owner. Browser email accounts and separately provisioned library tokens remain distinct identities.
 
 ```sh
 # Against your running local server:
@@ -299,8 +301,9 @@ Use the [runtime contract](docs/spec/runtime-v1.md), [account and community spec
 - Document blocks, editable slides, citations, immutable saved revisions, and conflict detection.
 - Markdown/HTML, DOCX, PPTX, and browser printing for PDF.
 - Shared HTTP client, CLI, and stdio MCP tools.
+- Local intake v1: URL preview/import, optional Brave search, and owned Arise tab clipping. Country/language, document type, source rights, and provenance are retained. [Contract and limits](docs/spec/web-memory-v1.md).
 
-Spreadsheet editing/formulas, provider synchronization, remote URL import, PDF import/OCR, and faithful reconstruction of complex Office layouts are outside this runtime. Wider product specifications include future work.
+Spreadsheet editing/formulas, provider synchronization, PDF import/OCR, and faithful reconstruction of complex Office layouts are outside this runtime. Wider product specifications include future work. Intake v1 is verified against the local source build; these new routes have not been deployed to the hosted API by this change.
 
 In local token mode the API binds to loopback, and `/v1` library requests require authorization. `/healthz` is a readiness endpoint. The browser stores the connection token in tab-scoped `sessionStorage`. Templates and factual references are searched separately.
 
@@ -336,6 +339,8 @@ See [.env.example](.env.example). The development supervisor reads `.env`; exist
 | `DMEM_WEB_ORIGIN` | `http://127.0.0.1:5174` | Allowed web origin |
 | `DMEM_WEB_DIR` | `web/dist` | Built web assets served by Rust |
 | `DMEM_URL` | `http://127.0.0.1:3847` | API base URL for CLI and MCP |
+| `DMEM_BRAVE_API_KEY` | Optional; server only | Brave web search; URL preview works without it |
+| `DMEM_CAPTURE_SECRET` | Optional; at least 32 characters | Same private value on server and browser adapter for signed tab clips |
 
 <details>
 <summary>Serve the built web app and API from one process</summary>
@@ -358,6 +363,30 @@ Open [http://127.0.0.1:3847](http://127.0.0.1:3847).
 
 For local CLI/MCP use, set `DMEM_URL=http://127.0.0.1:3847` and use the token generated in your local `.env` instead of the hosted library token.
 
+### Import a web document locally
+
+Run the server, web assets, and clients from the same source revision. In Templates or References, open **Import from web**, preview a URL, and confirm its country/language, provider, and document type before saving privately. Templates keep headings and table headers. References retain visible text when the detected license permits full copying; otherwise they retain structure. Source rights follow private copies and contribution review.
+
+```sh
+export DMEM_URL=http://127.0.0.1:3847
+./target/debug/dmem web preview https://example.com/document
+# Use the returned preview_id within 15 minutes:
+./target/debug/dmem web import PREVIEW_ID --as template
+./target/debug/dmem web origin SAVED_ID
+```
+
+Supported URL content is HTML, plain text, Markdown, and public Google Docs/Slides exports. Login-required documents can be uploaded as files or clipped from a tab owned by the browser adapter. Google account OAuth synchronization is separate future work. Google-shaped export fixtures verify the protocol here; live Google permissions and a real Brave key require separate checks.
+
+For Arise, register this command with an MCP host using its private environment for `DMEM_URL`, `DMEM_TOKEN`, and `DMEM_CAPTURE_SECRET`:
+
+```sh
+/absolute/path/my-document-memory/target/debug/dmem browser-mcp \
+  --browser-mcp /Applications/Arise.app/Contents/MacOS/agent_browser \
+  --browser-arg=--mcp-server
+```
+
+Configure the same capture secret on the server. The adapter keeps one public stdio browser connection, forwards its tools, and adds `document_memory_clip_current_tab` (alias `doc_memory_clip_current_tab`). Create a session-owned tab with those browser tools, then clip using its `session_id`. The clip tool accepts no URL or HTML from the model and checks ownership before and after capture. User tabs and foreign sessions are refused. [Inputs, expected results, and smoke evidence](docs/test/web-memory-v1.md).
+
 ### Checks
 
 Build the real product and its synthetic account fixture before running smoke tests:
@@ -368,12 +397,14 @@ cargo fmt --all --check
 cargo test --workspace --locked
 cargo build --workspace --locked
 cargo build -p dmem-server --example accounts_fixture --locked
+cargo build -p dmem-server --example web_fixture --locked
 pnpm --dir web check
 pnpm --dir web build
 python3 tests/smoke/runtime-v1.py --browser
 python3 tests/smoke/accounts-v1.py
 python3 tests/smoke/community-v1.py
 python3 -I tests/smoke/recall-v1.py
+python3 -B tests/smoke/web-memory-v1.py --browser --arise
 node --test demo/video/*.test.mjs
 ```
 
@@ -389,6 +420,7 @@ pnpm --dir web exec playwright install chromium
 | `accounts-v1.py` | Synthetic email links, private account isolation, administrator review, queue pagination, public copy/withdrawal, profiles, and leaderboard |
 | `community-v1.py` | Real CLI/MCP private/public workflows, blocked approval, attribution, and independent HTTP/SQLite checks |
 | `recall-v1.py` | Real HTTP/CLI/MCP recall, ownership boundaries, and safe errors |
+| `web-memory-v1.py --browser --arise` | URL/Google-shaped exports, source rights, private import, persistent browser adapter, hostile capture controls, actual Arise clipping and form input |
 
 These checks use temporary databases and synthetic credentials. Account tests capture email locally; the runtime-only browser run explicitly skips tests that require that fixture or live email opt-in. The broader Python contract suite defaults to a test double; its results are separate from these Rust product checks.
 

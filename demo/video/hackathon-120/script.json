@@ -1,0 +1,335 @@
+{
+  "about": "English 120-second cut. Reuses the first 75 seconds and verified footage of the 90-second version, then adds company formats, shared standards and contribution credit. Spec: docs/demo/hackathon-120s.md.",
+  "total_s": 120,
+  "poster_s": 100,
+  "scenes": {
+    "problem": {
+      "start": 0,
+      "end": 15
+    },
+    "command": {
+      "start": 15,
+      "end": 28,
+      "dark": true
+    },
+    "agents": {
+      "start": 28,
+      "end": 62,
+      "dark": true
+    },
+    "share": {
+      "start": 62,
+      "end": 75
+    },
+    "companies": {
+      "start": 75,
+      "end": 85
+    },
+    "standards": {
+      "start": 85,
+      "end": 95,
+      "dark": true
+    },
+    "community": {
+      "start": 95,
+      "end": 105
+    },
+    "saved": {
+      "start": 105,
+      "end": 116,
+      "dark": true
+    },
+    "close": {
+      "start": 116,
+      "end": 120,
+      "dark": true
+    }
+  },
+  "voice": {
+    "en": {
+      "name": "Eric",
+      "voice_id": "cjVigY5qzO86Huf0OWal",
+      "model_id": "eleven_multilingual_v2",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.8,
+        "style": 0.15
+      }
+    }
+  },
+  "beats": [
+    {
+      "id": "h01",
+      "scene": "problem",
+      "start": 0.6,
+      "end": 4.6,
+      "en": {
+        "cap": "Every document starts from zero."
+      }
+    },
+    {
+      "id": "h02",
+      "scene": "problem",
+      "start": 5.0,
+      "end": 10.2,
+      "en": {
+        "cap": "Find a format. Plan the outline. Gather sources. Fix the style."
+      }
+    },
+    {
+      "id": "h03",
+      "scene": "problem",
+      "start": 10.6,
+      "end": 14.6,
+      "en": {
+        "cap": "Then explain all of it to your AI. Again."
+      }
+    },
+    {
+      "id": "h04",
+      "scene": "command",
+      "start": 15.4,
+      "end": 19.0,
+      "en": {
+        "cap": "One sentence. Three documents. Three websites."
+      }
+    },
+    {
+      "id": "h05",
+      "scene": "command",
+      "start": 19.4,
+      "end": 23.6,
+      "en": {
+        "cap": "In Arise Browser, an agent works on each one."
+      }
+    },
+    {
+      "id": "h06",
+      "scene": "command",
+      "start": 24.0,
+      "end": 27.7,
+      "en": {
+        "cap": "But first, it asks Document Memory."
+      }
+    },
+    {
+      "id": "h07",
+      "scene": "agents",
+      "start": 28.5,
+      "end": 33.0,
+      "en": {
+        "cap": "Three workflows. Recorded separately in Arise."
+      }
+    },
+    {
+      "id": "h08",
+      "scene": "agents",
+      "start": 33.4,
+      "end": 39.4,
+      "en": {
+        "cap": "Each asks for the format and the sources."
+      }
+    },
+    {
+      "id": "h09",
+      "scene": "agents",
+      "start": 39.8,
+      "end": 46.6,
+      "en": {
+        "cap": "It returns structure, citations, and open questions.",
+        "vo": "It returns the structure, the citations, and a flag on anything still unconfirmed."
+      }
+    },
+    {
+      "id": "h10",
+      "scene": "agents",
+      "start": 47.0,
+      "end": 53.6,
+      "en": {
+        "cap": "So they write instead of guessing.",
+        "vo": "So they write instead of guessing. The Slides window is a real run from an earlier project, fast-forwarded."
+      }
+    },
+    {
+      "id": "h11",
+      "scene": "agents",
+      "start": 54.4,
+      "end": 61.4,
+      "en": {
+        "cap": "Docs, deck and post. Ready for your review.",
+        "vo": "A one-pager, a ten-slide deck, and a blog post, ready for your review."
+      }
+    },
+    {
+      "id": "h12",
+      "scene": "share",
+      "start": 62.4,
+      "end": 69.2,
+      "en": {
+        "cap": "Templates live in a shared library, with credit attached.",
+        "vo": "Templates live in a shared library, with author, version and license attached. Your references stay private."
+      }
+    },
+    {
+      "id": "h13",
+      "scene": "share",
+      "start": 69.6,
+      "end": 74.6,
+      "en": {
+        "cap": "Copy one, and your agent starts from a good structure."
+      }
+    },
+    {
+      "id": "c01",
+      "scene": "companies",
+      "start": 75.4,
+      "end": 79.6,
+      "en": {
+        "cap": "Different companies. Different document standards.",
+        "vo": "Every company has its own reports, proposals, and ways of writing."
+      }
+    },
+    {
+      "id": "c02",
+      "scene": "companies",
+      "start": 80,
+      "end": 84.6,
+      "en": {
+        "cap": "Keep their formats together in your template library.",
+        "vo": "Keep their reusable formats in your library, ready for your AI."
+      }
+    },
+    {
+      "id": "s01",
+      "scene": "standards",
+      "start": 85.4,
+      "end": 89.6,
+      "en": {
+        "cap": "One link. A shared standard for your AI.",
+        "vo": "Give your AI a link to the public template you want to reuse."
+      }
+    },
+    {
+      "id": "s02",
+      "scene": "standards",
+      "start": 90,
+      "end": 94.6,
+      "en": {
+        "cap": "Consistent standards across document tools.",
+        "vo": "Reuse your structure, writing patterns, and design guidance across tools."
+      }
+    },
+    {
+      "id": "r01",
+      "scene": "community",
+      "start": 95.4,
+      "end": 99.6,
+      "en": {
+        "cap": "Contribute a memory that helps the next person.",
+        "vo": "Contribute useful document memory for others to find and reuse."
+      }
+    },
+    {
+      "id": "r02",
+      "scene": "community",
+      "start": 100,
+      "end": 104.6,
+      "en": {
+        "cap": "See your contributions on the leaderboard.",
+        "vo": "See your contributions and their reuse on the community leaderboard."
+      }
+    },
+    {
+      "id": "h14",
+      "scene": "saved",
+      "start": 105.4,
+      "end": 107.6,
+      "en": {
+        "cap": "Every reuse skips the setup."
+      }
+    },
+    {
+      "id": "h15",
+      "scene": "saved",
+      "start": 108.0,
+      "end": 115.6,
+      "en": {
+        "cap": "Ten minutes saved, a thousand reuses: about 167 hours.",
+        "vo": "Say each reuse saves ten minutes. A thousand reuses: about 167 hours. A what-if, not a measurement."
+      }
+    },
+    {
+      "id": "h16",
+      "scene": "close",
+      "start": 116.3,
+      "end": 119.7,
+      "en": {
+        "cap": "Share the memory. Save the time.",
+        "vo": "My Document Memory. Share the memory. Save the time."
+      }
+    }
+  ],
+  "footage": {
+    "note": "Files are relative to demo/out/. speed is the playback factor of the prepared clip; 'from'/'to' are video seconds. Docs and Blog are edited public Arise MCP viewport recordings (prep-arise.py); each edit manifest retains the original timestamps. Product clips are scripted clicks on the real app (capture-product.mjs); Slides is a real agent run from the WAM project (prep-slides.mjs). The runs were recorded separately.",
+    "site_url": "mydocumentmemory.com",
+    "disclosure": "Docs and Blog: real Arise captures, edited. Runs recorded separately. Slides: earlier project. New feature scenes: illustrations with example data.",
+    "docs": {
+      "file": "footage/arise/docs-edited.mp4",
+      "speed": 1,
+      "src_from": 0,
+      "from": 29.2
+    },
+    "blog": {
+      "file": "footage/arise/blog-edited.mp4",
+      "speed": 1,
+      "src_from": 0,
+      "from": 29.2
+    },
+    "slides": {
+      "file": "footage/slides-muse-x45.mp4",
+      "speed": 45,
+      "src_from": 73,
+      "src_to": 1496,
+      "from": 29.2
+    },
+    "memory_app": {
+      "file": "footage/product/create-draft.mp4",
+      "speed": 1.5,
+      "src_from": 10.1,
+      "from": 40.0
+    },
+    "share_public": {
+      "file": "footage/product/public-memories.mp4",
+      "speed": 1.7,
+      "src_from": 1.5,
+      "from": 62.5
+    },
+    "share_copy": {
+      "file": "footage/product/library-preview.mp4",
+      "speed": 1.8,
+      "src_from": 7.0,
+      "from": 69.6
+    }
+  },
+  "ledger": {
+    "mcp_calls": 8,
+    "mcp_tools": 7,
+    "whatif_minutes": 10,
+    "whatif_reuses": 1000,
+    "whatif_hours": 167
+  },
+  "feature_examples": {
+    "public_template_url": "https://api.mydocumentmemory.com/v1/public/templates/meeting.minutes.en",
+    "company_names": [
+      "Northstar",
+      "Acme",
+      "Orbit"
+    ],
+    "reputation": {
+      "before": 0,
+      "after": 0,
+      "increment": 0,
+      "source_status": "pending"
+    }
+  }
+}

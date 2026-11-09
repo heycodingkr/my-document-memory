@@ -1,7 +1,8 @@
 'use strict';
 // Hackathon cut, 90 s. Spec and claims ledger: docs/demo/hackathon-90s.md. Every scene is a pure function of time.
 // What is real is labelled REAL (RUN / APP / MCP); everything drawn is labelled ILLUSTRATION; the arithmetic is labelled WHAT-IF.
-window.__SCRIPT_URL = '/demo/video/hackathon/script.json';
+window.__SCRIPT_URL = new URLSearchParams(location.search).get('cut') === 'hackathon-120'
+  ? '/demo/video/hackathon-120/script.json' : '/demo/video/hackathon/script.json';
 window.__BADGES = {
   illus: { cls: 'illus', text: () => 'ILLUSTRATION' },
   grid: { cls: '', text: () => 'REAL CAPTURES · RECORDED SEPARATELY' },
@@ -197,9 +198,9 @@ function buildShare() {
   const cC = A(s, `left:${X}px;top:602px;width:${W}px;height:242px;`, '', 'card');
   A(cC, 'left:30px;top:22px;', 'WHERE THIS STANDS', 'label');
   A(cC, 'left:30px;top:66px;', '<span class="chip lime">TODAY</span>');
-  A(cC, 'left:150px;top:68px;font-size:24px;white-space:nowrap;', 'Built-in catalog you can copy');
-  A(cC, 'left:30px;top:132px;', '<span class="chip amber">PLANNED</span>');
-  A(cC, 'left:190px;top:134px;font-size:24px;white-space:nowrap;', 'Share with other people');
+  A(cC, 'left:150px;top:68px;font-size:24px;white-space:nowrap;', SCRIPT.scenes.companies ? 'Reviewed public contributions' : 'Built-in catalog you can copy');
+  A(cC, 'left:30px;top:132px;', `<span class="chip amber">${SCRIPT.scenes.companies ? 'PRIVATE' : 'PLANNED'}</span>`);
+  A(cC, 'left:190px;top:134px;font-size:24px;white-space:nowrap;', SCRIPT.scenes.companies ? 'Your references stay private' : 'Share with other people');
   const tagTxt = win.tag;
   s.update = (lt) => {
     show(cA, fade(lt, 1.0, 1.6), 18); show(cB, fade(lt, 7.6, 8.2), 18); show(cC, fade(lt, 9.6, 10.2), 18);
@@ -256,5 +257,7 @@ function buildClose() {
 window.__buildScenes = async () => {
   FT = SCRIPT.footage;
   TRACE = await fetch('/demo/video/hackathon/data/mcp-trace.json').then((r) => r.json());
-  buildProblem(); buildCommand(); buildAgents(); buildShare(); buildSaved(); buildClose();
+  buildProblem(); buildCommand(); buildAgents(); buildShare();
+  if (SCRIPT.scenes.companies) window.__buildExtraScenes();
+  buildSaved(); buildClose();
 };

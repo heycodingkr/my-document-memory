@@ -19,6 +19,7 @@ cargo build --workspace --examples
 python3 -B tests/smoke/runtime-v1.py                                    # 실제 Rust CLI/MCP·HTTP·영속성
 python3 -I tests/smoke/recall-v1.py                                     # 실제 Rust recall CLI/MCP/HTTP
 python3 -B tests/smoke/community-v1.py                                  # 실제 비공개 저장·공개 복사·기여·검수
+python3 -B tests/smoke/web-memory-v1.py --browser --arise                 # 실제 URL intake·CLI/MCP·소유 Arise 탭·웹 입력
 ```
 
 러너는 케이스마다 새 일회용 세계(`HOME`·`XDG_*`·`DMEM_HOME`)를 만들고 `DMEM_CASE_TIMEOUT`초(기본 90) 안에 끝나지 않으면 자식 프로세스 그룹을 종료하고 `FAIL(timeout)`으로 기록한다. 판정을 한 번도 평가하지 않은 케이스는 `FAIL(vacuous)`다. 새 케이스 작성법은 [`smoke/cases/README.md`](smoke/cases/README.md).
