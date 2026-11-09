@@ -202,6 +202,8 @@ Call `document_memory_status` to verify the connection. Select a template and re
 | `document_web_search` · `document_web_preview` | Discover URLs and preview document structure (local intake v1) |
 | `document_web_import` · `document_web_origin` | Save a private structure/reference and read its source rights |
 
+The four web intake tools require a matching locally built server from this revision. Their new routes have not been deployed to the hosted API by this change. See [local web intake](#import-a-web-document-locally).
+
 Copying a template and copying a prompt are separate actions. Copying a prompt does not create a document. Deck requests remain disabled until their outline is approved.
 
 ## Administrator review
@@ -365,7 +367,7 @@ For local CLI/MCP use, set `DMEM_URL=http://127.0.0.1:3847` and use the token ge
 
 ### Import a web document locally
 
-Run the server, web assets, and clients from the same source revision. In Templates or References, open **Import from web**, preview a URL, and confirm its country/language, provider, and document type before saving privately. Templates keep headings and table headers. References retain visible text when the detected license permits full copying; otherwise they retain structure. Source rights follow private copies and contribution review.
+Run the server, web assets, and clients from the same source revision. In Templates or References, open **Import from the web**, preview a URL, and confirm its country/language, provider, and document type before saving privately. Templates keep headings and table headers. References retain visible text when the detected license permits full copying; otherwise they retain structure. Source rights follow private copies and contribution review.
 
 ```sh
 export DMEM_URL=http://127.0.0.1:3847

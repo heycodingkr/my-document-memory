@@ -31,3 +31,9 @@ All results below were run by the parent on 2026-11-09. Logs are under target/bu
 | Rust formatting baseline | Failed in14 files; separate fresh owner handles #410 | rust-fmt-before.log |
 
 Existing #411 fixture provisioning and sidebar overflow-y:auto changes were already present before this pass; this pass preserves and verifies them. The parent independently reconstructed the tracked baseline files and verified exactly the intended source replacements. The parent inspected passing 720px and mobile images. No deployment was performed.
+
+## Historical latency evidence independently opened by the parent
+
+The read-only gathering child (job183, codex:gpt-6-luna) completed. Its summary was used to locate original evidence, then the parent opened each cited trace ZIP's `1-trace.network` line1 and saved the selected raw fields in historical-html-timing.json. The 04:14:33Z request took29,123ms: DNS3,792 / connect14,661 / TLS6,560 / wait4,102 / receive7.988ms. The 04:15:16Z request took31,915ms: DNS1 / connect11,014 / TLS7,841 / wait13,058 / receive0.728ms. Both HTML responses were200. The delay spans multiple client-observed phases; these records do not isolate server processing from network behavior. The small receive time does not explain the long navigation.
+
+The parent also opened public-api.log and public-api-retry.log directly. The former times out reading an HTTP status line; the latter times out in TLS handshake for the saved traceback's /v1/templates request (line49). The historical audit summary's auth-config label is not supported by that saved traceback. The old public-probes.json has no timestamps for tight correlation. Fresh HTTPS200 samples are not a completed hosted-browser regression and do not close #409. No serving configuration was changed.

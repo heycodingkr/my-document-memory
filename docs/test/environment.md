@@ -9,7 +9,7 @@
 | 운영체제 | macOS 27.0 (Darwin 27.0.0, arm64) |
 | 언어 | Python 3.14.7, 표준 라이브러리만(설치 단계 없음). `timeout` 명령이 없어 문서의 예시는 `perl -e 'alarm N; exec @ARGV'`를 쓴다 |
 | 네트워크 | 계약·스모크 전량이 loopback(`127.0.0.1`)과 일회용 디렉터리만 쓴다. 외부 요청 0건(fixture 서버 요청 로그와 `SEC-A04`의 `remote_requests` sink가 증거) |
-| 브라우저 | Arise 0.1.77(`/Applications/Arise.app`), 공개 stdio MCP(`agent_browser --mcp-server`) 도구 62개. 환경 스모크만 쓴다([`hosts/arise.md`](hosts/arise.md)) |
+| 브라우저 | Arise 0.1.77(`/Applications/Arise.app`), 공개 stdio MCP(`agent_browser --mcp-server`) 도구 62개. 환경 스모크와 [intake v1 실제 소유 탭·웹 입력](web-memory-v1.md)을 별도 실행 |
 | 호스트 앱 | Claude Code·Codex는 **미실행**([`hosts/README.md`](hosts/README.md)) |
 
 ## 2. 실행과 측정값

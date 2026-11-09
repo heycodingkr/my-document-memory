@@ -27,6 +27,7 @@
 | private 외부 항목을 recall에서 직접 작성물로 취급해 full로 표시 | 외부 원장의 정책으로 보정하고 같은 토큰 예산 재적용 | `wi13_recall_does_not_upgrade_external_copy_rights`: full→structure_only, unknown/imported 확인 |
 | 저장 알림과 목록 loading status가 동시에 나타나 테스트 locator가 모호함 | 가져오기 panel 안의 status를 검증 | strict locator 실패 재현 뒤 Playwright 두 케이스 통과 |
 | native 탭 닫기 응답 뒤 잠시 탭이 남고, 이동 중 평가가 일시 실패함 | 실제 탭 제거와 기대 DOM/입력 상태를 확인한 뒤 다음 단계로 진행 | 닫기 직후 남음·0.15초 뒤 제거 재현, 사용자 탭 전후 동등성은 그대로 유지 |
+| 제목 입력 뒤 Save 버튼이 viewport 아래에 있어 native click 거부 | 설치본 도구 계약의 visible-target 조건을 확인하고 실제 geometry→`browser_scroll`→표시/활성 상태 검사→native click | top 904.95/bottom 943.45, viewport 651을 기록한 뒤 실제 저장·재조회·완료 PNG까지 33/33 통과 |
 
 ## 최종 리뷰와 제약
 

@@ -69,3 +69,11 @@ The existing renderer/voice CLI select only `demo-day` and `hackathon`; the latt
 - Independent ffmpeg scan: zero black segments, −16.3 LUFS integrated, −4.5 dBFS true peak. OCR: 120 frames / 3820 lines / zero findings. The parent inspected the final actual editor composite at 50 s, new company/standards/leaderboard scenes at 83/93/103 s, and closing URL at 118.5 s. The coarse contact sheet samples a few scene-transition fades, so the individual in-scene frames establish feature legibility.
 - YouTube delivery copy: `.en.youtube.mp4`, 119.900000 s / 3597 frames, 1920×1080 H.264/AAC stereo, 64,204,195 bytes, produced by MeshCode `video_trim`. Only the last 0.1 s of the static/silent closing tail was removed. The exact 120-second master is retained.
 - Evidence: `.artifacts/video-120/verification.json`, `ffprobe.json`, `privacy.log`, `quality.log`, `render-result.json`, `youtube-ffprobe.json` and opened final PNGs. No full real-time playback/listening or remote YouTube quality claim is made.
+
+### Submission URL
+
+- **120-second version:** https://youtu.be/JAkA8PgXcOU — `My Document Memory — 2-Minute Hackathon Demo`, channel `Groove Stacks`, saved **UNLISTED / 일부 공개**, displayed **2:00**.
+- The upload used the verified 119.9-second delivery copy. Before Save, UNLISTED was selected and PUBLIC was false. Studio then showed the posted-video success dialog. A fresh owned tab at `/video/JAkA8PgXcOU/edit` independently showed the persisted title/description, `공개 상태 / 일부 공개`, and `2:00`.
+- Anonymous YouTube oEmbed returned HTTP 200 with the exact title and channel name. Evidence: `.artifacts/video-120/youtube-report.json` and `youtube-public-oembed.json`. This establishes link access and metadata, not a full playback/listening audit.
+- The long native title/description entry returned a 60-second MCP timeout after completing both fields; fresh DOM reads confirmed their exact text and saved state before continuing. The operation was not blindly resent. The final details page confirmed both fields again.
+- Existing 90-second URL remains https://youtu.be/fh8DfHHa1zY and its local files are unchanged. No source commit was made.

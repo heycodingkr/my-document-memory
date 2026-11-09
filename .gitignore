@@ -18,3 +18,4 @@ data/
 .artifacts/
 /.meshcode/mcp.json
 /.meshcode/compaction/
+/.meshcode/worktrees/
