@@ -315,28 +315,14 @@ async fn withdraw(
     let now = s.auth.now();
     Ok(Json(run(s, move |db| db.withdraw(&owner, &id, now)).await?))
 }
-fn admin(s: &App, headers: &HeaderMap) -> Result<(), HttpError> {
-    origin(s, headers)?;
-    let token = headers
-        .get(header::AUTHORIZATION)
-        .and_then(|v| v.to_str().ok())
-        .and_then(|v| v.strip_prefix("Bearer "))
-        .unwrap_or("");
-    if !s
-        .auth
-        .admin_token
-        .as_ref()
-        .is_some_and(|expected| constant_eq(expected, token))
-    {
-        return Err(Fault::AuthRequired.into());
-    }
-    Ok(())
+fn admin(s: &App, headers: &HeaderMap, write: bool) -> Result<(), HttpError> {
+    super::admin::authorize(s, headers, write).map(|_| ())
 }
 async fn queue(
     State(s): State<App>,
     headers: HeaderMap,
 ) -> Reply<List<crate::community::Contribution>> {
-    admin(&s, &headers)?;
+    admin(&s, &headers, false)?;
     Ok(Json(run(s, |db| db.contributions(None)).await?))
 }
 #[derive(Deserialize)]
@@ -350,7 +336,7 @@ async fn decision(
     p: Result<Path<String>, PathRejection>,
     input: Result<Json<Decision>, JsonRejection>,
 ) -> Reply<crate::community::Contribution> {
-    admin(&s, &headers)?;
+    admin(&s, &headers, true)?;
     let id = path(p)?;
     let input = body(input)?;
     if !["approve", "reject"].contains(&input.decision.as_str()) {

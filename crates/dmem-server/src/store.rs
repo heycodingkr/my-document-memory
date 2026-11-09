@@ -101,6 +101,8 @@ impl Store {
             .map_err(internal)?;
         conn.execute_batch(include_str!("../migrations/0002_accounts.sql"))
             .map_err(internal)?;
+        conn.execute_batch(include_str!("../migrations/0005_administrator_email.sql"))
+            .map_err(internal)?;
         let s = Self {
             db: Mutex::new(conn),
         };

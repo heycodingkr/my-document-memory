@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+mod administrator;
 mod community;
 mod http;
 mod identity;

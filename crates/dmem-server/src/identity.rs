@@ -5,6 +5,7 @@ use rusqlite::{OptionalExtension, params};
 use serde::Serialize;
 use sha2::Sha256;
 use std::{
+    collections::HashSet,
     future::Future,
     pin::Pin,
     sync::Arc,
@@ -106,6 +107,7 @@ impl EmailSender for ResendEmailSender {
 #[derive(Clone)]
 pub struct AuthConfig {
     pub(crate) secret: String,
+    pub(crate) admin_emails: HashSet<String>,
     pub mailer: Option<Arc<dyn EmailSender>>,
     pub secure_cookies: bool,
     pub admin_token: Option<String>,
@@ -115,6 +117,7 @@ impl Default for AuthConfig {
     fn default() -> Self {
         Self {
             secret: format!("{}{}", Uuid::new_v4().simple(), Uuid::new_v4().simple()),
+            admin_emails: HashSet::new(),
             mailer: None,
             secure_cookies: false,
             admin_token: None,
@@ -137,6 +140,16 @@ impl AuthConfig {
             mailer: Some(mailer),
             ..Self::default()
         })
+    }
+    pub fn set_admin_emails(
+        &mut self,
+        emails: impl IntoIterator<Item = String>,
+    ) -> Result<(), Fault> {
+        self.admin_emails = emails
+            .into_iter()
+            .map(|email| normalize_email(&email))
+            .collect::<Result<HashSet<_>, _>>()?;
+        Ok(())
     }
     pub(crate) fn now(&self) -> u64 {
         (self.clock)()
