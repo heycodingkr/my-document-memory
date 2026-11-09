@@ -1,6 +1,6 @@
 # recall v1 테스트 케이스
 
-대상: [`../spec/recall-v1.md`](../spec/recall-v1.md). 단위(`RV-01~15`, 순수 함수)·서버(`RV-20~28`, 실제 Router + 임시 SQLite)·채널(`RV-30~34`)은 구현 작업자가 Rust 테스트로 만들고, 부모 전용(`RV-40~43`)은 부모가 실제 바이너리로 확인한다. 케이스 입력·기대 결과는 구현을 보고 바꾸지 않는다.
+대상: [`../spec/recall-v1.md`](../spec/recall-v1.md). 단위(`RV-01~15`, 순수 함수)·서버(`RV-20~28`, 실제 Router + 임시 SQLite)·채널(`RV-30~34`)은 구현 작업자가 Rust 테스트로 만들고, 부모 전용(`RV-40~43`)은 부모가 실제 바이너리로 확인하며, 반복 실행용 러너는 `tests/smoke/recall-v1.py`다. 구현 중 리뷰에서 찾은 두 결함의 회귀 케이스 `RV-05b`·`RV-11b`를 추가했다. 케이스 입력·기대 결과는 구현을 보고 바꾸지 않는다.
 
 ## 고정 후보 (단위 테스트가 코드로 만든다)
 
@@ -26,12 +26,14 @@
 | RV-03 | `N`, `meeting_minutes`, provider `google_docs` | `[B, A, C]`. B의 `matched_on=["doc_type","provider"]`. locale을 주지 않았으므로 모든 힌트의 `locale_match="unspecified"` |
 | RV-04 | `https://docs.google.com/document/d/ABC123SENTINEL/edit?usp=sharing`, `meeting_minutes` | RV-03과 같은 `[B, A, C]`. `canonical_url="docs.google.com/document/d/:id/edit"`, `form.provider="google_docs"`. 응답 JSON 전체에 `ABC123SENTINEL`·`usp`가 없다 |
 | RV-05 | `https://docs.google.com/presentation/d/XYZ/edit` 하나만(doc_type 없음) | `[E]`(provider family가 deck이라 document 후보는 제외). `matched_on=[]`, `form={provider:"google_slides"}` |
+| RV-05b | `https://docs.google.com/document/d/ABC123/edit` 하나만(doc_type 없음, provider 인자 없음) | URL에서 감지한 provider(`google_docs`)가 `provider_exact`로 쓰여 `[b-pub-minutes-ko-gdocs, a-mine-minutes-ko-docx, f-mine-report-ko-docx]` 순서이고, 첫 힌트의 `matched_on=["provider"]`, 둘째는 `[]`이다 |
 | RV-06 | `N`, 키워드 `["draft"]` / `["초안"]` / `["Draft ","DRAFT","초안"]` | 셋 모두 `[A, F, C]`(별칭 `초안`=`draft`, 중복은 하나로 센다). `matched_on`은 A `["keywords"]`, F `[]`, C `["keywords"]`. 키워드 `["weekly"]`는 `[F, A, B]` |
 | RV-07 | `N`, `meeting_minutes`, scope `mine` / `public` / `all` / `team` | `[A]` / `[B, C, D]` / `[A, B, C]` / 힌트 없음, `reason="scope_unavailable_local"`(`canonical_url`은 있음) |
 | RV-08 | `N`+`invoice` / `N`+`meeting_minutes`+kind `reference`·`style_rule` / kind `template` / kind `bogus` | `hints=[]`, `reason="no_match"`, `form={provider:"other",doc_type:"invoice"}` / 둘 다 빈 결과 `no_match` / `[A, B, C]` / `Fault::InvalidInput` |
 | RV-09 | `N`+`meeting_minutes`, limit 1 / 2 / 생략 / 0 / 4 | `[A]` / `[A, B]` / `[A, B, C]` / `InvalidInput` / `InvalidInput` |
 | RV-10 | RV-01·RV-06·RV-07 질의를 후보 순서를 뒤집거나 섞은 입력(순열 6개)으로 | 모든 순열에서 응답 JSON이 바이트 단위로 같다 |
 | RV-11 | 후보 G(공개, minutes, ko-KR): 제목 `가`×120, 요약 `나`×600, 섹션 12개(각 `다`×60) / 후보 A | G의 힌트 압축 JSON ≤ 1600바이트이고 `title`·`form`·`source`는 원본 그대로이며 `summary`는 원문의 앞부분, `outline`은 원문의 앞쪽 항목들이다(둘 다 줄어듦). A는 `summary="s"`, `outline` 2개로 변함없음 |
+| RV-11b | 후보 G(공개, minutes, ko-KR): 섹션 하나가 `가`×90 | 힌트 `outline[0].text`가 정확히 60자다(저장된 섹션이 더 길어도 60자를 넘지 않는다) |
 | RV-12 | A, B와 `b`의 비공개 복사본 H(`origin={template_id:"b-pub-minutes-ko-gdocs",version:1,author:"My Document Memory",license:"CC0-1.0"}`, 작성자·라이선스는 원본과 같음) | A: `source={tier:"mine",author_handle:null,license:"proprietary-structure-only",copy_policy:"full",origin:"user"}`. B: `{tier:"public",author_handle:"My Document Memory",license:"CC0-1.0",copy_policy:"full",origin:"user"}`. H: `{tier:"mine",author_handle:"My Document Memory",license:"CC0-1.0",copy_policy:"full",origin:"copied"}`. 모든 `Hint`는 필수 키(`memory_id`,`version`,`kind`,`title`,`summary`,`form`,`scope`,`source`,`matched_on`,`locale_match`,`freshness`,`warnings`)가 있고 허용 키(+`outline`) 밖의 키(`tags`,`sections`,`l2`,`receipt_id`,`key_points`)가 없다. `scope={url_patterns:[],route:"none"}`, `kind="template"`, `freshness="fresh"`, `warnings=[]`. 응답 최상위 키는 `schema_version`,`untrusted`,`framing`,`canonical_url`,`form`,`hints`,`reason`,`cache` 여덟 개뿐이다 |
 | RV-13 | 키워드 9개 / 33자 키워드 / 빈·공백 키워드 / doc_type `unknown_thing` / locale `xx_YY!` / provider `bogus` | `InvalidInput` / `InvalidInput` / `InvalidInput` / `InvalidForm` / `InvalidForm` / `InvalidForm`. 오류 값에 입력 문자열이 없다 |
 | RV-14 | url `http://example.com/` / `https://user:secret@example.com/` / `https://example.com:8443/` / `https://example.com/jane.doe@corp.test/` | `UrlRejected("scheme_not_allowed")` / `("userinfo_not_allowed")` / `("host_not_allowed")` / `("pii_in_url")` |
@@ -71,3 +73,20 @@
 | RV-41 | RV-40의 모든 응답과 빈 결과·`team` 응답 | `contracts/mcp-tools.v1.json#/$defs/RecallResult`(`tests/env/dmem-double`의 `jsonschema_lite`)를 모두 통과한다 |
 | RV-42 | `tests/sentinels.json`의 `capability`·`url_parts` family로 만든 URL | HTTP 본문·CLI stdout/stderr·MCP 출력·서버 로그에 어떤 센티널도(원문·JSON 이스케이프·퍼센트 인코딩·base64·hex) 없다 |
 | RV-43 | 반영 후 새 사본에서 `cargo test --workspace`, 사용자 서버(3847) 상태 | 기준선 27개 + 신규 테스트가 모두 통과하고, 사용자 서버 프로세스와 `data/`는 그대로이며 의도한 파일 밖의 변경이 없다 |
+
+## 실행 방법과 결과 (2026-11-09, 부모가 직접 실행)
+
+```bash
+cargo test --workspace                      # RV-01~15 단위, RV-20~28 서버, RV-30~34 채널(CLI·MCP 단위 포함)
+cargo build --workspace && python3 -I tests/smoke/recall-v1.py   # RV-11·20~34·40~42를 실제 바이너리로 (DMEM_BIN_DIR로 빌드 위치 변경 가능)
+```
+
+| 확인 | 결과 |
+|---|---|
+| `cargo test --workspace`(다른 세션의 기여 검수·회원 순위 시험 포함, 반영 직후 새 사본) | 전부 통과, 실패 0 (recall: core 17, server 5+4, mcp 3, cli 2) |
+| `tests/smoke/recall-v1.py` (RV-11·20~22·24~26·28·30~34·40~42) | 44/44 통과, 센티널 누출 검사 59개 출력 |
+| 음성 대조: recall이 없는 바이너리에 같은 러너 | 3/11에서 실패로 끝남(조용히 통과하지 않는다) |
+| 기존 스모크 `runtime-v1.py`, `community-v1.py` | recall을 넣은 빌드에서 그대로 통과 |
+| `RecallResult` 스키마 | 계약과 정확히 일치(입력 스키마 동치, 응답은 모든 질의에서 검증 통과) |
+
+`RV-43`: 반영 전 기준선은 이 저장소를 다른 세션이 계속 수정해 고정 개수(27개)가 의미 없어졌다. 대신 반영 직후 새 사본의 전체 `cargo test --workspace`와 기존 스모크가 통과하는지로 확인했다. 사용자 서버(3847·5174)와 `data/`, `.env`, `credentials/`는 건드리지 않았다.

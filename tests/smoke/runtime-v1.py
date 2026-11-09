@@ -82,8 +82,11 @@ with tempfile.TemporaryDirectory(prefix="dmem-smoke-") as tmp:
         start()
         assert request("/v1/templates", authenticated=False)[0] == 401
         assert cli("status")["service"] == "my-document-memory"
-        assert len(cli("templates")["items"]) == 18
-        assert len(json.loads(request("/v1/templates?locale=en-US")[1])["items"]) == 9
+        starters = json.loads((ROOT / "contracts/starter-memories.v1.json").read_text())["entries"]
+        assert len(cli("templates")["items"]) == min(20, 18 + len(starters))
+        english = json.loads(request("/v1/templates?locale=en-US")[1])["items"]
+        assert len(english) == min(20, 9 + sum(entry["locale"] == "en-US" for entry in starters))
+        assert all(item["form"]["locale"] == "en-US" for item in english)
         fixture = tmp / "facts.md"
         fixture.write_text("# Project decisions\nThe beta review is on 15 November.\nSynthetic test data only.", encoding="utf-8")
         source = cli("import", str(fixture), "--title", "Synthetic Notes")
@@ -124,7 +127,11 @@ with tempfile.TemporaryDirectory(prefix="dmem-smoke-") as tmp:
                              text=True, capture_output=True, timeout=20)
         assert mcp.returncode == 0 and not mcp.stderr
         replies = [json.loads(line) for line in mcp.stdout.splitlines()]
-        assert len(replies) == 6 and len(replies[1]["result"]["tools"]) == 7
+        assert len(replies) == 6
+        names = {tool["name"] for tool in replies[1]["result"]["tools"]}
+        assert {"document_memory_status", "document_memory_get", "document_template_save",
+                "document_memory_save", "document_public_template_search",
+                "document_contribution_submit", "document_contribution_check"} <= names
         source_hits = json.loads(replies[2]["result"]["content"][0]["text"])
         assert source_hits["items"][0]["id"] == source["id"]
         assert json.loads(replies[3]["result"]["content"][0]["text"])["version"] == 2

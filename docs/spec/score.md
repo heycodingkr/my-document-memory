@@ -1,8 +1,12 @@
 # SCORE: 영수증, 사용 결과와 작성자 점수
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 기여 승인 점수와 작업 분야 점수를 제거하고 공개 문서 메모리의 성공 사용만 반영한다. receipt와 score ledger는 runtime-v1 이후 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 기여 승인 점수와 작업 분야 점수를 제거하고 공개 문서 메모리의 성공 사용만 반영한다. receipt와 score ledger는 runtime-v1 이후 단계다.
+
+현재 구현과 구분: [`member-leaderboard-v1.md`](member-leaderboard-v1.md)의 회원 리더보드는 승인되어 공개 중인 기여당 20점을 계산한다. 이 파일은 receipt에 기반한 성공 사용 점수의 별도 목표 계약이며 현재 리더보드 구현을 설명하지 않는다.
 영역 / 테스트 ID 접두사: `SCORE` (케이스: [`../test/functional-review.md`](../test/functional-review.md))
 기반: [`sharing.md`](sharing.md) 7절, [`privacy.md`](privacy.md) 6절, [`mcp.md`](mcp.md) outcome 계약
+
+현재 구현된 [member-leaderboard-v1](member-leaderboard-v1.md)의 **기여 점수(contribution points)**는 승인·공개 중인 양식당20점이며, 이 문서의 **성공 사용/impact 점수**와 구분한다. 이 문서의 receipt/outcome과 impact ledger는 여전히 후속 설계이며 현재 공개 리더보드에 합산하지 않는다.
 
 ## 1. 원칙
 

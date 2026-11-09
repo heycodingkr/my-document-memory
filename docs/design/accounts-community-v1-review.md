@@ -30,4 +30,4 @@ Resend UI에서 mydocumentmemory.com 도메인 Verified와 로그인 메일 Deli
 
 기존 호스트 브라우저 wrapper가 호출 사이 lease proof를 잃고 빈 탭을 선택하여, 이 저장소의 tests/smoke/arise_smoke.py McpChild를 재사용한 하나의 유지되는 공개 stdio MCP 연결로 Arise를 제어했다. private 제어 socket/CDP를 사용하지 않았다. 이미 검증된 최신 Arise MCP binary는 project-only 등록하며 기존 MCP 설정을 보존했다.
 
-최종 전체 체크·배포 결과는 테스트 명세의 실행 기록에 갱신한다. 같은 작업 트리의 영문 랜딩/양식/이메일 링크 추가 작업과 합친 최신 상태를 검증해야 한다.
+최종 전체 체크·배포 결과는 [실행 기록](../test/accounts-community-v1-results.md)에 남겼다. 같은 작업 트리의 영문 랜딩/양식/이메일 링크/데모 추가 작업을 합쳐 Rust33개, 일반 웹21개와 계정 웹3개가 통과했다. release 20261109T022729Z-13901을 운영에 반영하고 공개 HTTPS·이메일 설정·정확한 asset bytes·개인 경계·기존 local 데이터 보존을 확인했다.

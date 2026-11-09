@@ -2,6 +2,8 @@
 
 기준: 2026-11-09. overview/core/form/template-library 설계를 구현 단계로 나누는 계약이다. 기존 설계 파일과 데모 작업은 보존한다. 개발/실행 범위는 이 저장소이며 배포는 포함하지 않는다.
 
+범위 주의: 아래는 **최초 로컬 단계의 계약**이다. 이후 [`recall-v1.md`](recall-v1.md), [`accounts-community-v1.md`](accounts-community-v1.md), [`memory-community-smoke-v1.md`](memory-community-smoke-v1.md)가 URL+양식 recall·계정 인증·익명 공개 조회·기여·검수·CLI/MCP를 확장한다. "모든 /v1 요청은 Bearer 필수", "공개 기여 없음"은 최초 단계에만 해당한다. 현재 검증 범위는 [`../test/wam-port-completion-v1.md`](../test/wam-port-completion-v1.md)에 구분해 기록한다. 웹 URL fetch·현재 탭 clip은 아직 목표 계약이다.
+
 ## 설계와 참고 근거
 
 형제 저장소 web-agentic-memory의 Cargo workspace, core/contracts/server/client/cli/mcp 경계, Axum 어댑터와 Svelte 웹 구성을 참고한다. WAM의 브라우저 작업 지식, 기여 점수, curator, OAuth 운영 코드를 그대로 복사하지 않는다. 이 제품의 핵심은 개인 양식, 근거 자료와 작성 결과의 분리다.

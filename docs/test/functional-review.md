@@ -1,6 +1,6 @@
 # 게시 검수·점수 기능 테스트
 
-상태: 설계 테스트(문서 우선, 구현 없음). 모든 데이터는 합성 fixture이며 외부 사이트와 실제 개인 정보를 사용하지 않는다.
+상태: 전체 목표의 테스트 설계(문서 우선). 실제 제품 부분집합의 실행 결과는 [포팅 검증](wam-port-completion-v1.md)과 구분한다. 모든 데이터는 합성 fixture이며 외부 사이트와 실제 개인 정보를 사용하지 않는다.
 기반: [`gatekeeper.md`](../spec/gatekeeper.md), [`score.md`](../spec/score.md), [`sharing.md`](../spec/sharing.md), [`mcp.md`](../spec/mcp.md)
 
 ## GK — 게시 검수

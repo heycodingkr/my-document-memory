@@ -4,7 +4,9 @@
 
 ## 1. 한 줄 요약
 
-WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하게 한다. My Document Memory(DMEM)는 **문서 양식·참고자료·작성 규칙을 URL + 양식(문서 종류·로케일·provider)으로 색인**해 내 것은 저장·가져오고, 다른 사람 것은 찾아 보고 복사하고, 웹의 문서는 미리보고 가져오게 한다. 구조화 레이어, URL 정규화, 기본 비공개, 항목별 동의, 불변 version, 귀속, 합성 fixture 원칙을 선택적으로 가져온다. WAM의 점수·leaderboard·curator, 익명 쓰기/복사, CLI·MCP·Arise 자동 주입은 이 제품의 기본 요구가 아니다. 문서 URL fetch는 WAM의 no-fetch 경계와 달라 별도 SSRF 방어를 둔다.
+WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하게 한다. My Document Memory(DMEM)는 **문서 양식·참고자료·작성 규칙을 URL + 양식(문서 종류·로케일·provider)으로 색인**해 내 것은 저장·가져오고, 다른 사람 것은 찾아 보고 복사하고, 웹의 문서는 미리보고 가져오게 한다. 구조화 레이어, URL 정규화, 기본 비공개, 항목별 동의, 불변 version, 귀속, 합성 fixture 원칙을 가져온다. 점수·leaderboard·curator와 호스트 자동 호출은 각 기능의 별도 계약·실행 상태로 관리한다. 문서 URL fetch는 WAM의 no-fetch 경계와 달라 별도 SSRF 방어를 둔다.
+
+2026-11-09 보완: WAM `docs/spec` Markdown 31개와 `docs/test` 62개, 합계 **93개**를 [`../../contracts/wam-port.v1.json`](../../contracts/wam-port.v1.json)에 개별 처분했다(**적응 72, 제외 21**). 원본 실험·배포 기록은 이 제품의 실행 결과로 복사하지 않는다. `PYTHONPATH=tests/lib python3 -B -m dmtest.porttrace --require-upstream`이 실제 원본 집합·중복·누락·대상 존재를 검사한다. 내용 리뷰와 실행 결과는 [`../test/wam-port-completion-v1.md`](../test/wam-port-completion-v1.md).
 
 ## 2. 개념 대응
 
@@ -26,7 +28,7 @@ WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하
 
 ## 3. 명세(`docs/spec`) 포팅표
 
-처분: ◎ 핵심 적응(작성 완료) · ○ 적응(위임 작성) · △ 승계(변경 최소) · ✕ 제외. 위임 묶음은 P1(서버·저장·연결), P2(검수·모델·점수), P3(웹·운영·출시).
+처분: ◎ 핵심 적응(작성 완료) · ○ 적응(설계 작성 완료) · △ 승계(변경 최소) · ✕ 제외. P1(서버·저장·연결), P2(검수·모델·점수), P3(웹·운영·출시)는 문서 묶음이다. 작성 완료는 제품 구현 완료를 뜻하지 않는다.
 
 | WAM 파일 | 영역 | 처분 | DMEM 파일 | 핵심 변경 |
 |---|---|---|---|---|
@@ -76,12 +78,12 @@ WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하
 | `functional-tests.md` | `functional-tests.md`(핵심) + `functional-{api,connect,install}.md`(P1) + `functional-{review,curator,models}.md`(P2) + `functional-{web,account,ops,release}.md`(P3) |
 | `security-scenarios.md` | [`../test/security-scenarios.md`](../test/security-scenarios.md) (+ SSRF·라이선스·OOXML 악성) |
 | `harness-verification.md` | [`../test/harness-verification.md`](../test/harness-verification.md) (+ 변이·양성/음성 대조) |
-| `local-smoke.md`, `host-smoke.md`, `hosts/*` | [`../test/local-smoke.md`](../test/local-smoke.md), [`../test/host-smoke.md`](../test/host-smoke.md), [`../test/hosts/`](../test/hosts/README.md) |
+| `local-smoke.md`, `host-smoke.md`, `hosts/*` | [`../test/local-smoke.md`](../test/local-smoke.md), [`../test/host-smoke.md`](../test/host-smoke.md), [`../test/hosts/`](../test/hosts/README.md), [`../test/hosts/matrix.md`](../test/hosts/matrix.md)(미검증 호스트의 범위·정리·인증 분리) |
 | `tool-forms/{cli,mcp,snippet}-form.md` | [`../test/tool-forms/`](../test/tool-forms/README.md) |
-| `user-flows.md`, `failure-matrix.md`, `metrics.md`, `environment.md` | 같은 이름 |
+| `user-flows.md`, `failure-matrix.md`, `metrics.md`, `environment.md` | 같은 이름. A/B 사전 등록은 [`../test/prereg/_template.md`](../test/prereg/_template.md) |
 | `tests/lib/wamtest/{doctrace,evidence,procs,sentinels}.py`, `tests/env/fixture-sites/fixture_server.py` | `tests/lib/dmtest/`(일반화), `tests/env/fixture-sites/` |
-| `tests/env/check_browser_mcp_bridge.py`(Arise 공개 MCP) | `tests/smoke/arise_smoke.py` |
-| (WAM 실제 서버·바이너리) | `tests/env/dmem-double/`(**테스트 더블**, 제품 아님) |
+| `tests/env/check_browser_mcp_bridge.py`(Arise 공개 MCP + 현재 탭 recall) | `tests/smoke/arise_smoke.py`는 **브라우저 환경 부분만** 실행. 제품 브리지·현재 탭 clip 수용 기준은 `HOST-09`, `SMK-10`이며 미실행. 동등한 제품 브리지 검증으로 세지 않음 |
+| (WAM 실제 서버·바이너리) | `tests/env/dmem-double/`(**목표 계약 참조 구현**, 제품 아님); 실제 Rust 제품은 `runtime-v1.py`, `recall-v1.py`, `community-v1.py`로 따로 검증 |
 
 ## 5. 확정한 결정과 열어 둔 결정
 
@@ -102,9 +104,9 @@ WAM은 **웹 작업 노하우를 URL로 색인**해 에이전트가 재사용하
 
 확인함: WAM 명세·테스트 문서·하네스 코드를 직접 읽었다. Google Drive API 내보내기 MIME 표(최종 갱신 2026-09-03)를 읽었다. 이 머신에 Python 3.14.7, Node 26.5.0, Arise 0.1.76이 있다.
 
-작업 도중 발견한 것: 같은 저장소에서 다른 세션이 [`runtime-v1.md`](../spec/runtime-v1.md)와 `crates/`(`dmem-*`)로 구현을 시작했고, 이 명세의 `core.md`·`form.md` 오류 코드와 양식 필드를 채택했다. 구현은 이 명세 세트의 **부분집합**(로컬 단일 소유자·정수 `version`·`private`/`public`·recall/게시/웹 가져오기 없음)이다. 차이와 대응은 [`../test/README.md`](../test/README.md) 7절에 기록했다.
+현재 확인한 것: Rust 6개 crate·Axum·SQLite·Svelte 제품, 실제 CLI·stdio MCP, URL+양식 recall 부분집합, 계정별 공개 기여·검수·복사가 있다. `runtime-v1.md`는 최초 단계 계약이며 이후 `recall-v1.md`·`accounts-community-v1.md`·`memory-community-smoke-v1.md`가 확장한다. 전체 목표의 `doc_memory_*` 12개와 실제 제품 `document_*`는 이름·입력·인증·오류 계약이 달라 별도 테스트한다. 차이와 대응은 [`../test/README.md`](../test/README.md) 7절이다.
 
-확인하지 못함: Google 웹 UI 내보내기 URL과 `/copy` 링크 형태, Docs·Slides API 구조, Notion 공식 문서 본문, WAM의 호스트별(Claude Code·Codex) 사실의 현재 유효성. 해당 항목은 각 문서에 "미검증" 또는 "WAM 승계(재확인 필요)"로 표시했다. 구현은 없으며 테스트 더블은 계약을 실행 가능하게 만든 것이다.
+확인하지 못함: Google 웹 UI 내보내기 URL과 `/copy` 링크 형태, Docs·Slides API 구조, Notion 공식 문서 본문, WAM의 호스트별(Claude Code·Codex) 사실의 현재 유효성. 해당 항목은 "미검증" 또는 "WAM 승계(재확인 필요)"로 표시했다. Google의 export MIME·API 제한·Sheets locale 문서는 별도 공식 출처를 재확인했으며 제품 OAuth·동기화 검증을 뜻하지 않는다. 웹 검색·미리보기·원격 URL 가져오기·clip 전체 기능은 목표 계약/더블 단계다.
 
 ## 7. 위임 작성 규약 (병렬 작업자용)
 

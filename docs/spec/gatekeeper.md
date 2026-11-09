@@ -1,6 +1,6 @@
 # GK: 공개 게시 검수
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 기여 게이트와 browser replay를 명시적 게시 검수 및 StandardDoc/export 검사로 바꿨다. 공개 검수는 runtime-v1 이후 다중 사용자 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 기여 게이트와 browser replay를 명시적 게시 검수 및 StandardDoc/export 검사로 바꿨다. 공개 검수는 runtime-v1 이후 다중 사용자 단계다.
 영역 / 테스트 ID 접두사: `GK` (케이스: [`../test/functional-review.md`](../test/functional-review.md))
 기반: [`sharing.md`](sharing.md), [`memory.md`](memory.md), [`web-import.md`](web-import.md), [`formats.md`](formats.md), [`privacy.md`](privacy.md)
 

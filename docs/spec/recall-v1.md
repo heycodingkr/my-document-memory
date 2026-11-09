@@ -1,6 +1,6 @@
 # recall v1: URL + 양식으로 양식 찾기 (runtime-v1 부분집합)
 
-상태: 구현 계약 (2026-11-09). [`recall.md`](recall.md)의 RCL 계약 중 runtime-v1(로컬 단일 소유자 서버, `private`/`public`, 템플릿에 URL 패턴·L0 키워드·갱신 시각 없음)에서 성립하는 부분집합이다. 응답은 [`contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)의 `$defs.RecallResult`와 정확히 같다. 기준 구현은 `tests/env/dmem-double/dmem_double/ranker.py`와 `engine.py`의 `op_recall`이다.
+상태: 구현·검증 완료 (2026-11-09; 8절). [`recall.md`](recall.md)의 RCL 계약 중 runtime-v1(로컬 단일 소유자 서버, `private`/`public`, 템플릿에 URL 패턴·L0 키워드·갱신 시각 없음)에서 성립하는 부분집합이다. 응답은 [`contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)의 `$defs.RecallResult`와 정확히 같다. 기준 구현은 `tests/env/dmem-double/dmem_double/ranker.py`와 `engine.py`의 `op_recall`이다.
 영역 / 테스트 ID 접두사: `RV` (케이스: [`../test/recall-v1.md`](../test/recall-v1.md)). WAM의 `wam recall`(URL → ≤3 힌트)을 문서 양식 도메인으로 옮긴 읽기 경로다.
 
 ## 의존 순서와 원자 목표
@@ -107,3 +107,17 @@ route 순위, `team` 범위, `receipt_id`·outcome, 캐시(`cache.state`는 항�
 | F-RV-08 | 후보 전체 | 후보가 20개를 넘어도 최상위가 누락되지 않는다 | RV-22 | RCL-09 |
 | F-RV-09 | 복사본 출처 | 복사본의 `origin`·`license`가 힌트에 보존된다 | RV-28 | RCL-06 |
 | F-RV-10 | 채널 동등 | HTTP=CLI=MCP, MCP 검증은 네트워크 없이 실패 | RV-30~34, RV-40 | RCL-14 |
+
+## 8. 구현 위치와 검증
+
+| 계층 | 위치 |
+|---|---|
+| DTO | `crates/dmem-contracts/src/recall.rs`(`RecallQuery`, `RecallResult`, `Hint` 등) |
+| 순위·힌트 순수 함수 | `crates/dmem-core/src/recall.rs`의 `recall(candidates, query)` |
+| HTTP | `crates/dmem-server/src/http/recall.rs`(`GET /v1/recall`, 엄격한 쿼리 파서), 후보 전체 로드 `Store::recall_candidates` |
+| 클라이언트·CLI·MCP | `dmem_client::recall_path`, `dmem recall`, 도구 `document_memory_recall` |
+| 시험 | `crates/dmem-core/tests/recall.rs`, `crates/dmem-server/tests/recall_{owners,http}.rs`, MCP·CLI 단위 시험, `tests/smoke/recall-v1.py` |
+
+구현 중 부모 리뷰에서 명세와 어긋난 곳을 고쳤다: URL에서만 감지한 provider도 `provider_exact`에 쓴다(RV-05b), 힌트의 `outline` 항목을 60자로 자른다(RV-11b), 어휘 JSON을 호출마다 파싱하지 않는다(프로세스당 1회), CLI의 기존 오류 출력 형식은 바꾸지 않는다.
+
+recall의 후보는 `records` 테이블의 소유자 비공개 템플릿과 `@catalog`의 공개 템플릿이다. 기여 검수 중인 스냅샷(`contributions` 테이블)은 후보가 아니므로 승인 전에는 recall에 나타나지 않는다. 결과와 실행 방법은 [`../test/recall-v1.md`](../test/recall-v1.md) 끝에 있다.

@@ -96,7 +96,7 @@ def disc_06(ctx):
         for field in ("title", "snippet"):
             text = c[field]
             ctx.expect("<" not in text and ">" not in text, f"{field}: markup must be stripped")
-            ctx.expect(all(ord(ch) >= 32 and ch not in "​‌‍⁠﻿‮" for ch in text), f"{field}: control and invisible characters must be removed")
+            ctx.expect(all(ord(ch) >= 32 and ch not in "\u200b‌‍⁠﻿\u202e" for ch in text), f"{field}: control and invisible characters must be removed")
     ctx.expect(r.json.get("untrusted") is True, "the result stays framed as untrusted data")
     ctx.expect(len(search_calls(ctx)) == 1 and not [e for e in ctx.fx_log() if e["path"] != "/search"], "nothing in the snippets may trigger a further request")
 

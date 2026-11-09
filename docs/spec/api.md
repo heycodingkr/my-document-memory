@@ -1,6 +1,6 @@
 # API: HTTP v1 인증·라이브러리·공유 계약
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM endpoint·receipt 멱등성 규칙을 문서 메모리 도메인에 적응했다. 외부 WAM 호스트·배포 사실은 승계하지 않는다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM endpoint·receipt 멱등성 규칙을 문서 메모리 도메인에 적응했다. 외부 WAM 호스트·배포 사실은 승계하지 않는다.
 영역 / 테스트 ID 접두사: `API` (케이스: [`../test/functional-api.md`](../test/functional-api.md))
 기반: [`core.md`](core.md), [`runtime-v1.md`](runtime-v1.md), [`recall.md`](recall.md), [`library.md`](library.md), [`sharing.md`](sharing.md), [`web-import.md`](web-import.md), [`mcp.md`](mcp.md), [`cli.md`](cli.md), [`privacy.md`](privacy.md)
 

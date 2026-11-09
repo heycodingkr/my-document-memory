@@ -1,6 +1,6 @@
 # IMP / DISC: 웹에서 찾고, 미리보고, 복사해 오기
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM에는 없는 신규 명세다. "웹에서 검색해 관련 문서를 대략 보고, 필요한 것을 복사해 내 메모리로 쓴다"는 요구를 URL 기반 가져오기와 출처·라이선스 규칙으로 정한다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM에는 없는 신규 명세다. "웹에서 검색해 관련 문서를 대략 보고, 필요한 것을 복사해 내 메모리로 쓴다"는 요구를 URL 기반 가져오기와 출처·라이선스 규칙으로 정한다.
 영역 / 테스트 ID 접두사: `DISC`(검색), `IMP`(미리보기·가져오기·클립) (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`core.md`](core.md), [`formats.md`](formats.md), [`memory.md`](memory.md) 5절, [`sharing.md`](sharing.md) 4절
 
@@ -64,6 +64,7 @@
 - `preview`는 저장 없이 `preview_id`, `canonical_url`, `provider`, `title`, 감지한 `detected {doc_type, locale, page}`, `outline[]`, `stats`, `license {id, source}`, `signals {noai, noindex}`, `copy_policy_default`, `content_hash`, `fetched_at`, `expires_at`(15분)을 준다. preview 내용은 프로세스 메모리 또는 소유자만 읽는 임시 파일(0600)에만 두고 TTL이 지나면 지운다.
 - `import`는 `preview_id`를 받으면 **그 시점의 내용을 그대로** 저장한다(미리본 것과 저장한 것이 같다 — 중간에 원격 내용이 바뀌어도 영향이 없다). 만료되었으면 `not_found`다. `url`을 직접 받으면 한 번 가져오고 같은 검사를 거친다.
 - 저장되는 출처 블록: `origin: fetched`, `provenance: fetched`, `source_host`, `source_url`(능력 호스트가 아니고 query·fragment 없이), `source_ref`(능력 호스트), `retrieved_at`, `content_hash`, `license`, `license_source`, `copy_policy`([`memory.md`](memory.md) 5절).
+- 가져온 메모리의 `url_patterns`는 **원본 URL의 canonical pattern**이고 scope의 URL 부분이 된다. 그래서 서로 다른 페이지는 서로 다른 scope이고 같은 페이지를 다시 가져와 내용이 바뀌었으면 `scope_conflict`다(변경은 `memory_id`와 `base_version`으로 한다). Google Sheets처럼 한 문서가 내보내기 형식 후퇴(xlsx → csv)로 가져와진 경우도 같은 scope다.
 - 같은 소유자가 같은 정규화 content hash·source fingerprint·`scope_key`를 멱등 재전송하면 기존 항목을 돌려줄 수 있다(`created: false`). 같은 owner scope에서 내용이 바뀌면 `memory_id`와 `base_version`을 명시해 새 version을 만든다. 같은 소유자의 독립 양식은 다른 source scope 또는 `variant`로 구분한다. 다른 작성자의 항목은 scope가 같다는 이유로 자동 병합하지 않는다.
 
 ## 6. 현재 탭 클립 (호스트 어댑터)

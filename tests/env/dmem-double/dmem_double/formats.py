@@ -561,6 +561,8 @@ def outline(doc):
 
 
 def spans(doc):
+    if doc.get("spans"):  # an adapter that knows better locators (a PDF's page numbers) supplies them
+        return [dict(s) for s in doc["spans"]]
     out, p, t = [], 0, 0
     for b in doc.get("blocks", []):
         kind = b.get("type")

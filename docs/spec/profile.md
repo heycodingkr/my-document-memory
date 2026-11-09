@@ -1,6 +1,6 @@
 # PROFILE: 공개 핸들·표시 이름·소개
 
-상태: 설계 초안(문서 우선, 구현 없음). 공개 프로필과 계정 화면은 runtime-v1 이후 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. 공개 프로필과 계정 화면은 runtime-v1 이후 단계다.
 영역 / 테스트 ID 접두사: `PROFILE` (케이스: [`../test/functional-account.md`](../test/functional-account.md))
 기반: [`accounts-community-v1.md`](accounts-community-v1.md), [`privacy.md`](privacy.md), [`sharing.md`](sharing.md)
 WAM 승계(재확인 필요): handle은 내부 계정 ID·이메일과 분리하고, 공개 프로필 참여는 opt-in으로 둔다.

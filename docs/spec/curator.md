@@ -1,6 +1,6 @@
 # CUR: 게시 검수 에이전트
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM curator의 읽기·단일 판정 경계를 게시 검수에 맞게 옮겼다. 공개 검수는 runtime-v1 이후 다중 사용자 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM curator의 읽기·단일 판정 경계를 게시 검수에 맞게 옮겼다. 공개 검수는 runtime-v1 이후 다중 사용자 단계다.
 영역 / 테스트 ID 접두사: `CUR` (케이스: [`../test/functional-curator.md`](../test/functional-curator.md))
 기반: [`gatekeeper.md`](gatekeeper.md), [`sharing.md`](sharing.md), [`formats.md`](formats.md), [`privacy.md`](privacy.md), [`../design/wam-port-map.md`](../design/wam-port-map.md)
 

@@ -2,6 +2,8 @@
 
 형식은 [`../host-smoke.md`](../host-smoke.md) 4절 템플릿이다. **직접 실행해 확인한 사실**과 **WAM 승계(재확인 필요)** 를 구분해 적고, 확인하지 못한 항목은 비워 둔다. 하네스는 Arise의 공개 stdio MCP(`agent_browser --mcp-server`)만 쓴다. CDP나 앱의 내부 제어 소켓에 접속하지 않는다.
 
+재실행(2026-11-09): `target/e2e-logs/arise/20261109-122711-6914/`에서 **21/21 통과**, 설치본 0.1.77·도구 62개를 다시 확인했다. `shots/resume-ko.png`를 이미지 도구로 직접 열어 국가별 문서 fixture의 제목·섹션·표를 확인했고 사용자 탭은 전후 같았다. 아래 초기 실행 기록과 함께 보존한다. 실제 Rust CLI/MCP는 별도 제품 스모크로 통과했으나, 이 환경 스모크는 제품 허브 등록·현재 탭 clip·자발적 recall을 검증하지 않는다([최신 결과](../wam-port-completion-v1.md)).
+
 ```
 호스트: Arise (/Applications/Arise.app, 번들 ID ai.meshcode.agent-browser)
   실행 시점 설치본 Info.plist 버전: 0.1.77 (2026-11-09 10:12 KST, 스모크 meta.json)
@@ -11,7 +13,7 @@
 환경변수 상속 여부: 스모크는 자식 MCP에 부모 환경을 그대로 상속(앱과 같은 TMPDIR) — 정상 동작을 확인
 비대화형 실행 방법: python3 -B tests/smoke/arise_smoke.py
 SMK 결과(환경 스모크): 2026-11-09 21/21 통과, 실행 증거 target/e2e-logs/arise/20261109-101257-0323/ (git 무시)
-  SMK-14 일부(자기 소유 탭만 닫기) ✓. SMK-10(현재 탭 클립)·SMK-02/HOST-05·HOST-10(허브 등록)은 제품 없음 → 미실행
+  SMK-14 일부(자기 소유 탭만 닫기) ✓. SMK-10(현재 탭 클립)·SMK-02/HOST-05·HOST-10(허브 등록)은 이 환경 스모크 범위 밖 → 미실행
 BEH 결과: 미실행
 알려진 이슈: 아래
 ```

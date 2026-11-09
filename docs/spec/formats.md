@@ -1,6 +1,6 @@
 # FMT: 표준 문서 구조, provider 어댑터, 내보내기
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM에는 대응 문서가 없는 신규 명세다. 제품 범위는 [`overview.md`](overview.md) v0.3(문서·슬라이드 우선, 시트는 후속)을 따른다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM에는 대응 문서가 없는 신규 명세다. 제품 범위는 [`overview.md`](overview.md) v0.3(문서·슬라이드 우선, 시트는 후속)을 따른다.
 영역 / 테스트 ID 접두사: `FMT` (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`form.md`](form.md)(provider·family), [`memory.md`](memory.md)(L2 구조), [`web-import.md`](web-import.md)(가져오기 보안)
 
@@ -65,6 +65,8 @@ v1은 메타데이터만 다룬다: `sheets[]`(`name`), 열 `header`·`type`·`f
 
 미검증 항목에 의존하는 구현은 기능 플래그로 가두고, 확인 후 이 표를 갱신한다.
 
+공식 문서 재확인(2026-11-09): [Google export MIME 표](https://developers.google.com/workspace/drive/api/guides/ref-export-formats)는 Docs의 DOCX·Markdown, Slides의 PPTX, Sheets의 XLSX·첫 시트 CSV/TSV를 구분한다. [files.export API](https://developers.google.com/workspace/drive/api/reference/rest/v3/files/export)는 MIME을 지정해 bytes를 반환하며 결과에 10 MB 제한이 있다. 이는 위 fixture `/export?format=` 경로나 `/copy` 링크의 검증이 아니다. [Sheets locale 도움말](https://support.google.com/docs/answer/58515?co=GENIE.Platform%3DDesktop&hl=en)은 지역 설정이 통화·날짜·숫자 기본 표시에 영향을 주며 UI 언어와 별개라고 설명한다. 따라서 provider·locale·region·표시 형식을 따로 다루고 실제 어댑터에서 손실을 보고한다. 제품 OAuth·동기화나 원본과 같은 레이아웃은 이 문서 확인만으로 검증되지 않는다.
+
 ## 4. 충실도와 경고
 
 | 충실도 | 의미 |
@@ -97,7 +99,7 @@ v1은 메타데이터만 다룬다: `sheets[]`(`name`), 열 `header`·`type`·`f
 | `table` | GFM 파이프 표. 병합 셀이나 셀 내 줄바꿈이 있으면 HTML `<table>`로 대체하고 `table_html_fallback` 경고 |
 | `quote` | `> ` |
 | `callout` | GFM 경고 블록: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`(tone에 대응) 다음 줄부터 `> ` 본문 |
-| `image` | `![alt](assets/<해시>.<확장자>)`, 자산 파일은 `<출력>.assets/`에 쓴다 |
+| `image` | `![alt](assets/<해시>.<확장자>)`. 자산 파일이 저장소에 있으면 `<출력>.assets/`(0700)에 쓴다. v1은 가져올 때 이미지를 버리므로(`images_omitted`) 자산이 없고 디렉터리도 만들지 않는다 |
 | 슬롯 | `{{name}}` 그대로 |
 | 확인 필요 표식 | `{{확인 필요: 항목}}` 그대로 |
 

@@ -79,7 +79,7 @@ class Sandbox:
             env.update({"DMEM_DOUBLE_TEST_HOOKS": "1", "DMEM_TEST_IDENTITY": identity, "DMEM_TEST_REQUEST_LOG": str(self.request_log_path)})
             if self.server_state:
                 env["DMEM_TEST_SERVER_STATE"] = str(self.server_state)
-            for key in ("DMEM_DOUBLE_MUTATION", "DMEM_TEST_RESOLVE", "DMEM_TEST_CLOCK_OFFSET"):
+            for key in ("DMEM_DOUBLE_MUTATION", "DMEM_TEST_RESOLVE", "DMEM_TEST_CLOCK_OFFSET", "DMEM_TEST_SERVER_DOWN"):
                 if key in os.environ:
                     env[key] = os.environ[key]
         elif self.endpoint:
@@ -134,6 +134,39 @@ class Sandbox:
             except Exception:
                 time.sleep(0.25)
         raise TargetError("server did not become healthy")
+
+    # -- the eight sinks of the sentinel sweep (docs/test/security-scenarios.md, HARN-14)
+    SINKS = ("client_output", "logs_diagnostics", "local_store", "cache", "server_requests", "remote_requests", "process_args_env", "exported_files")
+
+    def sweep_sources(self, identities, fixture_log=None):
+        """{sink: [sources]} where a source is a Path or bytes. `local_store_originals` is separate: preserved uploads legitimately hold the user's own personal data."""
+        sinks = {name: [] for name in self.SINKS}
+        sinks["local_store_originals"] = []
+        sinks["client_output"] += [out + b"\n" + err for cli in self._cli.values() for out, err in cli.transcript]
+        sinks["client_output"] += [bytes(s.raw_out) + b"\n" + bytes(s.raw_err) for s in self._sessions]
+        for who in identities:
+            root = self.tmp / who
+            home = self.home(who)
+            log_dirs = [home / n for n in ("log", "logs", "diagnostics", "telemetry", "spool")] + [root / "tmp", root / "data", root / "config"]
+            sinks["logs_diagnostics"] += [p for p in log_dirs if p.exists()] + [p for p in home.glob("*.log")] + [p for p in home.glob("*.jsonl")]
+            sinks["logs_diagnostics"].append(("listing of " + who + ":\n" + "\n".join(sorted(str(f.relative_to(root)) for f in root.rglob("*") if f.is_file()))).encode())
+            if home.exists():
+                own = ("originals", "cache", "log", "logs", "diagnostics", "telemetry", "spool")  # the other sinks' directories: keep the eight sinks disjoint
+                sinks["local_store"] += [c for c in home.iterdir() if c.name not in own and not c.name.endswith((".log", ".jsonl"))]
+                if (home / "originals").exists():
+                    sinks["local_store_originals"].append(home / "originals")
+            sinks["cache"] += [p for p in (root / "cache", home / "cache") if p.exists()]
+            sinks["exported_files"] += [c for c in root.iterdir() if c.is_file()] + ([root / "home"] if (root / "home").exists() else [])
+        if self.request_log_path.exists():
+            sinks["server_requests"].append(self.request_log_path)
+        if self.server_state and self.server_state.exists():
+            sinks["server_requests"].append(self.server_state)
+        if fixture_log is not None:  # None: no fixture server was started, so there is no log to look at (reported as an empty sink)
+            sinks["remote_requests"].append(json.dumps(fixture_log, ensure_ascii=False).encode())
+        calls = [{"args": a, "exit": e} for cli in self._cli.values() for a, e in cli.calls]
+        envs = [dict(cli.env) for cli in self._cli.values()] + [dict(s.env) for s in self._sessions]
+        sinks["process_args_env"].append(json.dumps({"calls": calls, "env": envs}, ensure_ascii=False).encode())
+        return sinks
 
     def close(self):
         for s in self._sessions:

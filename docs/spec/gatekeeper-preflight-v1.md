@@ -1,6 +1,6 @@
 # 게시 전 점검 v1: Gatekeeper preflight (runtime-v1 부분집합)
 
-상태: 구현 계약 (2026-11-09). [`gatekeeper.md`](gatekeeper.md)의 GK 계약 중 큐·모델·동의 기록·팀 가시성·OOXML 없이 **내 비공개 템플릿 한 개를 공개 전에 결정적 규칙으로 점검**하는 부분(R1 scrub, R2 사용권, R3 중복, R4 구조)이다. LLM 판정, 큐, 저장소 변경, 공개 상태 변경은 없다. WAM의 Gatekeeper(redaction → dedup → 판정)를 문서 양식 도메인으로 옮긴 쓰기 경로의 안전장치다. 기준 구현은 `tests/env/dmem-double/dmem_double/scrub.py`와 `engine.py`의 `op_publish`, 합격 오라클은 `tests/sentinels.json`이다. 사용권 규칙은 [`accounts-community-v1.md`](accounts-community-v1.md)의 공개 기여 계약(`CC0-1.0`·`CC-BY-4.0`, 재기여 시 원 라이선스 유지)을 따른다. 이 점검은 그 계약의 관리자 검수를 대체하지 않으며, 구현한 것은 판정 보조뿐이다.
+상태: 명세 (2026-11-09). **코드는 저장소에 반영하지 않았다(7절).** [`gatekeeper.md`](gatekeeper.md)의 GK 계약 중 큐·모델·동의 기록·팀 가시성·OOXML 없이 **내 비공개 템플릿 한 개를 공개 전에 결정적 규칙으로 점검**하는 부분(R1 scrub, R2 사용권, R3 중복, R4 구조)이다. LLM 판정, 큐, 저장소 변경, 공개 상태 변경은 없다. WAM의 Gatekeeper(redaction → dedup → 판정)를 문서 양식 도메인으로 옮긴 쓰기 경로의 안전장치다. 기준 구현은 `tests/env/dmem-double/dmem_double/scrub.py`와 `engine.py`의 `op_publish`, 합격 오라클은 `tests/sentinels.json`이다. 사용권 규칙은 [`accounts-community-v1.md`](accounts-community-v1.md)의 공개 기여 계약(`CC0-1.0`·`CC-BY-4.0`, 재기여 시 원 라이선스 유지)을 따른다. 이 점검은 그 계약의 관리자 검수를 대체하지 않으며, 구현한 것은 판정 보조뿐이다.
 영역 / 테스트 ID 접두사: `GP` (케이스: [`../test/gatekeeper-preflight-v1.md`](../test/gatekeeper-preflight-v1.md))
 
 ## 의존 순서와 원자 목표
@@ -112,3 +112,19 @@
 | F-GP-07 | 서버 경계 | 소유자 격리, 인증, 입력 검증, 읽기 전용 | GP-20, GP-22, GP-23, GP-25, GP-26 | GK-02 |
 | F-GP-08 | 실제 시드 무오탐 | 시드 복사본에서 R1·R2·R4 finding 없음 | GP-27 | GK-17 |
 | F-GP-09 | CLI | 종료 코드 0·4·1, HTTP와 같은 JSON | GP-30, GP-31 | — |
+
+## 7. 구현 상태와 결정 (2026-11-09)
+
+이 문서의 읽기 전용 사전 점검(`POST /v1/templates/{id}/check`, `dmem check`)은 작업 사본에서 구현·검증했지만(단위·서버 시험 21개와 실제 바이너리 센티널 전수) **저장소에는 반영하지 않았다.** 같은 시간에 다른 작업이 `contribution-review-v1`(`crates/dmem-core/src/review.rs`의 `review_snapshot`, [`memory-community-smoke-v1.md`](memory-community-smoke-v1.md))로 R1~R4와 같은 종류의 결정적 규칙을 제출 스냅샷에 구현했기 때문이다. 스캐너를 하나 더 넣으면 같은 템플릿에 정책이 둘 생겨 판정이 어긋날 수 있다.
+
+두 구현을 같은 오라클로 비교했다(작업 사본의 임시 시험, 저장소에 없음).
+
+| 입력 | 결과 |
+|---|---|
+| `tests/sentinels.json`의 비밀·개인정보 40개 + injection 6개, 요약·섹션 두 위치 | 두 구현 모두 누락 0 |
+| 같은 파일의 비밀이 아닌 21개(`capability`·`url_parts`·`prose`·`hidden`) | 두 구현 모두 오탐 0 |
+| 이 문서의 양성 29개(비밀·개인정보·injection·마크업·숨김 문자 분할)와 가드 24개를 요약·섹션에 | 판정 차이 0 (106회 비교) |
+
+그래서 탐지 규칙은 `contribution-review-v1`이 이미 이 문서의 오라클을 충족한다. 남은 것은 **저장 없는 사전 점검 진입점**뿐이다. 만든다면 새 스캐너가 아니라 `review_snapshot` 위에 얇게 얹고 `contribute`가 만드는 스냅샷 생성 코드를 재사용해야 하며, 그 코드(`community.rs`)가 다른 작업에서 계속 바뀌고 있어 안정된 뒤에 하는 것이 안전하다. 그때 판정 어휘는 `contribution-review-v1`(`ready`/`needs_review`/`blocked`)을 따른다.
+
+이 문서와 `contribution-review-v1`의 차이(사전 점검을 만들 때 어느 쪽으로 맞출지 정해야 한다): 이 문서는 숨김 문자를 제거하면서 `hidden_text_removed` 참고 finding을 남기고, 판정이 `approve`/`reject`/`escalate_to_human`이며, `content_hash`를 `dmem-preflight-v1` 정규 형식으로 정한다(골든 값 GP-01). `contribution-review-v1`은 숨김 문자를 조용히 제거하고, 판정이 `ready`/`needs_review`/`blocked`이며, 보고서 해시를 스냅샷 JSON의 SHA-256으로 정한다.

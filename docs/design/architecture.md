@@ -55,7 +55,8 @@
 | 모드 | 메타·버전·색인 | 원본·내보내기 | 인증 |
 |---|---|---|---|
 | 로컬(첫 구현) | SQLite(`rusqlite`). 임베디드 또는 `127.0.0.1` loopback 서버 뒤에서 사용([`../spec/runtime-v1.md`](../spec/runtime-v1.md)) | 원본 bytes와 체크섬을 저장소에 보존 | 설정한 `DMEM_TOKEN` 하나가 로컬 소유자 하나 |
-| 서버(다중 사용자 단계) | PostgreSQL(사용자·workspace·메타·버전·전문 검색) | 객체 저장소 | device flow·OAuth |
+| 계정 서버 v1(구현) | SQLite의 owner-scoped 계정·세션·기여·불변 snapshot, HTTPS proxy 뒤 loopback API | 기존 원본 보존 어댑터 | Resend 이메일 링크/OTP, HMAC 세션, Origin/CSRF, 별도 관리자 secret ([계약](../spec/accounts-community-v1.md)) |
+| 후속 서버 확장 | PostgreSQL(사용자·workspace·메타·버전·전문 검색) | 객체 저장소 | device flow·OAuth |
 
 계약(CLI·MCP·API 동작)은 저장소 어댑터와 무관하다. 어댑터를 바꿔도 `CORE`·`RCL`·`SHR` 등 테스트 ID의 기대 결과는 같아야 한다.
 
@@ -71,6 +72,8 @@
 | 테스트 하네스 | Python 3 표준 라이브러리만 | 구현 언어와 분리. 제품 바이너리는 환경 변수로 주입(`tests/README.md`) |
 
 runtime-v1은 이 명세 세트의 **부분집합**이다: 로컬 단일 소유자, 양식·자료·문서, 공개 시드 양식 복사, 검색, 내보내기. recall·게시·웹 가져오기·클립은 이후 단계다. 테스트는 케이스마다 적용 단계(profile)를 표시해 구현 범위 밖 케이스를 조용히 건너뛰지 않고 이유와 함께 `SKIP`으로 보고한다([`../test/README.md`](../test/README.md) 2절).
+
+계정·공개 기여는 이후 [accounts-community-v1](../spec/accounts-community-v1.md)로 구현·운영 배포되었다. [회원·리더보드 v1](../spec/member-leaderboard-v1.md)은 같은 검증 계정에 선택 공개 profile을 추가하고, 승인·공개된 기여에서20점씩 산출한다. 전체 순위는 본인에게만 제공하며 공개 순위는 opt-in 계정만 별도로 계산한다. 같은 SQLite를 사용해도 계정별 owner를 격리하고, 공개 기여는 별도 검수 후 노출한다. PostgreSQL·팀 공간·자동 검수는 후속 범위다. [검증 기록](../test/accounts-community-v1-results.md)을 기준으로 구현 범위를 확인한다.
 
 ## 6. 핵심 데이터 흐름
 

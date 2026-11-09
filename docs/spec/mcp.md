@@ -1,6 +1,6 @@
 # MCP: 도구 계약, 인증 티어, 호스트 연결
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM `mcp.md`의 transport·인증 티어·호스트 규칙을 승계하고 도구를 문서 메모리 용도로 다시 정의했다. 스키마의 원본은 [`../../contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)이다. 이 문서의 표는 요약이며 둘이 다르면 스키마가 우선한다.
+상태: 전체 목표 계약(문서 우선). 실제 Rust stdio MCP는 `document_*` 도구를 제공하며 아래 `doc_memory_*` 전체 목표 계약/더블과 구분한다. 구현 범위는 [`runtime-v1.md`](runtime-v1.md)·[`recall-v1.md`](recall-v1.md)·[`memory-community-smoke-v1.md`](memory-community-smoke-v1.md)다. WAM `mcp.md`의 transport·인증 티어·호스트 규칙을 승계하고 도구를 문서 메모리 용도로 다시 정의했다. 스키마의 원본은 [`../../contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)이다. 이 문서의 표는 요약이며 둘이 다르면 스키마가 우선한다.
 영역 / 테스트 ID 접두사: `MCP`(계약, [`../test/functional-tests.md`](../test/functional-tests.md)), `MCPF`(호스트 시나리오, [`../test/tool-forms/mcp-form.md`](../test/tool-forms/mcp-form.md))
 기반: [`core.md`](core.md), [`recall.md`](recall.md), [`sharing.md`](sharing.md), [`web-import.md`](web-import.md), [`cli.md`](cli.md)
 
@@ -21,7 +21,7 @@
 | 로컬 모드 | `DMEM_ENDPOINT`가 없으면 로컬 라이브러리만 쓴다(임베디드 라이브러리 또는 `127.0.0.1` loopback 서버로 구현할 수 있고 사용자에게 보이는 계약은 같다. [`runtime-v1.md`](runtime-v1.md)). `scope`에 `team`·`public`을 요청하면 오류가 아니라 `reason: scope_unavailable_local`이다 |
 | 서버 모드 | 계정 라이브러리, 팀·공개 카탈로그, 게시, outcome |
 
-프로토콜 버전은 2024-11-05, 2025-03-26 이후를 지원한다. 2025-03-26 이상에서는 `structuredContent`와 `outputSchema`를 주고 2024-11-05에서는 생략한다(annotations도 2024-11-05에서는 생략). 성공 결과의 text JSON과 `structuredContent`는 같은 내용이다.
+프로토콜 버전은 2024-11-05, 2025-03-26 이후를 지원한다. 2025-03-26 이상에서는 `structuredContent`를 주고 `outputSchema`는 `doc_memory_delete`만 싣는다(나머지 결과는 카탈로그의 `result` 스키마로 시험이 검증하며 `tools/list` 크기 예산 12,000 bytes를 지키기 위해 싣지 않는다. 측정: `tests/lib/selftest/test_contracts.py`). 2024-11-05에서는 `structuredContent`·`outputSchema`·annotations를 모두 생략한다. 성공 결과의 text JSON과 `structuredContent`는 같은 내용이다.
 
 ## 3. 도구 카탈로그 (12개)
 

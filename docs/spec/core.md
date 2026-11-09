@@ -1,6 +1,6 @@
 # CORE: URL·양식 키 정규화와 공통 계약
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM `docs/spec/core.md`를 문서 도메인에 맞게 적응했다([포팅 지도](../design/wam-port-map.md)).
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM `docs/spec/core.md`를 문서 도메인에 맞게 적응했다([포팅 지도](../design/wam-port-map.md)).
 영역 / 테스트 ID 접두사: `CORE` (케이스 원본: [`../test/functional-tests.md`](../test/functional-tests.md))
 기준 문서: [`overview.md`](overview.md) v0.3 (제품 범위), [`form.md`](form.md) (양식 객체)
 
@@ -112,6 +112,7 @@ URL 자체가 접근 권한인 호스트다. "링크가 있는 모든 사용자"
 | `scope_required` | 권한 부족 | 4 | 403 |
 | `license_forbids` | 라이선스가 요청한 복사·게시를 허용하지 않음 | 4 | 403 |
 | `version_conflict` | `base_version`이 현재 버전과 다름 | 4 | 409 |
+| `handle_unavailable` | 공개 handle이 예약되었거나 이미 사용 중이다. 소유자·이메일을 공개하지 않는다 | 4 | 409 |
 | `search_unavailable` | 웹 검색 provider 미설정 또는 장애 | 5 | 503 |
 | `fetch_failed` | 원격 사이트 오류. `reason`: `dns`, `tls`, `status_4xx`, `status_5xx`, `reset` | 5 | 502 |
 | `server_unavailable` | 서버·네트워크 불가 | 5 | 503 |
@@ -144,7 +145,7 @@ URL 자체가 접근 권한인 호스트다. "링크가 있는 모든 사용자"
 실제 사이트 없이 provider별 경로를 시험하기 위한 모드다. `DMEM_ISOLATED=1`**이고** 대상이 loopback일 때만 켜진다. 프로덕션 빌드에서는 비활성이어야 하며 켜지면 `status`가 `isolated: true`를 표시한다.
 
 - loopback(`127.0.0.1`, `[::1]`, `localhost`)의 `http`와 임의 포트를 허용한다.
-- 경로가 `/p/<provider-key>/...`이면 해당 provider의 실제 호스트로 간주해 같은 규칙을 적용한다. `google-docs`·`google-slides`·`google-sheets`는 `docs.google.com`, `notion`은 `www.notion.so`다(예: `/p/google-docs/document/d/X/edit` → `docs.google.com/document/d/:id/edit`).
+- 경로가 `/p/<provider-key>/...`이면 해당 provider의 실제 호스트로 간주해 같은 규칙을 적용한다. `google-docs`·`google-slides`·`google-sheets`는 `docs.google.com`, `notion`은 `www.notion.so`다(`google-sheets-csv`는 내보내기가 CSV만 제공하는 시험용 변형으로 `google-sheets`와 같은 호스트다)(예: `/p/google-docs/document/d/X/edit` → `docs.google.com/document/d/:id/edit`).
 - 그 밖의 loopback 경로는 호스트를 `fixture.test`로 치환한다(포트와 무관하게 결과가 결정적이다).
 - 이 모드에서도 사설 주소 차단 규칙은 loopback 외 대상에 그대로 적용된다.
 

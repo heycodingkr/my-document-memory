@@ -97,9 +97,7 @@ def _quality(candidate):
 def _canonical_keywords(words):
     out = set()
     for word in words or []:
-        canonical = vocab.keyword_canonical(word)
-        if canonical:
-            out.add(canonical)
+        out.add(vocab.keyword_canonical(word) or vocab.norm(word))  # outside the public vocabulary a local keyword still matches itself (recall.md: scope=mine has no vocabulary limit)
     return out
 
 

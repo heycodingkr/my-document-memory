@@ -1,6 +1,6 @@
 # FORM: 양식(Form) 객체, 국가·provider 변형, 관습 경고
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 `task_category` 폐쇄 어휘를 **문서 종류 + 로케일 + provider** 세 축으로 확장한 신규 명세다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 `task_category` 폐쇄 어휘를 **문서 종류 + 로케일 + provider** 세 축으로 확장한 신규 명세다.
 영역 / 테스트 ID 접두사: `FORM` (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`core.md`](core.md) 5절(정규화 순서), [`formats.md`](formats.md)(provider별 가져오기·내보내기), [`overview.md`](overview.md) v0.3
 
@@ -24,7 +24,7 @@ URL은 "어디서"를 말하고 양식은 "어떤 모양인가"를 말한다. `d
 
 ## 3. 문서 종류 어휘 v1
 
-`doc_types` 어휘는 [`../../contracts/vocab/doc_types.json`](../../contracts/vocab/doc_types.json)이 원본이다. 항목은 `id`, `family`, 다국어 `labels`, `aliases[]`(필요하면 `implies: {variant}`)를 가진다. 초기 목록은 제품 양식 목록(`template-library.md`, 작성 중인 별도 문서)과 맞춰 확장한다.
+`doc_types` 어휘는 [`../../contracts/vocab/doc_types.json`](../../contracts/vocab/doc_types.json)이 원본이다. 항목은 `id`, `family`, 다국어 `labels`, `aliases[]`(`value`, 필요하면 `variant`)를 가진다. 초기 목록은 제품 양식 목록(`template-library.md`, 작성 중인 별도 문서)과 맞춰 확장한다.
 
 | family | id |
 |---|---|

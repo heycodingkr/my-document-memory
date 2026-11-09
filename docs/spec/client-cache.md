@@ -1,6 +1,6 @@
 # CACHE: 클라이언트 익명 공개 recall 캐시
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 제한된 CLI/MCP cache 계약을 문서 메모리에 적용한다. runtime-v1 공개 recall 미구현 범위는 후속 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 제한된 CLI/MCP cache 계약을 문서 메모리에 적용한다. 실제 recall v1은 별도 구현되어 있으며 이 파일의 영속 캐시·offline 동작은 후속 단계다.
 영역 / 테스트 ID 접두사: `CACHE` (케이스: [`../test/functional-connect.md`](../test/functional-connect.md))
 기반: [`recall.md`](recall.md), [`web-import.md`](web-import.md), [`mcp.md`](mcp.md), [`cli.md`](cli.md)
 

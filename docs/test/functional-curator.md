@@ -1,6 +1,6 @@
 # CUR: 게시 검수 에이전트 (L0/F)
 
-상태: 설계 테스트(문서 우선, 구현 없음). 합성 후보와 정해진 도구 결과만 사용한다. 원문 비밀값·실제 개인 문서는 fixture에 넣지 않는다.
+상태: 전체 목표의 테스트 설계(문서 우선). 실제 제품 부분집합의 실행 결과는 [포팅 검증](wam-port-completion-v1.md)과 구분한다. 합성 후보와 정해진 도구 결과만 사용한다. 원문 비밀값·실제 개인 문서는 fixture에 넣지 않는다.
 영역 / 테스트 ID 접두사: `CUR`
 기반: [`../spec/curator.md`](../spec/curator.md), [`../spec/curator/instructions.v1.md`](../spec/curator/instructions.v1.md), [`../spec/curator/tools.v1.json`](../spec/curator/tools.v1.json), [`../spec/gatekeeper.md`](../spec/gatekeeper.md)
 

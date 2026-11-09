@@ -41,4 +41,4 @@ Initial inspection: runtime-v1 is a single-owner token-authenticated Axum/SQLite
 
 ## Review and evidence
 
-Pending execution. Record exact production route, service, release, test outcomes, Google URLs and imported IDs in docs/test/seed-deployment-v1.md. Do not record tokens or credentials.
+Completed and verified through public HTTPS and Arise, including original-byte checks and service-restart persistence. See [the verification record](../test/seed-deployment-v1.md) for production routing, all six native Google originals, private source/form IDs, saved examples and evidence. Subsequent hero rollout rechecked the same data; no credential is recorded.

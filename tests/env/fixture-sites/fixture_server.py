@@ -213,6 +213,10 @@ class Handler(BaseHTTPRequestHandler):
             if query.get("format", [""])[0] != "pptx":
                 return self._json(400, {"error": "unsupported_format"})
             return self._binary("pptx")
+        if path == "/p/google-sheets-csv/spreadsheets/d/FIX_SHEET/export":  # a Sheets export that offers CSV only (xlsx answers 400)
+            if query.get("format", [""])[0] != "csv":
+                return self._json(400, {"error": "unsupported_format"})
+            return self._reply(200, "Quarter,Value\nQ1,100\nQ2,125\n", "text/csv; charset=utf-8")
         if path == "/p/google-sheets/spreadsheets/d/FIX_SHEET/export":
             fmt = query.get("format", [""])[0]
             if fmt == "csv":
@@ -221,7 +225,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._binary("xlsx")
             return self._json(400, {"error": "unsupported_format"})
         if path == "/p/notion/Quarterly-Report-0123456789abcdef0123456789abcdef":
-            return self._reply(200, html("Quarterly Report", '<h1>Quarterly Report</h1><ul><li>Revenue grew</li><li>Costs declined</li></ul><table><tr><th>Quarter</th><th>Result</th></tr><tr><td>Q1</td><td>Strong</td></tr></table><aside>Callout: review next quarter</aside>'))
+            return self._reply(200, html("Quarterly Report", '<h1>Quarterly Report</h1><ul><li>Revenue grew</li><li>Costs declined</li></ul><table><tr><th>Quarter</th><th>Result</th></tr><tr><td>Q1</td><td>Strong</td></tr></table><aside>Callout: review next quarter</aside>', '<link rel="license" href="https://creativecommons.org/licenses/by/4.0/">'))
         if path == "/search":
             base = f"http://127.0.0.1:{self.server.server_address[1]}"
             q = query.get("q", [""])[0]

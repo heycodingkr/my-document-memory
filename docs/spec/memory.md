@@ -1,6 +1,6 @@
 # MEM: 구조화 메모리 레이어 (L0/L1/L2), 종류, 슬롯, 출처
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM `memory.md`의 L0/L1/L2 레이어와 불변 버전 규칙을 승계하고 kind·출처·라이선스를 문서 도메인에 맞게 바꿨다. 여기서 L0/L1/L2는 **메모리 레이어**이며 테스트 계층 L0~L6과 다른 개념이다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM `memory.md`의 L0/L1/L2 레이어와 불변 버전 규칙을 승계하고 kind·출처·라이선스를 문서 도메인에 맞게 바꿨다. 여기서 L0/L1/L2는 **메모리 레이어**이며 테스트 계층 L0~L6과 다른 개념이다.
 영역 / 테스트 ID 접두사: `MEM` (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`core.md`](core.md), [`form.md`](form.md), [`formats.md`](formats.md)
 
@@ -15,7 +15,7 @@
 | kind | 담는 것 | L1 필수 | L2 필수 |
 |---|---|---|---|
 | `template` | 문서·슬라이드 양식의 구조·스타일·슬롯 | `outline`(≥1) | `structure`(StandardDoc), `slots[]`(없으면 빈 배열), `rules[]` |
-| `reference` | 내 정책·사실·프로젝트 문서와 근거 | `summary` | `spans[]`(각 span은 `locator`와 `text`) |
+| `reference` | 내 정책·사실·프로젝트 문서와 근거 | `summary` | `spans[]`(각 span은 `locator`와 `text`. `locator`는 원문에서 찾는 좌표: `p:<n>` n번째 문단·목록, `t:<n>` n번째 표, `s:<n>` n번째 슬라이드, PDF는 `page:<n>` 쪽) |
 | `style_rule` | 어조·용어·표기·편집 규칙 | `rules` 요약(≥1) | `rules[]`(≥1) |
 
 `template`의 `examples`(본문 예시)는 `copy_policy`가 허용할 때만 보관한다(5절).

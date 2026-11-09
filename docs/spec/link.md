@@ -1,6 +1,6 @@
 # LINK: 계정과 MCP 기기 연결
 
-상태: 설계 초안(문서 우선, 구현 없음). Device authorization은 WAM 승계(재확인 필요)이며 runtime-v1 이후 단계다. 원격 MCP OAuth도 WAM 승계(재확인 필요)다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. Device authorization은 WAM 승계(재확인 필요)이며 runtime-v1 이후 단계다. 원격 MCP OAuth도 WAM 승계(재확인 필요)다.
 영역 / 테스트 ID 접두사: `LINK` (케이스: [`../test/functional-connect.md`](../test/functional-connect.md))
 기반: [`mcp.md`](mcp.md), [`cli.md`](cli.md), [`runtime-v1.md`](runtime-v1.md)
 

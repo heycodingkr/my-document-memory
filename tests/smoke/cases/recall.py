@@ -113,23 +113,28 @@ def rcl_08(ctx):
 def rcl_09(ctx):
     source = json.loads((Path(__file__).resolve().parents[2] / "fixtures" / "rcl-lib.json").read_text(encoding="utf-8"))
     orders = [list(source), list(reversed(source)), source[9:] + source[:9]]
-    seen = []
-    for i, entries in enumerate(orders):
+    queries = [{"url": DOCS, "doc_type": "resume", "locale": "ko-KR"},      # a clear ranking
+               {"url": "example.com/x", "doc_type": "memo", "locale": "ko-KR"}]  # M10/M11 tie on EVERY key, so only the tie-break decides
+    seen = {i: [] for i in range(len(queries))}
+    for n, entries in enumerate(orders):
         box = ctx.target.sandbox(server=True)  # a fresh, separately stored library per insertion order
         try:
-            path = box.tmp / f"perm{i}.json"
+            path = box.tmp / f"perm{n}.json"
             path.write_text(json.dumps(entries, ensure_ascii=False), encoding="utf-8")
             box.load_library(path, "carol", {"local": "carol"})
             for _ in range(5):  # every call is a new process: a restart each time
-                r = box.cli("carol").json(["recall", "--stdin"], stdin=json.dumps({"url": DOCS, "doc_type": "resume", "locale": "ko-KR"}))
-                seen.append(tuple(h["memory_id"] for h in hints_of(r)))
+                for i, q in enumerate(queries):
+                    r = box.cli("carol").json(["recall", "--stdin"], stdin=json.dumps(q))
+                    seen[i].append(tuple(h["memory_id"] for h in hints_of(r)))
         finally:
             box.close()
-    ctx.expect(len(seen) == 15 and len(set(seen)) == 1 and len(seen[0]) == 3, f"15 recalls over 3 insertion orders must return one identical order: {sorted(set(seen))}")
+    for i, runs in seen.items():
+        ctx.expect(len(runs) == 15 and len(set(runs)) == 1 and len(runs[0]) >= 2, f"query {i}: 15 recalls over 3 insertion orders must return one identical order: {sorted(set(runs))}")
+    ctx.expect(seen[1][0] == ("fx_m10", "fx_m11"), f"a complete tie falls back to memory_id ascending: {seen[1][0]}")
     with ctx.mcp("carol") as m:  # a long-lived MCP server must agree with the one-shot CLI
         lib(ctx)
-        r = m.call("doc_memory_recall", {"url": DOCS, "doc_type": "resume", "locale": "ko-KR"})
-        ctx.expect(r is not None and not r.is_error and tuple(h["memory_id"] for h in r.structured["hints"]) == seen[0], "the MCP server must rank like the CLI")
+        r = m.call("doc_memory_recall", queries[0])
+        ctx.expect(r is not None and not r.is_error and tuple(h["memory_id"] for h in r.structured["hints"]) == seen[0][0], "the MCP server must rank like the CLI")
 
 
 @case("RCL-10", "R1", needs=("server",))

@@ -26,8 +26,12 @@
 
 호스트 jason-4090, 서비스 my-document-memory.service, loopback :3848, persistent DB /var/lib/my-document-memory/library.sqlite3, release /srv/my-document-memory/releases, current symlink, 환경 파일 /etc/my-document-memory/server.env. 기존 서비스와 DB를 보존하며, 계정 migration 전에 SQLite backup API로 일관된 백업을 만든다. 빌드/검증된 새 release만 원자적으로 전환하고 이상 시 이전 current로 복귀한다.
 
-운영 키는 서버의 root 전용 환경 파일이나 dmem만 읽는 별도 파일로 전달한다. 소스 archive/web build에 credentials/를 포함하지 않는다. 환경 파일 값을 표시하지 않으며, 기존 DMEM_TOKEN/DB/Origin을 지우지 않는다. 이메일 링크 기본 UI를 추가하는 동시 작업 #392의 배포와 조율한다.
+운영 키는 서버의 root 전용 환경 파일이나 dmem만 읽는 별도 파일로 전달한다. 소스 archive/web build에 credentials/를 포함하지 않는다. 환경 파일 값을 표시하지 않으며, 기존 DMEM_TOKEN/DB/Origin을 지우지 않는다. 이메일 링크 기본 UI를 추가하는 작업 #392와 합쳐 release 20261109T022729Z-13901을 배포했다. `/v1/auth/config`는 email_enabled=true이며, 전체 일반 웹21개 + 계정3개 검증 후 전환했다. 같은 호스트 동시 배포는 scripts/deploy-production.sh의 flock으로 직렬화한다.
 
 ## 검수
 
-GET /v1/admin/contributions와 POST /v1/admin/contributions/{id}/decision은 별도 관리자 Bearer와 허용 Origin이 필요하다. decision은 approve/reject다. 공개할 제목·요약·섹션·태그·저작자·라이선스를 확인한 뒤 승인한다. 일반 계정 세션은 관리자 권한이 없다. 비밀/개인 정보 자동 탐지·중복 검수·점수·리더보드·팀 공간은 후속 범위다.
+브라우저에서는 https://mydocumentmemory.com/#review 에서 관리자 이메일 링크를 요청한다. 운영 환경의 DMEM_ADMIN_EMAILS에 쉼표로 구분한 명시적 이메일만 허용한다. 주소는 공백 제거·소문자화 후 정확히 비교하며 와일드카드나 잘못된 주소는 거부한다. 빈 목록이면 관리자 로그인이 비활성화된다. 발신자 주소나 일반 회원을 자동으로 관리자로 승격하지 않는다.
+
+로그인 링크는 10분간 1회 사용하며 명시적인 POST 확인 후 일반 회원과 별개인 HttpOnly 관리자 쿠키를 발급한다. 관리자 세션은 2시간이며 매 요청마다 허용 목록을 다시 확인한다. 허용 이메일 제거 후 서비스 설정을 반영하면 기존 세션도 거부한다. 모든 관리자 응답은 no-store이며 승인·반려·로그아웃에는 허용 Origin과 관리자 CSRF가 필요하다.
+
+GET /v1/admin/contributions, GET /v1/admin/contributions/{id}/review, POST /v1/admin/contributions/{id}/decision으로 검토한다. decision은 approve/reject다. 별도의 DMEM_ADMIN_TOKEN은 API/CLI 운영 호환용으로 남고 브라우저에 입력하거나 저장하지 않는다. 일반 회원 세션과 DMEM_TOKEN은 관리자 권한이 없다. 승인·반려는 현재 검토 결과를 같은 DB 트랜잭션에서 다시 확인하며 가명화한 관리자 식별자와 결정을 기록한다. 실제 관리자 이메일은 사용자에게 확인한 값만 운영 환경 파일에 반영한다. 사양과 검증은 admin-email-starters-v1.md를 참조한다.

@@ -6,7 +6,7 @@ Date: 2026-11-09. Scope: live Arise Browser checks for one request producing a G
 
 Use English synthetic My Document Memory project content, based on inspected repository documentation. Prefix new private test artifacts with `MDM Demo QA`. The target is ten short slides, one overview page, and one blog draft. Do not claim a native product integration from a browser-agent success. Do not publish a blog post, share documents, change account settings, or modify existing documents.
 
-Browser session: `dmem-demo-20261109-qa-7138`. Create dedicated owned windows. Browser interaction, judgments and verification remain inline. Authentication uses an existing signed-in session or a sole matching saved account; do not invent credentials. Record unavailable authentication as a blocker and continue independent checks.
+Initial forwarded browser session: `dmem-demo-20261109-qa-7138`. The verified fallback keeps one public Arise stdio MCP connection with session `dmem-demo-persistent-20261109-7138`. Create dedicated owned windows. Browser interaction, judgments and verification remain inline. Authentication uses an existing signed-in session or a sole matching saved account; do not invent credentials. Record unavailable authentication as a blocker and continue independent checks. This smoke does not establish that Arise's built-in AI completes the composite request from one prompt.
 
 ## Dependency-order atomic goals
 
@@ -26,7 +26,7 @@ Browser session: `dmem-demo-20261109-qa-7138`. Create dedicated owned windows. B
 | MAB-02 | Check each app's login/editor | Signed-in editable surface, or an explicit reproducible auth/account blocker |
 | MAB-03 | Create `MDM Demo QA — My Document Memory Deck` | Ten slides with distinct titles, readable content and a saved document URL |
 | MAB-04 | Create `MDM Demo QA — One-page Overview` | English overview fits one page, correct title/body, saved document URL |
-| MAB-05 | Create `MDM Demo QA — Blog Draft` | English title/body in Naver editor; draft persisted without publication |
+| MAB-05 | Create `MDM Demo QA — One brief, three documents` | English title/body in Naver editor; draft persisted without publication |
 | MAB-06 | Switch Slides → Naver → Docs → Slides | Exact selected target verified before input; no cross-app edits |
 | MAB-07 | Reopen saved Docs/Slides; reopen draft if safely available | Title and representative body text persist; slide/page counts verified |
 | MAB-08 | Inspect failure state once and try a bounded supported alternative | Concrete reproduction, underlying observed error and next prerequisite; no repeated login/captcha attempts |

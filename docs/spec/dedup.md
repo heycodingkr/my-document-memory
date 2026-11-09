@@ -1,6 +1,6 @@
 # DEDUP: 게시 중복 판정과 재게시 차단
 
-상태: 설계 초안(문서 우선, 구현 없음). 게시 카탈로그 중복 검수는 runtime-v1 이후 단계이며, WAM의 중복 판정·takedown 지문 흐름을 문서 메모리 게시에 맞춘다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. 게시 카탈로그 중복 검수는 runtime-v1 이후 단계이며, WAM의 중복 판정·takedown 지문 흐름을 문서 메모리 게시에 맞춘다.
 영역 / 테스트 ID 접두사: `DEDUP` (케이스: [`../test/functional-connect.md`](../test/functional-connect.md))
 기반: [`core.md`](core.md), [`library.md`](library.md), [`sharing.md`](sharing.md)
 

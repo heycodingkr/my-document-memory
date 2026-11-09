@@ -108,7 +108,7 @@ class ContractTests(unittest.TestCase):
     def test_doc_type_aliases_in_form_md_exist_in_the_vocabulary(self):
         vocab = json.loads((CONTRACTS / "vocab" / "doc_types.json").read_text(encoding="utf-8"))
         types = {item["id"]: item for item in vocab["items"]} if "items" in vocab else {item["id"]: item for item in vocab["doc_types"]}
-        aliases = {a["value"]: (item["id"], a.get("implies", {})) for item in types.values() for a in item.get("aliases", [])}
+        aliases = {a["value"]: (item["id"], a.get("variant")) for item in types.values() for a in item.get("aliases", [])}
         for alias, doc_type, variant in (("이력서", "resume", None), ("cv", "resume", "cv"), ("履歴書", "resume", "jp_rirekisho"), ("세금계산서", "invoice", "kr_tax_invoice"),
                                          ("適格請求書", "invoice", "jp_qualified"), ("견적서", "quote", None), ("見積書", "quote", None), ("angebot", "quote", None),
                                          ("회의록", "meeting_minutes", None), ("議事録", "meeting_minutes", None), ("교안", "lesson_plan", None)):
@@ -117,7 +117,7 @@ class ContractTests(unittest.TestCase):
                 self.assertIsNotNone(found, f"alias {alias} missing")
                 if alias in aliases:
                     self.assertEqual(aliases[alias][0], doc_type)
-                    self.assertEqual(aliases[alias][1].get("variant"), variant)
+                    self.assertEqual(aliases[alias][1], variant)
 
 
 if __name__ == "__main__":

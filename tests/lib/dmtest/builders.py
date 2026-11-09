@@ -93,7 +93,7 @@ def _doc_parts(blocks,page=None,styles=None,title=None,extra="",url="https://fix
     if extra=="ole": parts["word/embeddings/oleObject1.bin"]=b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1fixture-ole"
     if extra=="external": rels.append(("rIdExternal",_WREL+"attachedTemplate",url,"External"))
     if extra=="dde":
-        fld=ET.Element(_tag(W,"p")); rr=ET.SubElement(fld,_tag(W,"r")); ET.SubElement(rr,_tag(W,"fldChar"),{_tag(W,"fldCharType"):"begin"}); instr=ET.SubElement(ET.SubElement(fld,_tag(W,"r")),_tag(W,"instrText")); instr.text="DDEAUTO c:\\windows\\system32\\cmd.exe /c calc.exe"; ET.SubElement(ET.SubElement(fld,_tag(W,"r")),_tag(W,"fldChar"),{_tag(W,"fldCharType"):"end"}); b.insert(len(b)-1,fld)
+        fld=ET.Element(_tag(W,"p")); rr=ET.SubElement(fld,_tag(W,"r")); ET.SubElement(rr,_tag(W,"fldChar"),{_tag(W,"fldCharType"):"begin"}); instr=ET.SubElement(ET.SubElement(fld,_tag(W,"r")),_tag(W,"instrText")); instr.text="DDEAUTO c:\\windows\\system32\\cmd.exe /c calc.exe"; ET.SubElement(ET.SubElement(fld,_tag(W,"r")),_tag(W,"fldChar"),{_tag(W,"fldCharType"):"end"}); b.insert(len(b)-1,fld); parts["word/document.xml"]=_xml(body)  # re-serialise: the field was added after the first pass
     if extra=="rich":
         rels += [("rIdComments",_WREL+"comments","comments.xml",None),("rIdFootnotes",_WREL+"footnotes","footnotes.xml",None)]
         parts["word/comments.xml"]=_xml(ET.fromstring('<w:comments xmlns:w="%s"><w:comment w:id="0" w:author="Fixture" w:date="2026-01-01T00:00:00Z"><w:p><w:r><w:t>Fixture review note</w:t></w:r></w:p></w:comment></w:comments>'%W))
@@ -239,3 +239,27 @@ def resume_ko_md():
     return ("# 이력서\n\n## 인적사항\n- 이름: {{name}}\n- 이메일: {{email}}\n\n## 경력\n| 기간 | 회사 | 역할 |\n|---|---|---|\n| {{기간}} | {{회사}} | {{역할}} |\n\n## 학력\n- {{학교}}\n\n## 기술\nPython, 문서 자동화, 협업\n").encode("utf-8")
 def invoice_kr_md():
     return ("# 세금계산서\n\n## 공급자\n- 상호: {{공급자명}}\n- 사업자등록번호: {{사업자번호}}\n\n## 거래 내역\n| 품목 | 수량 | 공급가액 |\n|---|---:|---:|\n| {{품목}} | {{수량}} | {{금액}}원 |\n\n## 합계\n부가가치세와 합계 금액을 기재합니다.\n").encode("utf-8")
+
+
+def xlsx(sheets=None):
+    """A deterministic minimal XLSX (inline strings): one sheet 'Quarters' with a header row by default."""
+    sheets = sheets or [{"name": "Quarters", "header": ["Quarter", "Value"], "rows": [["Q1", "100"], ["Q2", "125"]]}]
+    S = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    parts = {}
+    wb = ET.Element("{%s}workbook" % S); lst = ET.SubElement(wb, "{%s}sheets" % S)
+    rels = []
+    for i, sheet in enumerate(sheets, 1):
+        ET.SubElement(lst, "{%s}sheet" % S, {"name": sheet["name"], "sheetId": str(i), "{%s}id" % R: "rId%d" % i})
+        rels.append(("rId%d" % i, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet", "worksheets/sheet%d.xml" % i, None))
+        root = ET.Element("{%s}worksheet" % S); data = ET.SubElement(root, "{%s}sheetData" % S)
+        for r, row in enumerate(([sheet["header"]] if sheet.get("header") else []) + sheet.get("rows", []), 1):
+            tr = ET.SubElement(data, "{%s}row" % S, {"r": str(r)})
+            for c, value in enumerate(row):
+                cell = ET.SubElement(tr, "{%s}c" % S, {"r": "%s%d" % (chr(65 + c), r), "t": "inlineStr"})
+                ET.SubElement(ET.SubElement(cell, "{%s}is" % S), "{%s}t" % S).text = str(value)
+        parts["xl/worksheets/sheet%d.xml" % i] = _xml(root)
+    types = ET.Element(_tag(CT, "Types")); ET.SubElement(types, _tag(CT, "Default"), {"Extension": "rels", "ContentType": "application/vnd.openxmlformats-package.relationships+xml"}); ET.SubElement(types, _tag(CT, "Default"), {"Extension": "xml", "ContentType": "application/xml"})
+    ET.SubElement(types, _tag(CT, "Override"), {"PartName": "/xl/workbook.xml", "ContentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"})
+    parts.update({"[Content_Types].xml": _xml(types), "_rels/.rels": _rels([("rId1", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", "xl/workbook.xml", None)]),
+                  "xl/workbook.xml": _xml(wb), "xl/_rels/workbook.xml.rels": _rels(rels)})
+    return _zip(parts)
