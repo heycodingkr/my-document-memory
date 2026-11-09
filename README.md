@@ -1,5 +1,7 @@
 # My Document Memory
 
+**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
+
 ![Templates and references connected to documents and slides](docs/assets/readme-hero.png)
 
 > The era of writing documents yourself is ending.
@@ -7,8 +9,6 @@
 **We are building a service where people share document memory, so anyone can create the document they need with AI, easily and for free.**
 
 Keep useful structures, writing rules, and ways to use references as reusable memory. One person's writing experience can become a better starting point for another person and their AI.
-
-**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
 
 Anyone can browse, search, and preview public memories without signing in. Individuals can [create a free account](https://mydocumentmemory.com/#signup) with a personal email address. Contribution requests require a registered, signed-in account; follow Awaiting review, Approved · Public, Rejected, and Withdrawn states in My contributions.
 
