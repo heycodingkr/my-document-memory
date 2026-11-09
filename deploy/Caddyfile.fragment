@@ -16,4 +16,23 @@ www.mydocumentmemory.com {
 	import direct_tls
 	redir https://mydocumentmemory.com{uri} permanent
 }
+api.mydocumentmemory.com {
+	import direct_tls
+	import rate_limit_per_ip
+	encode zstd gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		X-Robots-Tag "noindex, nofollow"
+		Cache-Control no-store
+	}
+	@api path /healthz /v1/*
+	handle @api {
+		reverse_proxy 127.0.0.1:3848
+	}
+	handle {
+		respond 404
+	}
+}
 # END MY DOCUMENT MEMORY

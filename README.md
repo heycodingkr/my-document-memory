@@ -69,66 +69,41 @@ Drafts contain confirmation placeholders such as `{{Needs confirmation: Purpose}
 
 ## Quick start
 
-Install Rust/Cargo, Node.js, and pnpm. The workspace requires Rust 1.89 or later.
+1. Open [mydocumentmemory.com](https://mydocumentmemory.com).
+2. Browse the public template library and preview a template.
+3. Sign in with an email link to keep your own library and contribute templates.
+
+You can use the hosted web app without installing anything or starting a local server.
+
+| Service | Public address |
+|---|---|
+| Web app | [https://mydocumentmemory.com](https://mydocumentmemory.com) |
+| HTTP API base | `https://api.mydocumentmemory.com` |
+| API health | [https://api.mydocumentmemory.com/healthz](https://api.mydocumentmemory.com/healthz) |
 
 ```sh
-node scripts/dev.mjs
+curl --fail https://api.mydocumentmemory.com/healthz
+# {"ready":true}
 ```
 
-Run from the repository root. The first run creates a random `DMEM_TOKEN` in `.env`, installs missing web dependencies, builds the API server, and starts API and Vite.
-
-1. Open [http://127.0.0.1:5174](http://127.0.0.1:5174).
-2. Enter `DMEM_TOKEN` from your local `.env` in **Library connection token**.
-3. Click **Open library** and preview **Meeting Notes and Action Items**.
-
-Default ports are API `3847` and web `5174`. Reuse an existing server. The supervisor stops only its own processes. Your data and revision history persist in `data/dmem.sqlite3`. A deployed library can use a separate token and database.
-
-### Configuration
-
-See [.env.example](.env.example). The development supervisor reads `.env`; existing environment variables take precedence. CLI and MCP binaries require their environment variables explicitly.
-
-| Variable | Default or requirement | Purpose |
-|---|---|---|
-| `DMEM_TOKEN` | Required; generated on first development run | Library token, at least 16 characters |
-| `DMEM_ADDR` | `127.0.0.1:3847` | API listener; loopback only |
-| `DMEM_DATABASE` | `data/dmem.sqlite3` | SQLite database |
-| `DMEM_WEB_ORIGIN` | `http://127.0.0.1:5174` | Allowed web origin |
-| `DMEM_WEB_DIR` | `web/dist` | Built web assets served by Rust |
-| `DMEM_URL` | `http://127.0.0.1:3847` | API base URL for CLI and MCP |
-
-<details>
-<summary>Serve the built web app and API from one process</summary>
-
-Use the generated `.env`, or copy `.env.example` and configure a random token.
-
-```sh
-cargo build --workspace --locked
-pnpm --dir web install --frozen-lockfile
-pnpm --dir web build
-set -a
-. ./.env
-set +a
-./target/debug/dmem-server
-```
-
-Open [http://127.0.0.1:3847](http://127.0.0.1:3847).
-
-</details>
+Public templates are available at [`/v1/public/templates`](https://api.mydocumentmemory.com/v1/public/templates). Private library routes require authentication. For a local checkout, see [Local development](#local-development).
 
 ## Connect your agent
 
-Build the complete workspace first. The development supervisor builds the server only.
+CLI and MCP can connect to the hosted API at `https://api.mydocumentmemory.com`. Build the local client binaries from a source checkout with Rust 1.89 or later:
 
 ```sh
-cargo build --workspace --locked
+cargo build --locked -p dmem-cli -p dmem-mcp
 ```
+
+Private CLI/MCP access currently requires a separately provisioned library token in `DMEM_TOKEN`. Email sign-in creates a browser session; it does not issue a CLI/MCP token.
 
 ### CLI
 
+Set `DMEM_TOKEN` through your private environment, then select the hosted API:
+
 ```sh
-set -a
-. ./.env
-set +a
+export DMEM_URL=https://api.mydocumentmemory.com
 ./target/debug/dmem status
 ./target/debug/dmem templates 'Meeting'
 ./target/debug/dmem import ./my-notes.md --title 'Project Notes'
@@ -147,7 +122,7 @@ cargo install --path crates/dmem-mcp --locked --debug
 
 ### stdio MCP
 
-Register the absolute path to your built or installed executable with an MCP host. Start the API server first.
+Register the absolute path to your built or installed executable with an MCP host. Supply `DMEM_TOKEN` through the host's private environment or secret settings. The local stdio adapter connects to the hosted HTTP API; there is no remote `/mcp` endpoint.
 
 ```json
 {
@@ -155,8 +130,7 @@ Register the absolute path to your built or installed executable with an MCP hos
     "document-memory": {
       "command": "/absolute/path/my-document-memory/target/debug/dmem-mcp",
       "env": {
-        "DMEM_URL": "http://127.0.0.1:3847",
-        "DMEM_TOKEN": "<your library token>"
+        "DMEM_URL": "https://api.mydocumentmemory.com"
       }
     }
   }
@@ -239,6 +213,58 @@ Spreadsheet editing/formulas, provider synchronization, remote URL import, PDF i
 In local token mode the API binds to loopback, and `/v1` library requests require authorization. `/healthz` is a readiness endpoint. The browser stores the connection token in tab-scoped `sessionStorage`. Templates and factual references are searched separately.
 
 ## Development
+
+### Local development
+
+Install Rust/Cargo, Node.js, and pnpm. The workspace requires Rust 1.89 or later.
+
+```sh
+node scripts/dev.mjs
+```
+
+Run from the repository root. The first run creates a random `DMEM_TOKEN` in `.env`, installs missing web dependencies, builds the API server, and starts API and Vite.
+
+1. Open [http://127.0.0.1:5174](http://127.0.0.1:5174).
+2. Enter `DMEM_TOKEN` from your local `.env` in **Library connection token**.
+3. Click **Open library** and preview **Meeting Notes and Action Items**.
+
+Default ports are API `3847` and web `5174`. Reuse an existing server. The supervisor stops only its own processes. Your data and revision history persist in `data/dmem.sqlite3`. A deployed library can use a separate token and database.
+
+### Configuration
+
+See [.env.example](.env.example). The development supervisor reads `.env`; existing environment variables take precedence. CLI and MCP binaries require their environment variables explicitly.
+
+| Variable | Default or requirement | Purpose |
+|---|---|---|
+| `DMEM_TOKEN` | Required; generated on first development run | Library token, at least 16 characters |
+| `DMEM_ADDR` | `127.0.0.1:3847` | API listener; loopback only |
+| `DMEM_DATABASE` | `data/dmem.sqlite3` | SQLite database |
+| `DMEM_WEB_ORIGIN` | `http://127.0.0.1:5174` | Allowed web origin |
+| `DMEM_WEB_DIR` | `web/dist` | Built web assets served by Rust |
+| `DMEM_URL` | `http://127.0.0.1:3847` | API base URL for CLI and MCP |
+
+<details>
+<summary>Serve the built web app and API from one process</summary>
+
+Use the generated `.env`, or copy `.env.example` and configure a random token.
+
+```sh
+cargo build --workspace --locked
+pnpm --dir web install --frozen-lockfile
+pnpm --dir web build
+set -a
+. ./.env
+set +a
+./target/debug/dmem-server
+```
+
+Open [http://127.0.0.1:3847](http://127.0.0.1:3847).
+
+</details>
+
+For local CLI/MCP use, set `DMEM_URL=http://127.0.0.1:3847` and use the token generated in your local `.env` instead of the hosted library token.
+
+### Checks
 
 ```sh
 pnpm --dir web install --frozen-lockfile
