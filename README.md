@@ -1,6 +1,6 @@
 # My Document Memory
 
-**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public)** — no installation needed. Sign in with an email link to save your own library.
+**[Try the web app](https://mydocumentmemory.com) · [Browse free templates](https://mydocumentmemory.com/#public) · [Watch the 2-minute demo](https://www.youtube.com/watch?v=JAkA8PgXcOU)** — no installation needed. Sign in with an email link to save your own library.
 
 ![Templates and references connected to documents and slides](docs/assets/readme-hero.png)
 
@@ -12,8 +12,9 @@ Keep useful structures, writing rules, and ways to use references as reusable me
 
 Anyone can browse, search, and preview public memories without signing in. Individuals can [create a free account](https://mydocumentmemory.com/#signup) with a personal email address. Contribution requests require a registered, signed-in account; follow Awaiting review, Approved · Public, Rejected, and Withdrawn states in My contributions.
 
-[The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [Free templates](#start-free-with-the-ai-you-choose) · [How it works](#how-it-works) · [Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [Architecture](#architecture) · [Development](#development)
+Available today: reusable templates, reference import, editable document and slide outlines, revision history, and export. The web app creates template-based outlines; connect your own AI host for model-written drafts. [Current scope](#current-scope).
 
+[Quick start](#quick-start) · [Connect your agent](#connect-your-agent) · [How it works](#how-it-works) · [The problem](#the-problem) · [Our vision](#our-vision) · [Examples](#what-my-document-memory-does) · [Expected savings](#expected-time-and-tool-call-savings) · [Free templates](#start-free-with-the-ai-you-choose) · [Architecture](#architecture) · [Development](#development)
 
 ## The Problem
 
@@ -91,7 +92,6 @@ The related **Web Agentic Memory (WAM)** project tested a Canva workflow with `g
 | Supplied WAM memory hints | 423.193 s | 106 |
 
 This is a preliminary observation: one run per condition, different templates and upload paths, higher reported tokens with hints, and unmeasured billing. It does not establish general speed or cost savings. **My Document Memory's own document-writing benchmarks are pending.**
-
 
 ## How it works
 
@@ -193,11 +193,16 @@ Call `document_memory_status` to verify the connection. Select a template and re
 | `document_memory_get` | Read a document and its pinned versions |
 | `document_template_copy` | Copy a template privately with attribution |
 | `document_memory_create` | Create an editable draft from selected IDs |
+| `document_memory_recall` | Recall accessible memory by URL, form and keywords |
 | `document_template_save` · `document_template_get` | Save and read private reusable structures |
 | `document_memory_save` | Save an edited document revision with conflict detection |
 | `document_public_template_search` · `document_public_template_get` | Search and read approved public structures without a token |
 | `document_contribution_submit` · `document_contribution_list` | Explicitly submit a structure snapshot and follow its review |
 | `document_contribution_check` · `document_contribution_withdraw` | Read safe review findings or withdraw your contribution |
+| `document_web_search` · `document_web_preview` | Discover URLs and preview document structure (local intake v1) |
+| `document_web_import` · `document_web_origin` | Save a private structure/reference and read its source rights |
+
+The four web intake tools require a matching locally built server from this revision. Their new routes have not been deployed to the hosted API by this change. See [local web intake](#import-a-web-document-locally).
 
 Copying a template and copying a prompt are separate actions. Copying a prompt does not create a document. Deck requests remain disabled until their outline is approved.
 
@@ -209,7 +214,7 @@ Administrator access is separate from ordinary member sign-in and CLI/MCP librar
 
 ## Contribute and review a structure
 
-The local review runtime supports private save/read and the public contribution lifecycle from the web, CLI, and 16 stdio MCP tools. Public search/read works without `DMEM_TOKEN`; private operations use the token's library owner. Browser email accounts and separately provisioned library tokens remain distinct identities.
+The local review runtime supports private save/read and the public contribution lifecycle from the web, CLI, and 21 stdio MCP tools. Public search/read works without `DMEM_TOKEN`; private operations use the token's library owner. Browser email accounts and separately provisioned library tokens remain distinct identities.
 
 ```sh
 # Against your running local server:
@@ -226,7 +231,7 @@ A template input contains `title`, `summary`, `form` (`provider`, `doc_type`, `l
 
 Review runs submission checks → privacy/injection → license/attribution → duplicate comparison → structure validation → explicit administrator decision. Secret or personal-data findings block approval, including direct API/CLI attempts. Duplicate structures are flagged for human judgment. Review findings contain fixed codes and field names. Decisions, timestamps, and the exact snapshot hash persist in SQLite.
 
-Open `/#review` and enter the separate administrator credential in **Review contributions**, or supply `DMEM_ADMIN_TOKEN` through a private environment and run:
+Open `/#review`, request a sign-in link for an allowlisted administrator email, confirm it, and inspect **Review contributions**. Operator CLI access remains separate: supply a configured `DMEM_ADMIN_TOKEN` through a private environment and run:
 
 ```sh
 # Set DMEM_ORIGIN to the server's allowed web origin when it differs from DMEM_URL.
@@ -235,7 +240,7 @@ Open `/#review` and enter the separate administrator credential in **Review cont
 ./target/debug/dmem decide <CONTRIBUTION_ID> --decision approve
 ```
 
-The browser clears its administrator credential on leaving, locking, or reloading the review view. A passing check stays pending until approval; approved structures can be copied privately with attribution. Withdrawal stops new public reads/copies and preserves existing copies.
+The web uses a separate HttpOnly administrator session and **Sign out and lock queue**; administrator tokens are not entered or saved in browser storage. A passing check stays pending until approval; approved structures can be copied privately with attribution. Withdrawal stops new public reads/copies and preserves existing copies.
 
 [Workflow contract](docs/spec/memory-community-smoke-v1.md) · [Test inputs and results](docs/test/memory-community-smoke-v1.md). The repeatable local checks are `python3 tests/smoke/community-v1.py` and `python3 tests/smoke/accounts-v1.py` after building the workspace, account fixture, and web assets.
 
@@ -298,8 +303,9 @@ Use the [runtime contract](docs/spec/runtime-v1.md), [account and community spec
 - Document blocks, editable slides, citations, immutable saved revisions, and conflict detection.
 - Markdown/HTML, DOCX, PPTX, and browser printing for PDF.
 - Shared HTTP client, CLI, and stdio MCP tools.
+- Local intake v1: URL preview/import, optional Brave search, and owned Arise tab clipping. Country/language, document type, source rights, and provenance are retained. [Contract and limits](docs/spec/web-memory-v1.md).
 
-Spreadsheet editing/formulas, provider synchronization, remote URL import, PDF import/OCR, and faithful reconstruction of complex Office layouts are outside this runtime. Wider product specifications include future work.
+Spreadsheet editing/formulas, provider synchronization, PDF import/OCR, and faithful reconstruction of complex Office layouts are outside this runtime. Wider product specifications include future work. Intake v1 is verified against the local source build; these new routes have not been deployed to the hosted API by this change.
 
 In local token mode the API binds to loopback, and `/v1` library requests require authorization. `/healthz` is a readiness endpoint. The browser stores the connection token in tab-scoped `sessionStorage`. Templates and factual references are searched separately.
 
@@ -325,7 +331,6 @@ Default ports are API `3847` and web `5174`. Reuse an existing server. The super
 
 These defaults are for a local checkout. Hosted clients use `DMEM_URL=https://api.mydocumentmemory.com`. On the production server, `DMEM_ADDR=127.0.0.1:3848` is the internal listener behind Caddy; it is separate from the public API address.
 
-
 See [.env.example](.env.example). The development supervisor reads `.env`; existing environment variables take precedence. CLI and MCP binaries require their environment variables explicitly.
 
 | Variable | Default or requirement | Purpose |
@@ -336,6 +341,8 @@ See [.env.example](.env.example). The development supervisor reads `.env`; exist
 | `DMEM_WEB_ORIGIN` | `http://127.0.0.1:5174` | Allowed web origin |
 | `DMEM_WEB_DIR` | `web/dist` | Built web assets served by Rust |
 | `DMEM_URL` | `http://127.0.0.1:3847` | API base URL for CLI and MCP |
+| `DMEM_BRAVE_API_KEY` | Optional; server only | Brave web search; URL preview works without it |
+| `DMEM_CAPTURE_SECRET` | Optional; at least 32 characters | Same private value on server and browser adapter for signed tab clips |
 
 <details>
 <summary>Serve the built web app and API from one process</summary>
@@ -358,16 +365,48 @@ Open [http://127.0.0.1:3847](http://127.0.0.1:3847).
 
 For local CLI/MCP use, set `DMEM_URL=http://127.0.0.1:3847` and use the token generated in your local `.env` instead of the hosted library token.
 
+### Import a web document locally
+
+Run the server, web assets, and clients from the same source revision. In Templates or References, open **Import from the web**, preview a URL, and confirm its country/language, provider, and document type before saving privately. Templates keep headings and table headers. References retain visible text when the detected license permits full copying; otherwise they retain structure. Source rights follow private copies and contribution review.
+
+```sh
+export DMEM_URL=http://127.0.0.1:3847
+./target/debug/dmem web preview https://example.com/document
+# Use the returned preview_id within 15 minutes:
+./target/debug/dmem web import PREVIEW_ID --as template
+./target/debug/dmem web origin SAVED_ID
+```
+
+Supported URL content is HTML, plain text, Markdown, and public Google Docs/Slides exports. Login-required documents can be uploaded as files or clipped from a tab owned by the browser adapter. Google account OAuth synchronization is separate future work. Google-shaped export fixtures verify the protocol here; live Google permissions and a real Brave key require separate checks.
+
+For Arise, register this command with an MCP host using its private environment for `DMEM_URL`, `DMEM_TOKEN`, and `DMEM_CAPTURE_SECRET`:
+
+```sh
+/absolute/path/my-document-memory/target/debug/dmem browser-mcp \
+  --browser-mcp /Applications/Arise.app/Contents/MacOS/agent_browser \
+  --browser-arg=--mcp-server
+```
+
+Configure the same capture secret on the server. The adapter keeps one public stdio browser connection, forwards its tools, and adds `document_memory_clip_current_tab` (alias `doc_memory_clip_current_tab`). Create a session-owned tab with those browser tools, then clip using its `session_id`. The clip tool accepts no URL or HTML from the model and checks ownership before and after capture. User tabs and foreign sessions are refused. [Inputs, expected results, and smoke evidence](docs/test/web-memory-v1.md).
+
 ### Checks
+
+Build the real product and its synthetic account fixture before running smoke tests:
 
 ```sh
 pnpm --dir web install --frozen-lockfile
 cargo fmt --all --check
 cargo test --workspace --locked
 cargo build --workspace --locked
+cargo build -p dmem-server --example accounts_fixture --locked
+cargo build -p dmem-server --example web_fixture --locked
 pnpm --dir web check
 pnpm --dir web build
 python3 tests/smoke/runtime-v1.py --browser
+python3 tests/smoke/accounts-v1.py
+python3 tests/smoke/community-v1.py
+python3 -I tests/smoke/recall-v1.py
+python3 -B tests/smoke/web-memory-v1.py --browser --arise
 node --test demo/video/*.test.mjs
 ```
 
@@ -377,9 +416,21 @@ Install Playwright Chromium first if needed:
 pnpm --dir web exec playwright install chromium
 ```
 
-The runtime smoke uses a private temporary database, random port/token, and owned-process cleanup. Browser coverage includes prompt copying and its failure fallback, deck approval, editing, revisions, export, validation recovery, and mobile overflow. Office exports are checked as ZIP/XML and text; native Word/PowerPoint rendering requires a separate review.
+| Smoke target | What it verifies |
+|---|---|
+| `runtime-v1.py --browser` | Import, copy, create, edit, revisions, export, CLI/MCP, restart persistence, prompt copying/fallback, outline approval, and desktop/mobile UI |
+| `accounts-v1.py` | Synthetic email links, private account isolation, administrator review, queue pagination, public copy/withdrawal, profiles, and leaderboard |
+| `community-v1.py` | Real CLI/MCP private/public workflows, blocked approval, attribution, and independent HTTP/SQLite checks |
+| `recall-v1.py` | Real HTTP/CLI/MCP recall, ownership boundaries, and safe errors |
+| `web-memory-v1.py --browser --arise` | URL/Google-shaped exports, source rights, private import, persistent browser adapter, hostile capture controls, actual Arise clipping and form input |
 
-[Landing screenshot](docs/assets/landing-en.png) · [Verification report](docs/test/english-handoff-v1.md) · [Design review](docs/design/english-handoff-v1-review.md)
+These checks use temporary databases and synthetic credentials. Account tests capture email locally; the runtime-only browser run explicitly skips tests that require that fixture or live email opt-in. The broader Python contract suite defaults to a test double; its results are separate from these Rust product checks.
+
+For the hosted deployment, `python3 tests/smoke/public-api-v1.py --env <private-env-file>` performs read-only HTTPS, catalog, authentication, CORS, and Origin checks using a separately provisioned library token. Keep its credential file private.
+
+Office exports are checked as ZIP/XML and text; native Word/PowerPoint rendering requires a separate review. These smoke tests do not measure AI writing quality or editing inside external providers.
+
+[Latest smoke audit](docs/test/landing-readme-smoke-audit-v1.md) · [Landing screenshot](docs/assets/landing-en.png) · [English handoff verification](docs/test/english-handoff-v1.md) · [Design review](docs/design/english-handoff-v1-review.md)
 
 ## Further reading
 

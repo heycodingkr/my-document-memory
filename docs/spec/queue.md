@@ -1,6 +1,6 @@
 # QUE: 게시 검수 큐
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM 큐의 lease·fencing·백프레셔·예산 대기 원칙을 게시 검수에 적응했다. WAM의 기여자·기기 우선순위, PostgreSQL batch·curator 세부는 제외한다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM 큐의 lease·fencing·백프레셔·예산 대기 원칙을 게시 검수에 적응했다. WAM의 기여자·기기 우선순위, PostgreSQL batch·curator 세부는 제외한다.
 영역 / 테스트 ID 접두사: `QUE` (케이스: [`../test/functional-models.md`](../test/functional-models.md))
 기반: [`gatekeeper.md`](gatekeeper.md), [`model.md`](model.md), [`provider-outage.md`](provider-outage.md), [`privacy.md`](privacy.md), [`sharing.md`](sharing.md)
 

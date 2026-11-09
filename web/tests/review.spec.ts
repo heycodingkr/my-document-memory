@@ -6,7 +6,7 @@ test.skip(!process.env.DMEM_E2E_MAILBOX,'Requires isolated synthetic email fixtu
 
 async function submission(request: import('@playwright/test').APIRequestContext, baseURL:string, unsafe=false){
  const headers={Authorization:'Bearer '+owner,Origin:baseURL};
- const title='Review UI '+(unsafe?'blocked ':'clean ')+Date.now();
+ const title='Review UI '+(unsafe?'blocked ':'clean ')+Date.now().toString(36);
  const t=await request.post('/v1/templates',{headers,data:{title,
   summary:unsafe?'synthetic-person@example.test':'Synthetic reusable structure only',
   form:{provider:'docx',doc_type:'report',locale:'en-US'},

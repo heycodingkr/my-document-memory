@@ -1,6 +1,6 @@
 # 기능 명세 (Feature Spec)
 
-상태: 설계 초안(문서 우선, 구현 없음). 기능 명세는 "무엇을 만들고 어떤 상태가 되면 끝인가"의 단일 출처다. 설계([`../design/`](../design/architecture.md))는 "어떻게 만드는가", 테스트([`../test/`](../test/README.md))는 "어떻게 검증하는가"를 다룬다. 명세가 있다는 것은 구현이나 검증이 끝났다는 뜻이 아니다.
+상태: 전체 목표 계약과 구현 단계 명세의 색인. 실제 Rust 제품은 `runtime-v1`·`recall-v1`·`web-memory-v1`·계정/기여 명세의 부분집합을 구현한다. 기능 명세는 "무엇을 만들고 어떤 상태가 되면 끝인가"의 단일 출처다. 설계([`../design/`](../design/architecture.md))는 "어떻게 만드는가", 테스트([`../test/`](../test/README.md))는 "어떻게 검증하는가"를 다룬다. 명세가 있다는 것은 구현이나 검증이 끝났다는 뜻이 아니다.
 
 제품 범위의 상위 문서는 [`overview.md`](overview.md)(v0.3)이며 이 저장소의 다른 작업이 함께 편집한다. 이 색인의 문서들은 그 범위 안에서 **계약**(CLI·MCP·정규화·저장·공유·가져오기)과 **테스트 ID**를 고정한다. 초기 양식 목록은 `template-library.md`(별도 작성 중)가 맡고 [`form.md`](form.md)의 `doc_types` 어휘와 맞춘다.
 
@@ -55,7 +55,9 @@
 | `SNIP` | 지침 스니펫 | tool-forms/snippet-form.md | 01~04 | 핵심 |
 | `SMK`, `BEH`, `HOST`, `CUST` | 호스트 스모크·행동·호스트 여정·고객 경로 | host-smoke.md | SMK 01~16, BEH 01~10, HOST 01~12, CUST 01~06 | 핵심 |
 | `FLOW` | 유저 플로우 | user-flows.md | 01~12 | 핵심 |
-| `HARN` | 테스트 하네스 자체 검증 | harness-verification.md | 01~16 | 핵심 |
+| `HARN` | 테스트 하네스 자체 검증 | harness-verification.md(01~16), wam-port-completion-v1.md(17) | 01~17 | 핵심 |
+| `PORT` | WAM 전체 이식·제품/더블/호스트 검증 범위 | wam-port-completion-v1.md | 01~08 | 포팅 보완 |
+| `WI` | 실제 URL 검색·preview/import·출처·소유 Arise 탭 클립 | web-memory-v1.md | 01~24 | intake v1 |
 | `FAIL` | 교차 계층 실패·복구 | failure-matrix.md | 01~24 | 핵심 |
 | `API` `DB` | HTTP API·저장 | functional-api.md | API 01~40, DB 01~27 | P1 |
 | `DEDUP` `LINK` `CACHE` | 중복·기기 연결·캐시 | functional-connect.md | DEDUP 01~14, LINK 01~11, CACHE 01~11 | P1 |
@@ -73,7 +75,14 @@
 | 파일 | 영역 | 상태 |
 |---|---|---|
 | [`overview.md`](overview.md) | 제품 개요(상위 문서, 별도 편집 중) | v0.3 |
-| [`runtime-v1.md`](runtime-v1.md) | 구현 단계 계약(별도 작업: Rust·Axum·SQLite·Svelte, 이 명세의 부분집합) | 별도 작업 |
+| [`runtime-v1.md`](runtime-v1.md) | 구현 단계 계약(Rust·Axum·SQLite·Svelte의 로컬 부분집합) | 구현 |
+| [`web-memory-v1.md`](web-memory-v1.md) | 실제 URL 검색·미리보기·비공개 가져오기·서명된 소유 Arise 탭 클립 (`WI`) | 로컬 구현; 결과는 `docs/test/web-memory-v1.md` |
+| [`wam-port-completion-v1.md`](wam-port-completion-v1.md) | 원본 93개 처분·CLI/MCP·Arise·하네스 검증 (`PORT`, `HARN-17`) | 계약·검사 구현; 결과는 `docs/test/wam-port-completion-v1.md` |
+| [`accounts-community-v1.md`](accounts-community-v1.md) | 이메일 계정·마이페이지·공개 기여·검수·철회 | 구현·운영 검증 |
+| [`accounts-operations-v1.md`](accounts-operations-v1.md) | Resend/Cloudflare·자격 증명·서버 운영 | 운영 검증 |
+| [`member-leaderboard-v1.md`](member-leaderboard-v1.md) | 로그인·가입·선택 공개 프로필·기여20점·내/공개 순위 (`LB`) | 구현·회귀 검증 |
+| [`landing-email-links-v1.md`](landing-email-links-v1.md) | 영문 랜딩·이메일 링크 확인·연결 안내 | 구현·운영 검증 |
+| [`landing-bilingual-v1.md`](landing-bilingual-v1.md) | 영문 기본 랜딩·한국어 번역·언어 전환 (`LANG`) | 구현·운영 확인 |
 | [`template-library.md`](template-library.md) | 초기 양식 시드 카탈로그(별도 작업) | 별도 작업 |
 | [`core.md`](core.md) | URL·양식 키 정규화, 오류 코드, 한도 (`CORE`) | 설계 초안 |
 | [`form.md`](form.md) | 양식 객체, 국가·provider 변형, 관습 경고 (`FORM`) | 설계 초안(신규) |
@@ -86,6 +95,6 @@
 | [`mcp.md`](mcp.md) | MCP 도구 12개, 인증 티어, 호스트 연결 (`MCP`, `MCPF`) | 설계 초안 |
 | [`cli.md`](cli.md) | `dmem` 명령 표면, 종료 코드 0~7 (`CLI`) | 설계 초안 |
 | [`privacy.md`](privacy.md) | 로컬 우선, 동의, 개인 정보, 삭제 (`PRIV`) | 설계 초안 |
-| `api.md`, `database.md`, `dedup.md`, `link.md`, `install.md`, `client-cache.md`, `diagnostics.md` | 서버·저장·연결·설치·캐시 (P1) | 작성 대기 |
-| `gatekeeper.md`, `curator.md`, `model.md`, `queue.md`, `provider-outage.md`, `score.md` | 검수·모델·큐·점수 (P2) | 작성 대기 |
-| `web.md`, `document.md`, `my-page.md`, `profile.md`, `admin.md`, `email-auth.md`, `rate-limits.md`, `usage-analytics.md`, `search-performance.md`, `release.md` | 웹·편집기·운영 (P3) | 작성 대기 |
+| `api.md`, `database.md`, `dedup.md`, `link.md`, `install.md`, `client-cache.md`, `diagnostics.md` | 서버·저장·연결·설치·캐시 (P1) | 설계 작성; 전체 목표 계약 |
+| `gatekeeper.md`, `curator.md`, `model.md`, `queue.md`, `provider-outage.md`, `score.md` | 검수·모델·큐·점수 (P2) | 설계 작성; 전체 목표 계약 |
+| `web.md`, `document.md`, `my-page.md`, `profile.md`, `admin.md`, `email-auth.md`, `rate-limits.md`, `usage-analytics.md`, `search-performance.md`, `release.md` | 웹·편집기·운영 (P3) | 설계 작성; 구현 단계 명세와 구분 |

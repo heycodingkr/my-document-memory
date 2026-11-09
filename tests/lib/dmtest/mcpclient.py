@@ -30,6 +30,9 @@ class McpSession:
         self.messages = queue.Queue()
         self.noise_bytes = 0
         self.stderr_bytes = 0
+        self.raw_out = bytearray()  # every byte the server wrote to stdout / stderr: sink 1 of the sentinel sweep
+        self.raw_err = bytearray()
+        self.env = dict(env)
         self._id = 0
         self.version = None
         threading.Thread(target=self._read_stdout, daemon=True).start()
@@ -38,6 +41,8 @@ class McpSession:
     # -- reading
     def _read_stdout(self):
         for line in self.proc.p.stdout:
+            if len(self.raw_out) < 8 * 1024 * 1024:
+                self.raw_out += line
             text = line.decode("utf-8", "replace").strip()
             if not text:
                 continue
@@ -52,6 +57,8 @@ class McpSession:
     def _read_stderr(self):
         for line in self.proc.p.stderr:
             self.stderr_bytes += len(line)
+            if len(self.raw_err) < 8 * 1024 * 1024:
+                self.raw_err += line
 
     def read(self, timeout=15.0, ident=None):
         deadline = time.monotonic() + timeout

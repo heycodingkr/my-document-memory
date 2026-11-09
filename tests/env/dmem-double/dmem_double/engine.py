@@ -39,6 +39,7 @@ class Ctx:
         self.disabled = env.get("DMEM_DISABLED") == "1"
         self.search_provider = env.get("DMEM_SEARCH_PROVIDER") or "none"
         self.server_path = env.get("DMEM_TEST_SERVER_STATE") or None
+        self.server_down = env.get("DMEM_TEST_SERVER_DOWN") == "1"  # SMK-13: the server process is stopped
         self.require_canonical = require_canonical
         self.local = Store(self.home / "state.json")
         self.server = Store(self.server_path) if self.server_path else None
@@ -66,10 +67,14 @@ class Ctx:
                     workspaces.append(name)
         return {"id": self.owner, "workspaces": workspaces if self.linked else []}
 
+    def require_server(self):
+        if self.server and self.server_down:
+            raise DmemError("server_unavailable")
+
     def stores(self):
         """Stores whose memories may be visible to this caller: the server store (if any) and the caller's local library."""
         out = []
-        if self.server:
+        if self.server and not self.server_down:
             out.append(self.server)
         if not self.linked:
             out.append(self.local)
@@ -155,6 +160,8 @@ def _source_summary(rec, ctx_caller, version):
 
 
 def _effective_version(rec, caller):
+    if mutation() == "cross_tenant_leak":
+        return rec["versions"][-1]  # deliberate defect: no ownership or publication check at all
     mine = caller.get("id") is not None and rec["owner"] == caller.get("id")
     number = rec["head"] if mine else rec.get("published_version")
     if number is None:
@@ -236,7 +243,7 @@ def _query_url(ctx, url):
     return canon.pattern, canon.provider
 
 
-def _hint(row, query_form, ctx, receipts):
+def _hint(row, query_form, ctx, receipt_id):
     cand = row["candidate"]
     rec, v = cand["_rec"], cand["_v"]
     l1 = v["l1"]
@@ -262,10 +269,8 @@ def _hint(row, query_form, ctx, receipts):
             hint["outline"].pop()
         else:
             break
-    if ctx.linked:
-        rid = new_id("rcpt")
-        receipts[rid] = {"owner": ctx.identity, "items": [[cand["memory_id"], v["version"]]], "created_at": now()}
-        hint["receipt_id"] = rid
+    if receipt_id:
+        hint["receipt_id"] = receipt_id  # one receipt per recall call, shared by its hints (score.md)
     return hint
 
 
@@ -293,6 +298,8 @@ def op_recall(ctx, args):
     if ctx.mode == "local" and scope in ("team", "public"):
         base["reason"] = "scope_unavailable_local"
         return base
+    if scope != "mine":
+        ctx.require_server()
     remote = ctx.mode == "server" and scope != "mine"
     vocab_kws = [k for k in (vocab.keyword_canonical(w) for w in kws) if k] if remote else [vocab.keyword_canonical(w) or w for w in kws]
     if remote:
@@ -303,11 +310,11 @@ def op_recall(ctx, args):
     query = {"url": pattern, "doc_type": form.get("doc_type"), "locale": form.get("locale"), "provider": form["provider"], "keywords": vocab_kws,
              "kind": kind, "scope": scope, "limit": limit}
     rows = ranker.rank(_candidates(ctx), query, ctx.caller())
-    receipts = {}
-    base["hints"] = [_hint(r, form, ctx, receipts) for r in rows]
-    if receipts and ctx.server:
+    receipt_id = new_id("rcpt") if (ctx.linked and rows) else None
+    base["hints"] = [_hint(r, form, ctx, receipt_id) for r in rows]
+    if receipt_id and ctx.server:
         with ctx.server.txn() as st:
-            st["receipts"].update(receipts)
+            st["receipts"][receipt_id] = {"owner": ctx.identity, "items": [[h["memory_id"], h["version"]] for h in base["hints"]], "created_at": now()}
     if not base["hints"]:
         base["reason"] = "no_match"
     return base
@@ -333,6 +340,8 @@ def op_search(ctx, args):
     if ctx.mode == "local" and scope in ("team", "public"):
         base["reason"] = "scope_unavailable_local"
         return base
+    if scope != "mine":
+        ctx.require_server()
     remote = ctx.mode == "server" and scope != "mine"
     base["remote"] = remote
     if remote:
@@ -512,6 +521,12 @@ def _build_version(ctx, *, kind, title, summary, key_points, form, patterns, hos
         doc = _walk(doc, slotify)
     else:
         personal = any(scrub.slotify_pii(t)[1] for t in _strings(doc))
+    slot_names = [s.get("name") for s in doc.get("slots", [])]
+    if len(slot_names) != len(set(slot_names)):
+        raise _bad("slot")  # a slot name may be declared once
+    rule_kinds = ("section_order", "required_section", "max_length", "citation", "tone", "terminology", "notation")
+    if any(r.get("kind") not in rule_kinds for r in doc.get("rules", [])):
+        raise _bad("rule")
     declared = {s["name"]: s for s in doc.get("slots", [])}
     for name in sorted(slots_found | set(formats.placeholders(doc))):
         declared.setdefault(name, {"name": name, "type": "text", "required": False})
@@ -553,7 +568,7 @@ def _build_version(ctx, *, kind, title, summary, key_points, form, patterns, hos
     if injected:
         flags["injection_flagged"] = True
         flags["warnings"].append("injection_flagged")
-    l2 = {"structure": doc if kind == "template" else None, "slots": doc["slots"], "rules": doc.get("rules", []),
+    l2 = {"structure": {k: v for k, v in doc.items() if k != "spans"} if kind == "template" else None, "slots": doc["slots"], "rules": doc.get("rules", []),
           "spans": formats.spans(doc) if kind == "reference" else [], "examples": []}
     if kind == "style_rule":
         l2["structure"] = None
@@ -585,6 +600,9 @@ def _persist(ctx, *, built, form, memory_id, base_version, source, original=None
                 if r.get("scope_key") == scope_key:
                     rec, head = r, next(v for v in r["versions"] if v["version"] == r["head"])
                     break
+            if rec is not None and head["content_hash"] != chash:
+                # core.md sections 6-7: the same scope never gains a version by accident; a change names its memory_id and base_version
+                raise DmemError("invalid_input", reason="scope_conflict")
         if rec is not None:
             if head["content_hash"] == chash:
                 return rec, head, False, chash, scope_key
@@ -644,7 +662,7 @@ def _parse_content(content, original_name=None):
 PROVIDER_FOR_FORMAT = {"markdown": "markdown", "text": "txt", "html": "html", "stddoc": "other"}
 
 
-def op_save(ctx, args, original=None, original_name=None):
+def op_save(ctx, args, original=None, original_name=None, file_warnings=()):
     _check(args, ("kind", "title", "form", "content", "from_preview_id", "url_patterns", "keywords", "memory_id", "base_version", "dry_run", "summary", "key_points"),
            ("kind", "title", "form"))
     kind = args["kind"]
@@ -673,6 +691,7 @@ def op_save(ctx, args, original=None, original_name=None):
             raise DmemError("extract_empty", reason="no_text")
         doc, warns, meta, fmt = _parse_content(content)
         warnings += warns
+        warnings += [w for w in file_warnings if w not in warnings]  # what the file extractor found (macro, external relation, DDE, ...)
         default_provider = PROVIDER_FOR_FORMAT[fmt]
         source = _new_source()
     else:
@@ -688,7 +707,8 @@ def op_save(ctx, args, original=None, original_name=None):
                            host=host, keywords=_keywords(args.get("keywords")), doc=doc, source=source)
     rec, v, created, chash, _ = _persist(ctx, built=built, form=form, memory_id=args.get("memory_id"), base_version=args.get("base_version"),
                                          source=source, original=original, dry_run=dry, kind=kind)
-    out = _result_common(ctx, rec, v, created, form, kind, warnings + (["pii_slotified"] if built[4]["pii_slotified"] else []), built[4])
+    shown = list(dict.fromkeys(warnings + built[3].get("warnings", []) + (["pii_slotified"] if built[4]["pii_slotified"] else [])))
+    out = _result_common(ctx, rec, v, created, form, kind, shown, built[4])
     out.update({"schema_version": 1, "dry_run": dry})
     if dry:
         out["preview"] = {"outline": built[1]["outline"], "slots": built[2]["slots"], "stats": {"blocks": len(doc.get("blocks", doc.get("slides", []))), "bytes": len(json.dumps(doc, ensure_ascii=False).encode())}}
@@ -725,13 +745,20 @@ def _preview_core(ctx, url):
     from . import fetch, formats, ooxml
     canon = urls.canonicalize(url, isolated=ctx.isolated)
     target = _export_url(canon.fetch_url or url, canon.provider) if ctx.isolated else url
+    csv_fallback = False
     with fetch.FetchGate(ctx.home).slot():
-        res = fetch.fetch(target, isolated=ctx.isolated)
+        try:
+            res = fetch.fetch(target, isolated=ctx.isolated)
+        except DmemError as exc:
+            if not (exc.code == "fetch_failed" and exc.reason == "status_4xx" and canon.provider == "google_sheets" and "format=xlsx" in target):
+                raise
+            csv_fallback = True  # the Sheets export offers no workbook: take the first sheet as CSV (formats.md section 3)
+            res = fetch.fetch(target.replace("format=xlsx", "format=csv"), isolated=ctx.isolated)
     body = res.body
     ctype = res.content_type
     sniffed = ooxml.detect_format(target.split("?")[0].rsplit("/", 1)[-1], body)
     # a text-like sniff yields to a more specific Content-Type (a Docs export named `export` is markdown, not plain text)
-    fmt = sniffed if sniffed not in (None, "text") else ("html" if "html" in ctype else "markdown" if "markdown" in ctype else (sniffed or "text"))
+    fmt = sniffed if sniffed not in (None, "text") else ("html" if "html" in ctype else "markdown" if "markdown" in ctype else "csv" if "csv" in ctype else (sniffed or "text"))
     warnings, meta, signals = [], {}, {"noai": False, "noindex": False}
     if fmt == "docx":
         doc, warnings = ooxml.extract_docx(body)
@@ -748,6 +775,12 @@ def _preview_core(ctx, url):
         signals = {"noai": any("noai" in r.lower() for r in robots), "noindex": any("noindex" in r.lower() for r in robots)}
     elif fmt == "markdown":
         doc = formats.parse_markdown(body.decode("utf-8", "replace"))
+    elif fmt == "csv":
+        import csv as _csv
+        import io as _io
+        header = next(_csv.reader(_io.StringIO(body.decode("utf-8", "replace"))), [])
+        doc = ooxml._standard("sheet", sheets=[{"name": "Sheet1", "columns": [{"header": h[:80]} for h in header]}])
+        warnings = ["sheet_support_deferred", "first_sheet_only"]
     else:
         doc = formats.parse_text(body.decode("utf-8", "replace"))
     lic, lic_source = licenses.detect_license(body.decode("utf-8", "replace")) if fmt == "html" else ("unknown", "none")
@@ -780,7 +813,7 @@ def op_web_preview(ctx, args):
     else:
         source["source_ref"] = urls.source_ref(core["plain_url"], library_key(ctx.home))
     record = {"doc": core["doc"], "warnings": core["warnings"], "provider": core["provider"], "source": source, "doc_type": core["doc_type"],
-              "locale": core["locale"], "signals": core["signals"], "title": core["title"]}
+              "locale": core["locale"], "signals": core["signals"], "title": core["title"], "pattern": canon.pattern}
     pid = PreviewStore(ctx.home).put(record)
     expires = iso(now() + 900)
     return {"schema_version": 1, "untrusted": True, "framing": FRAMING, "preview_id": pid, "canonical_url": canon.pattern, "provider": core["provider"],
@@ -808,10 +841,11 @@ def op_import(ctx, args):
         rec = PreviewStore(ctx.home).get(_str(args["preview_id"], "preview_id", 64, 1))
         doc, warnings, source, provider = rec["doc"], list(rec["warnings"]), dict(rec["source"]), rec["provider"]
         detected = {"doc_type": rec["doc_type"], "locale": rec["locale"]}
-        signals, title = rec["signals"], rec["title"]
+        signals, title, source_pattern = rec["signals"], rec["title"], rec.get("pattern")
     else:
         core = _preview_core(ctx, _str(args["url"], "url", 2048, 1))
         canon = core["canonical"]
+        source_pattern = canon.pattern
         signals = core["signals"]
         max_policy = licenses.copy_policy_for(core["license"], "fetched", core["license_source"], False)
         source = _new_source(origin="fetched", provenance="fetched", source_host=canon.host, content_hash=core["content_hash"], retrieved_at=iso(),
@@ -851,7 +885,7 @@ def op_import(ctx, args):
     raw_form.setdefault("doc_type", detected["doc_type"])
     raw_form.setdefault("locale", detected["locale"])
     form = forms.normalize_form(raw_form, for_save=True)
-    host, patterns = _patterns(None, form)
+    host, patterns = _patterns([source_pattern] if source_pattern else None, form)  # an import is scoped to the page it came from (web-import.md: source scope)
     title = _str(args.get("title") or title, "title", 120, 1)
     if scrub.l1_problems(title):
         title = vocab.doc_type_lookup(form["doc_type"]) and form["doc_type"].replace("_", " ")
@@ -942,15 +976,28 @@ def _pub_rule(rec, version, target_license):
     return None
 
 
+NOTICE = "privacy.detection_limit"
+REJECTED_PAYLOAD_DAYS = 7  # privacy.md section 5
+
+
+def _purge_rejected(st):
+    """Rejected publish payloads live 7 days; the audit row (reason codes only) stays."""
+    cutoff = now() - REJECTED_PAYLOAD_DAYS * 86400
+    for rid in [k for k, v in st.setdefault("rejected_payloads", {}).items() if v["created_at"] < cutoff]:
+        del st["rejected_payloads"][rid]
+
+
 def op_publish(ctx, args):
     _check(args, ("memory_id", "visibility", "version", "license", "consent", "consent_version"), ("memory_id", "visibility"))
     if not ctx.linked:
         raise DmemError("auth_required")
+    ctx.require_server()
     visibility = args["visibility"]
     if visibility not in ("private", "team", "public"):
         raise _bad(visibility)
     store = ctx.server
     with store.txn() as st:
+        _purge_rejected(st)
         rec = st["memories"].get(_str(args["memory_id"], "memory_id", 64, 1))
         if not rec or rec["owner"] != ctx.identity or rec.get("status") != "active":
             raise DmemError("not_found")
@@ -996,8 +1043,11 @@ def op_publish(ctx, args):
                                "license": license_id, "consent_version": CONSENT_VERSION, "at": iso()})
         if reasons:
             rec["review_state"] = "rejected"
+            review_id = new_id("rev")
+            st.setdefault("rejected_payloads", {})[review_id] = {"memory_id": rec["memory_id"], "version": version["version"], "created_at": now(), "payload_hash": version["content_hash"]}
+            st.setdefault("audit", []).append({"review_id": review_id, "memory_id": rec["memory_id"], "reasons": sorted(set(reasons)), "at": iso()})
             return {"schema_version": 1, "memory_id": rec["memory_id"], "visibility": rec["visibility"], "review_state": "rejected",
-                    "review_id": new_id("rev"), "reasons": sorted(set(reasons))}
+                    "review_id": review_id, "reasons": sorted(set(reasons)), "notice": NOTICE}
         review_id = new_id("rev")
         if license_id:
             version["source"]["license"] = license_id if version["source"]["origin"] == "user" else version["source"]["license"]
@@ -1005,10 +1055,10 @@ def op_publish(ctx, args):
         if visibility == "team":
             ws = next((w for w, members in st["workspaces"].items() if ctx.identity in members), None)
             rec.update({"visibility": "team", "workspace": ws, "review_state": "approved", "published_version": version["version"]})
-            return {"schema_version": 1, "memory_id": rec["memory_id"], "visibility": "team", "review_state": "approved", "review_id": review_id, "reasons": []}
+            return {"schema_version": 1, "memory_id": rec["memory_id"], "visibility": "team", "review_state": "approved", "review_id": review_id, "reasons": [], "notice": NOTICE}
         rec["review_state"] = "queued"
         rec["pending"] = {"visibility": "public", "version": version["version"], "license": license_id, "review_id": review_id}
-        return {"schema_version": 1, "memory_id": rec["memory_id"], "visibility": rec["visibility"], "review_state": "queued", "review_id": review_id, "reasons": []}
+        return {"schema_version": 1, "memory_id": rec["memory_id"], "visibility": rec["visibility"], "review_state": "queued", "review_id": review_id, "reasons": [], "notice": NOTICE}
 
 
 def op_delete(ctx, args):
@@ -1181,6 +1231,10 @@ def op_test(ctx, args):
         return {"schema_version": 1, "patched": True}
     if action == "consents":
         return {"schema_version": 1, "consents": ctx.server.read()["consents"]}
+    if action == "rejected":  # retention probe: the payload rows still alive after the purge, and the audit rows that outlive them
+        with ctx.server.txn() as st:
+            _purge_rejected(st)
+            return {"schema_version": 1, "payloads": sorted(st.get("rejected_payloads", {})), "audit": list(st.get("audit", []))}
     raise _bad(action)
 
 

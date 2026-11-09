@@ -336,6 +336,7 @@ def extract_pptx(data):
                 el = cs.find("a:"+name, NS)
                 if el is not None and len(el): theme["colors"][name] = next(iter(el)).get("val", "")
     if any("comment" in n.lower() for n in names): warnings.add("comments_dropped")
+    if any(n.startswith("ppt/charts/") for n in names): warnings.add("unsupported_block")  # a chart has no StandardDoc block in v1
     warnings.add("layout_inferred")
     z.close()
     if not slides or not any(s["title"] or s["blocks"] for s in slides): _err("extract_empty", "no_text")

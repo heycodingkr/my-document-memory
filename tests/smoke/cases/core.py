@@ -92,7 +92,6 @@ def core_08(ctx):
     off = {"DMEM_ISOLATED": "0"}
     reject(ctx, recall(ctx, docs, env=off), "url_rejected")
     ctx.expect((ctx.cli().json(["status"]).json or {}).get("isolated") is True, "status.isolated should be true")
-    ctx.expect((ctx.cli(env := None, extra_env=off).json(["status"]).json or {}).get("isolated") is False, "status.isolated should be false") if False else None
     ctx.expect((ctx.cli(extra_env=off).json(["status"]).json or {}).get("isolated") is False, "status.isolated should be false without DMEM_ISOLATED")
 
 
@@ -188,7 +187,8 @@ def core_19(ctx):
         results.append(exp)
         source = json.loads((ctx.home() / "out.json").read_text(encoding="utf-8"))["source"]
         ctx.expect(source.get("source_url") is None and str(source.get("source_ref", "")).startswith("src_"), "capability host must store source_ref only")
-    ctx.expect(cap not in sink_text(*results).replace("FIX_KO_RESUME", "", 0) or True, "")  # outputs may legitimately omit it; sinks below decide
+    shown = sink_text(*results)  # sink 1 (client output): neither the document id nor the resourcekey may be echoed back
+    ctx.expect(cap not in shown and "RK_SENTINEL_zz" not in shown, "the capability id or resourcekey was echoed in a command's output")
     findings = ctx.scan_values([cap, "RK_SENTINEL_zz"], extra=[])
     ctx.expect(not findings, f"capability id / resourcekey found in {len(findings)} client-side sink(s)")
 
@@ -248,7 +248,7 @@ def core_23(ctx):
 @case("CORE-24", "R1")
 def core_24(ctx):
     pad = lambda n: "https://example.com/" + "a" * (n - len("https://example.com/"))
-    ctx.expect(recall(ctx, pad(2048)).exit in (0,), "2048-char URLs must be accepted (segments are cut, not rejected)") if False else None
+    ctx.expect(recall(ctx, pad(2048)).exit == 0, "a 2048-character URL must be accepted")
     reject(ctx, recall(ctx, pad(2049)), "url_rejected", "too_long")
     reject(ctx, recall(ctx, "https://example.com/x", limit=4), "invalid_input")
     reject(ctx, recall(ctx, "https://example.com/x", keywords=[f"k{i}" for i in range(9)]), "invalid_input")

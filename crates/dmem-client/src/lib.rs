@@ -24,6 +24,48 @@ fn unavailable(_: impl std::fmt::Debug) -> ClientError {
     }
 }
 impl DmemClient {
+    pub async fn capture<T: DeserializeOwned>(
+        &self,
+        body: &impl Serialize,
+        secret: &str,
+    ) -> Result<T, ClientError> {
+        use hmac::{Hmac, Mac};
+        use sha2::Sha256;
+        if secret.len() < 32 {
+            return Err(ClientError {
+                code: "capture_not_configured".into(),
+            });
+        }
+        let bytes = serde_json::to_vec(body).map_err(|_| ClientError {
+            code: "invalid_input".into(),
+        })?;
+        let time = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(unavailable)?
+            .as_secs()
+            .to_string();
+        let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes()).map_err(unavailable)?;
+        mac.update(time.as_bytes());
+        mac.update(b"\n");
+        mac.update(&bytes);
+        let proof = mac
+            .finalize()
+            .into_bytes()
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        Self::decode(
+            self.request(Method::POST, "/v1/web/clip", true)
+                .header("content-type", "application/json")
+                .header("x-dmem-capture-time", time)
+                .header("x-dmem-capture-proof", proof)
+                .body(bytes)
+                .send()
+                .await
+                .map_err(unavailable)?,
+        )
+        .await
+    }
     pub fn new(base: &str, token: String) -> Result<Self, ClientError> {
         let parsed = reqwest::Url::parse(base).map_err(unavailable)?;
         if !["http", "https"].contains(&parsed.scheme())
@@ -170,6 +212,19 @@ pub fn search_path(resource: &str, query: &str) -> String {
     url.query_pairs_mut().append_pair("q", query);
     format!("/v1/{resource}?{}", url.query().unwrap_or(""))
 }
+pub fn contribution_queue_path(status: &str, cursor: Option<&str>, limit: u16) -> String {
+    let mut url = reqwest::Url::parse("http://localhost").expect("static URL");
+    {
+        let mut pairs = url.query_pairs_mut();
+        pairs
+            .append_pair("status", status)
+            .append_pair("limit", &limit.to_string());
+        if let Some(cursor) = cursor {
+            pairs.append_pair("cursor", cursor);
+        }
+    }
+    format!("/v1/admin/contributions?{}", url.query().unwrap_or(""))
+}
 pub fn recall_path(q: &RecallQuery) -> String {
     let mut url = reqwest::Url::parse("http://localhost").expect("static URL");
     {
@@ -195,8 +250,19 @@ pub fn recall_path(q: &RecallQuery) -> String {
     }
     format!("/v1/recall?{}", url.query().unwrap_or(""))
 }
+#[cfg(test)]
+mod tests {
+    use super::safe_id;
+    #[test]
+    fn rejects_url_dot_segments_but_preserves_dotted_seed_ids() {
+        assert!(!safe_id("."));
+        assert!(!safe_id(".."));
+        assert!(safe_id("meeting.minutes.en"));
+    }
+}
 pub fn safe_id(id: &str) -> bool {
     !id.is_empty()
+        && !matches!(id, "." | "..")
         && id.len() <= 100
         && id
             .bytes()

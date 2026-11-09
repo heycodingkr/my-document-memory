@@ -73,7 +73,7 @@ M1~M5 기대 순위는 [`functional-tests.md`](functional-tests.md) RCL-01~04가
 | `/p/google-docs/document/d/FIX_KO_RESUME/edit` | Docs 모양 페이지(제목만) |
 | `/p/google-docs/document/d/FIX_KO_RESUME/export?format=md\|html\|docx\|txt` | Docs 내보내기 모사(미검증 경로를 흉내 낸 것, [`../spec/formats.md`](../spec/formats.md) 3절) |
 | `/p/google-slides/presentation/d/FIX_DECK/export?format=pptx` | Slides 내보내기 모사. `format=md`·`html`은 400 |
-| `/p/google-sheets/spreadsheets/d/FIX_SHEET/export?format=csv\|xlsx` | Sheets 모사(`?variant=csv-only`면 csv만) |
+| `/p/google-sheets/spreadsheets/d/FIX_SHEET/export?format=csv\|xlsx` | Sheets 모사. `/p/google-sheets-csv/…`는 csv만 내보내고 xlsx는 400이다 |
 | `/p/notion/Quarterly-Report-0123456789abcdef0123456789abcdef` | Notion 모양 공개 HTML(제목·목록·표·콜아웃) |
 | `/search?q=…` | `fixture` 검색 provider의 고정 JSON 결과(후보 8개, 사설 주소 후보 1개 포함) |
 

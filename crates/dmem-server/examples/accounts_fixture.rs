@@ -47,7 +47,7 @@ async fn main() {
     config.admin_token = Some("synthetic-e2e-admin-token-at-least-32-characters".into());
     config
         .set_admin_emails(
-            "reviewer@example.test,reviewer-blocked@example.test,reviewer-cross@example.test",
+            "reviewer@example.test,reviewer-blocked@example.test,reviewer-cross@example.test,reviewer-queue@example.test",
         )
         .unwrap();
     let db = std::env::var("DMEM_E2E_DATABASE").unwrap();
@@ -55,10 +55,12 @@ async fn main() {
     let store = Arc::new(Store::open(&db).unwrap());
     let connection = rusqlite::Connection::open(&db).unwrap();
     for owner in ["local", "bob"] {
-        connection.execute(
-            "INSERT OR IGNORE INTO accounts(id,email,created_at) VALUES(?1,?2,1)",
-            rusqlite::params![owner, format!("fixture-{owner}@example.test")],
-        ).unwrap();
+        connection
+            .execute(
+                "INSERT OR IGNORE INTO accounts(id,email,created_at) VALUES(?1,?2,1)",
+                rusqlite::params![owner, format!("fixture-{owner}@example.test")],
+            )
+            .unwrap();
     }
     drop(connection);
     let app = router_with_auth(

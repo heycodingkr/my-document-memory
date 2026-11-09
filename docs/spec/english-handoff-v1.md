@@ -1,6 +1,6 @@
 # English experience and agent handoff v1
 
-Status: implementation in progress, 2026-11-09. Fixes workspace issues #390 and #391 and makes the README, landing page, and primary product UI English by default.
+Status: implemented and verified, 2026-11-09. Fixes workspace issues #390 and #391 and makes the README, landing page, and primary product UI English by default.
 
 ## Contract
 
@@ -19,13 +19,14 @@ The landing page, navigation, labels, validation messages, accessibility names, 
 | 1 inline | Git status/diff, relevant code/tests, issue claims, baseline snapshots | Read actual files, preserve concurrent work | none |
 | 2 inline | This contract and test inputs/expected results | Compare to requested English UI and issue repros | 1 |
 | 3a codex:gpt-6-luna attempt, then inline fallback | Initial five-file copy sweep; job 127 was queued and cancelled with no edits, completed by parent | Direct parent file review and checks | 2 |
-| 3b codex:gpt-6-luna background | English literal copy in newly added AuthPanel.svelte, MyPage.svelte, PublicLibrary.svelte only | Parent reads each changed file and runs integration tests | 2; newly observed account UI |
+| 3b codex:gpt-6-luna attempt, then inline fallback | Job 132 was queued and cancelled without starting; parent reviewed the three newly added account components and completed remaining English/filter changes | Direct source reads and integration tests | 2; newly observed account UI |
 | 4 inline | Focused failing Rust and browser tests for both bugs | Run tests here and capture specific failures before implementation | 2 |
 | 5 inline | Locale-aware drafts/catalog filtering and prompt preview/copy; English App/README | Review exact source changes and clipboard/approval behavior | 4 |
 | 6 inline | Builds/tests, actual Arise smoke, English screenshots and exported demo | Parent runs workspace checks, isolated runtime/browser smoke and image inspection | 3,5 |
-| 7 inline | Review, issue comments/status, verified know-how corrections | Evidence links and final diff; deployment state stated accurately | 6 |
+| 6b inline | Refresh this session's existing development supervisor after observing HTTP 400 for the new locale parameter on its old process | Same database/token retained; health, English HTTP search, installed CLI and configured MCP checked | 6 |
+| 7 inline | Review, issue comments/status, verified know-how corrections | Evidence links and final diff; deployment state stated accurately | 6,6b |
 
-No worker runs builds, tests, browser loops, production actions, commits, or credential reads. Worker scope is the five named mechanical-copy files. App.svelte, README, store.rs, contracts, tests, CSS, design/root-cause decisions, and final review stay with the parent.
+No worker runs builds, tests, browser loops, production actions, commits, or credential reads. Worker scope was the explicitly named mechanical-copy files; both queued attempts were cancelled before starting, so no worker changes or summaries serve as evidence. App.svelte, README, store.rs, contracts, tests, CSS, design/root-cause decisions, and final review stay with the parent.
 
 ## Inputs and expected results
 
@@ -56,6 +57,8 @@ Current catalog has nine Korean seeds. Add English IDs rather than repurposing p
 
 The initial workspace has substantial concurrent untracked implementation and new deployment/account specifications. Snapshot only relevant files, patch exact regions, avoid broad formatting/rewrites of unrelated sources, and stage/commit nothing.
 
+A final shared-source run caught an outdated onboarding assertion after the concurrent landing changed its hero from outline text to an output preview. Keep the behavior contract: selecting Slides must show its deck example and link, while the separate copied request must still require outline approval. Update that assertion to inspect the actual current panel/link, then rerun the workflow suite here.
+
 ## Review and evidence
 
-Pending: docs/test/english-handoff-v1.md and docs/design/english-handoff-v1-review.md. Evidence belongs under .artifacts/english-handoff/. Production rollout, if reachable through the existing authorized deployment path, follows successful local verification; never claim a rollout based only on local source edits.
+See [verification report](../test/english-handoff-v1.md) and [design review](../design/english-handoff-v1-review.md). Evidence is under .artifacts/english-handoff/. Public HTTPS now returns English and was visually inspected in Arise; the authenticated create/edit/export smoke used an isolated local library. This work did not perform the concurrent production rollout.

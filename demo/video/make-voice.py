@@ -3,6 +3,7 @@
 
   python3 demo/video/make-voice.py --dry-run                      # English is the default; add --lang ko for Korean
   python3 demo/video/make-voice.py demo/out/video/mdm-demo-day.en.mp4 demo/out/video/mdm-demo-day.en.vo.mp4
+  python3 demo/video/make-voice.py --cut hackathon --dry-run      # the 90 s hackathon cut (English only), script in demo/video/hackathon/
 
 Reads script.json, the same file the burned-in captions come from. Each beat's `vo` text (its caption when there is no `vo`)
 is synthesised once with ElevenLabs and cached by text in demo/out/voice-cache/ (git-ignored), so a rerun only pays for beats
@@ -10,8 +11,9 @@ whose text changed. Beats are placed at their start time, sped up to at most 1.2
 normalised to -16 LUFS and muxed into the video without re-encoding it.
 
 This sends the narration text to a third-party service and spends credits. Run --dry-run first, and run the real thing only
-after the owner has approved it. The key comes from ELEVENLABS_API_KEY or ~/.config/mdm-demo/elevenlabs.key (never commit it;
-it needs text-to-speech access). The Korean voice_id in script.json must be chosen by listening first.
+after the owner has approved it. The key comes from ELEVENLABS_API_KEY, then ~/.config/mdm-demo/elevenlabs.key, then the key the
+sibling WAM demo video used, ~/.config/wam-demo/elevenlabs.key (never commit one; it needs text-to-speech access). The key is never
+printed. The Korean voice_id in script.json must be chosen by listening first.
 """
 import argparse, hashlib, json, os, subprocess, sys, urllib.error, urllib.request
 
@@ -21,6 +23,7 @@ cache = os.environ.get('MDM_VOICE_CACHE', os.path.join(repo, 'demo', 'out', 'voi
 
 ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 ap.add_argument('--lang', choices=['ko', 'en'], default='en', help='voice-over language (default: en)')
+ap.add_argument('--cut', choices=['demo-day', 'hackathon', 'hackathon-120'], default='demo-day', help='which video: concept, 90 s hackathon, or 120 s hackathon (English only)')
 ap.add_argument('--dry-run', action='store_true', help='print the beats and the character count; no network, no key needed')
 ap.add_argument('video_in', nargs='?')
 ap.add_argument('video_out', nargs='?')
@@ -28,7 +31,14 @@ args = ap.parse_args()
 if not args.dry_run and not (args.video_in and args.video_out):
     ap.error('video_in and video_out are required unless --dry-run')
 
-spec = json.load(open(os.path.join(here, 'script.json'), encoding='utf-8'))
+if args.cut != 'demo-day' and args.lang != 'en':
+    ap.error('the hackathon cuts are English only')
+script_path = {
+    'demo-day': os.path.join(here, 'script.json'),
+    'hackathon': os.path.join(here, 'hackathon', 'script.json'),
+    'hackathon-120': os.path.join(here, 'hackathon-120', 'script.json'),
+}[args.cut]
+spec = json.load(open(script_path, encoding='utf-8'))
 voice = spec['voice'][args.lang]
 beats = [{'id': b['id'], 'start': b['start'], 'end': b['end'], 'text': b[args.lang].get('vo') or b[args.lang]['cap']} for b in spec['beats']]
 total = spec['total_s']
@@ -49,9 +59,10 @@ def api_key():
     k = os.environ.get('ELEVENLABS_API_KEY')
     if k:
         return k.strip()
-    p = os.path.expanduser('~/.config/mdm-demo/elevenlabs.key')
-    if os.path.exists(p):
-        return open(p).read().strip()
+    for p in ('~/.config/mdm-demo/elevenlabs.key', '~/.config/wam-demo/elevenlabs.key'):
+        p = os.path.expanduser(p)
+        if os.path.exists(p):
+            return open(p).read().strip()
     sys.exit('no ElevenLabs key: set ELEVENLABS_API_KEY or create ~/.config/mdm-demo/elevenlabs.key')
 
 def mp3_for(text):
@@ -86,7 +97,7 @@ for i, b in enumerate(beats):
     chains.append(f"[{i}:a]atempo={tempo:.4f},adelay={ms}|{ms},apad[a{i}]")
     labels.append(f'[a{i}]')
 fc = ';'.join(chains) + ';' + ''.join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=longest,atrim=0:{total},loudnorm=I=-16:TP=-1.5:LRA=11,apad=whole_dur={total}[aout]"
-track = os.path.join(cache, f'track.{args.lang}.wav')
+track = os.path.join(cache, f'track.{args.lang}.wav' if args.cut == 'demo-day' else f'track.{args.cut}.{args.lang}.wav')
 subprocess.check_call(['ffmpeg', '-y', '-loglevel', 'error', *inputs, '-filter_complex', fc, '-map', '[aout]', '-ar', '44100', '-ac', '2', track])
 subprocess.check_call(['ffmpeg', '-y', '-loglevel', 'error', '-i', args.video_in, '-i', track, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
                        '-shortest', '-movflags', '+faststart', args.video_out])

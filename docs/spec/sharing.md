@@ -1,6 +1,6 @@
 # SHR: 다른 사람의 메모리 찾기·미리보기·복사, 게시와 라이선스
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 contribution → gatekeeper → 공개 카탈로그 흐름을 "소유자의 명시적 게시"로 바꾸고, 라이선스와 복사 정책을 추가한 명세다. 제품 규칙의 상위 기준은 [`overview.md`](overview.md) 3·5절이다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 contribution → gatekeeper → 공개 카탈로그 흐름을 "소유자의 명시적 게시"로 바꾸고, 라이선스와 복사 정책을 추가한 명세다. 제품 규칙의 상위 기준은 [`overview.md`](overview.md) 3·5절이다.
 영역 / 테스트 ID 접두사: `SHR` (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`memory.md`](memory.md) 5·6절, [`library.md`](library.md), [`privacy.md`](privacy.md), 검수 파이프라인은 [`gatekeeper.md`](gatekeeper.md)
 

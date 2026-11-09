@@ -1,6 +1,6 @@
 # ADMIN: 게시 검수·takedown·계정 관리
 
-상태: 설계 초안(문서 우선, 구현 없음). 공개 사용자·관리자 화면은 runtime-v1 이후 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. 공개 사용자·관리자 화면은 runtime-v1 이후 단계다.
 영역 / 테스트 ID 접두사: `ADMIN` (케이스: [`../test/functional-account.md`](../test/functional-account.md))
 기반: [`accounts-community-v1.md`](accounts-community-v1.md), [`privacy.md`](privacy.md), [`sharing.md`](sharing.md)
 WAM 승계(재확인 필요): 일반 사용자와 분리된 관리자 권한, 검수 generation, 명시적 결정, no-store 응답, 최소 감사 기록.

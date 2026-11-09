@@ -1,6 +1,6 @@
 # DB: 저장 중립 계약과 SQLite·PostgreSQL 어댑터
 
-상태: 설계 초안(문서 우선, 구현 없음). runtime-v1의 SQLite `records/revisions/source_files` 골격을 확장한다. WAM의 원장·불변 버전 원칙을 적응하고 Gatekeeper queue 구현 세부는 승계하지 않는다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. runtime-v1의 SQLite `records/revisions/source_files` 골격을 확장한다. WAM의 원장·불변 버전 원칙을 적응하고 Gatekeeper queue 구현 세부는 승계하지 않는다.
 영역 / 테스트 ID 접두사: `DB` (케이스: [`../test/functional-api.md`](../test/functional-api.md))
 기반: [`core.md`](core.md), [`runtime-v1.md`](runtime-v1.md), [`memory.md`](memory.md), [`library.md`](library.md), [`sharing.md`](sharing.md), [`privacy.md`](privacy.md)
 

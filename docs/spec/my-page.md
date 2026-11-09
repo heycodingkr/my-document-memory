@@ -1,6 +1,6 @@
 # MYPAGE: 내 라이브러리·게시·연결·동의 화면
 
-상태: 설계 초안(문서 우선, 구현 없음). 공개 계정과 다중 사용자 화면은 runtime-v1 이후 단계다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. 공개 계정과 다중 사용자 화면은 runtime-v1 이후 단계다.
 영역 / 테스트 ID 접두사: `MYPAGE` (케이스: [`../test/functional-account.md`](../test/functional-account.md))
 기반: [`accounts-community-v1.md`](accounts-community-v1.md), [`library.md`](library.md), [`sharing.md`](sharing.md), [`privacy.md`](privacy.md), [`link.md`](link.md)
 제외: WAM의 점수·순위·웹 작업 통계 화면은 문서 메모리 도메인에 적용하지 않는다.

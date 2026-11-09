@@ -1,6 +1,6 @@
 # OUTAGE: 모델 provider 장애 대기
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM 서버 worker의 분류·시도 없는 대기·대기 게이트·순환을 문서 검수에 적응했다. 수치는 WAM 승계(재확인 필요)이며 여러 worker 동시 탐침은 상한이 worker 수다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM 서버 worker의 분류·시도 없는 대기·대기 게이트·순환을 문서 검수에 적응했다. 수치는 WAM 승계(재확인 필요)이며 여러 worker 동시 탐침은 상한이 worker 수다.
 영역 / 테스트 ID 접두사: `OUTAGE` (케이스: [`../test/functional-models.md`](../test/functional-models.md))
 기반: [`model.md`](model.md), [`queue.md`](queue.md), [`gatekeeper.md`](gatekeeper.md), [실패 행렬](../test/failure-matrix.md)
 

@@ -90,6 +90,7 @@ class Ctx:
     def search_provider(self, spec):
         """spec 'none' | 'fixture' (loopback fixture /search) | raw provider string."""
         self.sandbox.extra_env["DMEM_SEARCH_PROVIDER"] = f"fixture:{self.fx_url}/search" if spec == "fixture" else spec
+        self.sandbox._cli.clear()  # a Cli keeps the environment it was created with: later cli() calls must see the provider
 
     def load_library(self, name, identity="local", owner_map=None):
         path = self.store.base.parent / "tests" / "fixtures" / f"{name}.json"
@@ -115,6 +116,31 @@ class Ctx:
         paths += list(extra)
         return sentinel_lib.scan(paths, self.sentinels, families)
 
+
+    ORIGINALS_FAMILIES = ("api_key", "jwt", "bearer", "private_key", "capability", "url_parts")
+
+    EXEMPT = {"remote_requests": ("capability",)}  # fetching a Google/Notion document necessarily sends its id to that very site
+
+    def sweep(self, families=None, identities=("local",), allow_empty=()):
+        """SEC-A04: scan all eight sinks (docs/test/security-scenarios.md) for sentinels. Returns {"findings": {sink: [Finding]}, "empty": [sink], "sizes": {sink: n}}.
+
+        A sink that collected nothing is reported in `empty` (HARN-14: a sweep that silently looked at nothing proves nothing); sinks named in `allow_empty`
+        are expected to be empty in this scenario. Preserved originals are scanned for secret and capability families only."""
+        fixture_log = self.fx_log() if self._fixtures is not None and self._fixtures.base_url else None
+        sources = self.sandbox.sweep_sources(identities, fixture_log)
+        findings, sizes = {}, {}
+        for sink, items in sources.items():
+            sizes[sink] = len(items)
+            wanted = families
+            if sink == "local_store_originals":
+                wanted = [f for f in (families or self.ORIGINALS_FAMILIES) if f in self.ORIGINALS_FAMILIES]
+            elif sink in self.EXEMPT:
+                wanted = [f for f in (families or sentinel_lib.FAMILIES) if f not in self.EXEMPT[sink]]
+            found = sentinel_lib.scan(items, self.sentinels, wanted) if items and (wanted is None or wanted) else []
+            if found:
+                findings[sink] = found
+        empty = [s for s in self.sandbox.SINKS if sizes.get(s, 0) == 0 and s not in allow_empty]
+        return {"findings": findings, "empty": empty, "sizes": sizes}
 
     def scan_values(self, values, identities=("local",), extra=()):
         """Like scan_sinks for ad-hoc literals (e.g. a capability id). Returns findings (ids only)."""

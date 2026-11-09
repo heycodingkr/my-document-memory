@@ -2,6 +2,8 @@
 use serde::{Deserialize, Serialize};
 mod recall;
 pub use recall::*;
+mod web;
+pub use web::*;
 pub const MAX_UPLOAD: usize = 10 * 1024 * 1024;
 pub const MAX_CONTENT: usize = 1024 * 1024;
 pub const MAX_RESULTS: usize = 20;
@@ -254,6 +256,9 @@ pub enum Fault {
     ServerUnavailable,
     RateLimited,
     HandleUnavailable,
+    FetchBlocked(&'static str),
+    FetchFailed(&'static str),
+    SearchUnavailable,
 }
 impl Fault {
     pub fn code(&self) -> &'static str {
@@ -273,6 +278,9 @@ impl Fault {
             Self::ServerUnavailable => "server_unavailable",
             Self::RateLimited => "rate_limited",
             Self::HandleUnavailable => "handle_unavailable",
+            Self::FetchBlocked(_) => "fetch_blocked",
+            Self::FetchFailed(_) => "fetch_failed",
+            Self::SearchUnavailable => "search_unavailable",
         }
     }
     pub fn status(&self) -> u16 {
@@ -285,7 +293,12 @@ impl Fault {
             Self::PayloadTooLarge => 413,
             Self::UnsupportedFormat => 415,
             Self::ReviewBlocked => 422,
-            Self::InvalidForm(_) | Self::UrlRejected(_) | Self::ExtractEmpty(_) => 422,
+            Self::InvalidForm(_)
+            | Self::UrlRejected(_)
+            | Self::ExtractEmpty(_)
+            | Self::FetchBlocked(_) => 422,
+            Self::FetchFailed(_) => 502,
+            Self::SearchUnavailable => 503,
             Self::Internal => 500,
             Self::ServerUnavailable => 503,
             Self::RateLimited => 429,
@@ -310,11 +323,20 @@ impl Fault {
             Self::ServerUnavailable => "Server unavailable.",
             Self::RateLimited => "Too many requests.",
             Self::HandleUnavailable => "This handle is unavailable.",
+            Self::FetchBlocked(_) => {
+                "Cannot fetch this page. Try a file upload or an owned browser tab."
+            }
+            Self::FetchFailed(_) => "The remote page could not be read.",
+            Self::SearchUnavailable => {
+                "Web search is not configured. Paste a document URL instead."
+            }
         };
         let reason = match self {
-            Self::InvalidForm(r) | Self::UrlRejected(r) | Self::ExtractEmpty(r) => {
-                Some((*r).into())
-            }
+            Self::InvalidForm(r)
+            | Self::UrlRejected(r)
+            | Self::ExtractEmpty(r)
+            | Self::FetchBlocked(r)
+            | Self::FetchFailed(r) => Some((*r).into()),
             _ => None,
         };
         ApiError {

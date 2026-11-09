@@ -1,4 +1,4 @@
-use dmem_server::{AuthConfig, ResendEmailSender, Store, router_with_auth};
+use dmem_server::{AuthConfig, ResendEmailSender, Store, WebConfig, router_with_services};
 use std::{path::PathBuf, sync::Arc};
 #[tokio::main]
 async fn main() {
@@ -57,7 +57,14 @@ async fn start() -> Result<(), Box<dyn std::error::Error>> {
     auth.secure_cookies = origins[0].starts_with("https://");
     auth.admin_token = secret_file("DMEM_ADMIN_TOKEN", "credentials/admin-token")?;
     auth.set_admin_emails(&std::env::var("DMEM_ADMIN_EMAILS").unwrap_or_default())?;
-    let app = router_with_auth(store, vec![(token, "local".into())], origins, web, auth)?;
+    let app = router_with_services(
+        store,
+        vec![(token, "local".into())],
+        origins,
+        web,
+        auth,
+        WebConfig::from_env()?,
+    )?;
     let listener = tokio::net::TcpListener::bind(addr).await?;
     eprintln!("My Document Memory API: http://{addr}");
     axum::serve(listener, app)

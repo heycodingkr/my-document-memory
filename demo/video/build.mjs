@@ -41,7 +41,8 @@ const opt = (name, fallback) => { const i = args.indexOf(name); return i >= 0 ? 
 // A cut is one video built on the same stage engine: its own stage page, its own script.json and its own output name.
 const CUTS = {
   'demo-day': { stage: 'demo/video/stage.html', script: 'demo/video/script.json', out: (l) => `mdm-demo-day.${l}.mp4`, langs: ['ko', 'en'] },
-  hackathon: { stage: 'demo/video/hackathon/stage.html', script: 'demo/video/hackathon/script.json', out: (l) => `mdm-hackathon-90s.${l}.mp4`, langs: ['en'] }
+  hackathon: { stage: 'demo/video/hackathon/stage.html', script: 'demo/video/hackathon/script.json', out: (l) => `mdm-hackathon-90s.${l}.mp4`, langs: ['en'] },
+  'hackathon-120': { stage: 'demo/video/hackathon/stage.html', script: 'demo/video/hackathon-120/script.json', out: (l) => `mdm-hackathon-120s.${l}.mp4`, langs: ['en'] }
 };
 const cutName = opt('--cut', 'demo-day');
 const cut = CUTS[cutName];
@@ -50,6 +51,7 @@ const lang = opt('--lang', 'en');
 if (!cut.langs.includes(lang)) throw new Error(`--lang must be ${cut.langs.join(' or ')} for the ${cutName} cut, got ${lang}`);
 const fps = Number(opt('--fps', '30'));
 const stills = opt('--at', '');
+const textAt = opt('--text', '');   // print the visible on-screen text at these times as JSON (number/claims check)
 const lint = flag('--lint');
 const outMp4 = path.resolve(opt('--out', path.join(repo, 'demo/out/video', cut.out(lang))));
 const from = Number(opt('--from', '0'));
@@ -78,7 +80,7 @@ page.on('pageerror', (e) => problem('page error:', e.message));
 page.on('console', (m) => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) problem('console:', m.text()); });
 page.on('requestfailed', (r) => { if (!r.url().startsWith('data:') && !/blocked/i.test(r.failure()?.errorText || '') && r.failure()?.errorText !== 'net::ERR_FAILED') problem('request failed:', r.url()); });
 page.on('response', (r) => { if (r.status() >= 400) problem(`HTTP ${r.status()}:`, r.url()); });
-await page.goto(`${ORIGIN}/${cut.stage}?lang=${lang}`);
+await page.goto(`${ORIGIN}/${cut.stage}?lang=${lang}&cut=${encodeURIComponent(cutName)}`);
 await page.evaluate(() => window.__init());
 await page.waitForFunction(() => window.__ready === true);
 const total = await page.evaluate(() => window.__total);
@@ -107,6 +109,11 @@ if (lint) {
   for (const f of found.values()) console.log(`[${f.type}] t=${f.first}–${f.last}s (${f.count}×) ${JSON.stringify(f.text)} ${f.detail || ''}`);
   console.log(`lint (${lang}): ${sorted.length} sample times, ${found.size} distinct issue(s), ${problems} page problem(s)`);
   process.exitCode = found.size || problems ? 1 : 0;
+} else if (textAt) {
+  const rows = [];
+  for (const t of textAt.split(',').map(Number)) rows.push({ t, text: await page.evaluate((x) => { window.__render(x); return window.__visibleText(); }, t) });
+  console.log(JSON.stringify(rows));
+  process.exitCode = problems ? 1 : 0;
 } else if (stills) {
   const dir = '/tmp/mdm-video/stills';
   mkdirSync(dir, { recursive: true });

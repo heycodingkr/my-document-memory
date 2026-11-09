@@ -1,6 +1,6 @@
 # LIB: 내 메모리 저장·가져오기·수정·삭제·내보내기
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 "기여(propose)" 대신 **내 라이브러리에 직접 저장하는 로컬 우선 흐름**을 정한 신규 명세다. 공유(게시)는 [`sharing.md`](sharing.md)가 맡는다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 "기여(propose)" 대신 **내 라이브러리에 직접 저장하는 로컬 우선 흐름**을 정한 신규 명세다. 공유(게시)는 [`sharing.md`](sharing.md)가 맡는다.
 영역 / 테스트 ID 접두사: `LIB` (케이스: [`../test/functional-tests.md`](../test/functional-tests.md))
 기반: [`memory.md`](memory.md), [`formats.md`](formats.md), [`privacy.md`](privacy.md), [`overview.md`](overview.md) 2·5절
 
@@ -20,7 +20,7 @@
 
 ## 3. 수정과 버전
 
-수정은 `save`에 `memory_id`와 `base_version`을 주어 새 버전을 만든다. `memory_id` 없이 저장했는데 같은 `scope_key`([`core.md`](core.md) 6절)의 active 메모리가 이미 있으면 **그 메모리의 새 버전**이 되고(이전 버전은 `superseded`) `base_version` 충돌 검사는 하지 않는다. `kind`·`provider`·`doc_type`·`locale`·`region`·`variant`·URL 패턴 중 하나라도 다르면 별개 메모리다([`core.md`](core.md) 6절의 `scope_key`). `base_version`이 현재 head와 다르면 `version_conflict`이며 아무것도 바뀌지 않는다. 이전 버전은 `superseded`로 남고 `expand --version`으로 읽을 수 있다. 두 프로세스가 동시에 같은 메모리를 수정하면 하나만 성공하고 나머지는 `version_conflict`다. 저장소 쓰기는 잠금과 원자적 교체로 보호한다.
+수정은 `save`에 `memory_id`와 `base_version`을 주어 새 버전을 만든다. `memory_id` 없이 저장했는데 같은 `scope_key`([`core.md`](core.md) 6절)의 active 메모리가 이미 있으면 내용이 같을 때만 그 메모리를 돌려주고(`created: false`) 다르면 `invalid_input` reason `scope_conflict`다(상태 변화 0). 변경은 항상 `memory_id`와 `base_version`을 명시해 새 버전(이전 버전은 `superseded`)으로 저장한다. `kind`·`provider`·`doc_type`·`locale`·`region`·`variant`·URL 패턴 중 하나라도 다르면 별개 메모리다([`core.md`](core.md) 6절의 `scope_key`). `base_version`이 현재 head와 다르면 `version_conflict`이며 아무것도 바뀌지 않는다. 이전 버전은 `superseded`로 남고 `expand --version`으로 읽을 수 있다. 두 프로세스가 동시에 같은 메모리를 수정하면 하나만 성공하고 나머지는 `version_conflict`다. 저장소 쓰기는 잠금과 원자적 교체로 보호한다.
 
 ## 4. 삭제
 

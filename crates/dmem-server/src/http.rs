@@ -2,7 +2,7 @@ use crate::{AuthConfig, Store};
 mod account;
 mod admin;
 mod recall;
-
+mod web;
 use axum::{
     Extension, Json, Router,
     extract::Request,
@@ -28,6 +28,7 @@ struct App {
     tokens: Arc<HashMap<[u8; 32], String>>,
     origins: Arc<Vec<String>>,
     auth: Arc<AuthConfig>,
+    web: Arc<crate::web::WebService>,
 }
 #[derive(Clone)]
 struct Owner(String);
@@ -87,6 +88,23 @@ pub fn router_with_auth(
     web_dir: Option<PathBuf>,
     auth: AuthConfig,
 ) -> Result<Router, Fault> {
+    router_with_services(
+        store,
+        credentials,
+        origins,
+        web_dir,
+        auth,
+        crate::WebConfig::default(),
+    )
+}
+pub fn router_with_services(
+    store: Arc<Store>,
+    credentials: Vec<(String, String)>,
+    origins: Vec<String>,
+    web_dir: Option<PathBuf>,
+    auth: AuthConfig,
+    web: crate::WebConfig,
+) -> Result<Router, Fault> {
     if auth
         .admin_token
         .as_ref()
@@ -114,11 +132,17 @@ pub fn router_with_auth(
         tokens: Arc::new(tokens),
         origins: Arc::new(origins),
         auth: Arc::new(auth),
+        web: Arc::new(crate::web::WebService::new(web)),
     };
     let api = Router::new()
         .route("/status", get(status))
         .route("/templates", get(templates).post(create_template))
         .route("/recall", get(recall::handler))
+        .route("/web/search", axum::routing::post(web::search))
+        .route("/web/preview", axum::routing::post(web::preview))
+        .route("/web/import", axum::routing::post(web::import))
+        .route("/web/clip", axum::routing::post(web::clip))
+        .route("/web/origins/{id}", get(web::origin))
         .route("/templates/{id}", get(template))
         .route("/templates/{id}/copy", axum::routing::post(copy_template))
         .route("/sources", get(sources).post(import_source))

@@ -4,7 +4,7 @@ Date: 2026-11-09. User scope: make mydocumentmemory.com open in English; bring t
 
 ## Findings and design
 
-The public root currently serves lang=ko and an older asset bundle; its /v1/auth/session returns 404. The current local app is Svelte 5, already has an English landing and owner-scoped accounts, but the landing hides setup in a disclosure, has no Chrome or CLI entry, and keeps GitHub only in the footer. Existing Resend auth sends a six-digit code rather than a link. The production server has no email configuration yet. Preserve existing accounts, sessions, ownership, CSRF, community review, editor state, local token access and other uncommitted work.
+The public root currently serves lang=ko and an older asset bundle; its /v1/auth/session returns 404. The current local app is Svelte 5, already has an English landing and owner-scoped accounts, but the landing hides setup in a disclosure, has no Chrome or CLI entry, and keeps GitHub only in the footer. Existing Resend auth sends a six-digit code rather than a link. At initial inspection the production server had no email configuration. A concurrent operations release configured Resend during this task; the final live checks use that configuration. Preserve existing accounts, sessions, ownership, CSRF, community review, editor state, local token access and other uncommitted work.
 
 Use the existing Svelte app, components and green/paper visual system. Expose product/use cases, How it works, Connect your agent and GitHub in navigation. Show three explicit connection paths (web app, CLI, MCP), usable copy controls, real command/config examples and a browser setup row linking Arise download and Chrome. Keep the distinction between document-memory tools and browser tools clear. Public library and email sign-in remain first-class app actions. Reference: WAM Landing.svelte:85-131 (hero resources, browser setup and workflow), not its unrelated benchmark results or remote MCP endpoint. DMEM currently supports local stdio MCP; do not claim a public remote MCP or built-in LLM.
 
@@ -47,4 +47,4 @@ Core design, source changes, builds, browser loops, tests and final review stay 
 
 ## Verification
 
-Pending implementation. Record actual commands/results, screenshots inspected, production release and any unavailable delivery prerequisites in docs/test/landing-email-links-v1.md.
+Implemented and verified. Svelte check/build passed; 33 Rust tests passed on macOS and Linux; 19 isolated browser scenarios and three live public/provider checks passed. The current public root is English and email sign-in is enabled. Details, independent source hashes, screenshots, deployment and data-preservation evidence are recorded in [docs/test/landing-email-links-v1.md](../test/landing-email-links-v1.md). GitHub remains private; access/publication is tracked separately in issue #393.

@@ -1,0 +1,62 @@
+{
+  "CLI-01": {
+    "status": "skip",
+    "reason": "dmem link (device flow) needs a server with a web approval page and a secure store; specified in docs/test/functional-connect.md (LINK), not available in the double."
+  },
+  "CLI-02": {
+    "status": "skip",
+    "reason": "Same as CLI-01 (denied/expired/Ctrl-C device flow)."
+  },
+  "CLI-03": {
+    "status": "skip",
+    "reason": "Same as CLI-01 (unlink revokes the server device)."
+  },
+  "CLI-20": {
+    "status": "covered",
+    "reason": "The same inputs and checks as MEM-15, LIB-08, SEC-A01..02 (implemented as MEM-15, LIB-08, SHR-09, DISC-04, SEC-A04)."
+  },
+  "CLI-24": {
+    "status": "covered",
+    "reason": "Corrupted store and cache handling is LIB-13 (implemented)."
+  },
+  "CLI-29": {
+    "status": "skip",
+    "reason": "An agent calling the CLI as a shell tool is host behaviour (Claude Code, Codex); SNIP-04 and the host smoke measure it."
+  },
+  "CLI-30": {
+    "status": "skip",
+    "reason": "dmem doctor failure classes (DNS, TLS, 401, expired token, no cache, host not registered, version mismatch) need a real network and hosts; specified in docs/test/functional-install.md (DIAG)."
+  },
+  "CLI-32": {
+    "status": "covered",
+    "reason": "No token or sentinel in argv, environment, logs or crash output is the eight-sink sweep SEC-A04 (implemented; also SMK-16)."
+  },
+  "CLI-33": {
+    "status": "covered",
+    "reason": "File permissions and symlink refusal are LIB-13 and FMT-14 (implemented)."
+  },
+  "DOC-01": {
+    "status": "product-only",
+    "reason": "Editor and draft generation are web/API behaviour (docs/test/functional-tests.md, DOC section: SKIP(L3) for the CLI/MCP harness). Run by the product's own API and web tests (runtime-v1 RT-06..RT-08)."
+  },
+  "DOC-02": {
+    "status": "product-only",
+    "reason": "Same as DOC-01: a missing figure must stay as {{확인 필요: …}} in the generated draft; verified by the product's document-generation tests, not through the CLI or MCP tools."
+  },
+  "RCL-15": {
+    "status": "skip",
+    "reason": "Host-agent behaviour (call recall before work, no repeat within 5 minutes, honour a refusal). It is measured in the Claude Code and Codex hosts by BEH-01, BEH-06 and BEH-08 (docs/test/host-smoke.md), not by a black-box CLI/MCP case."
+  },
+  "SMK-06": {
+    "status": "skip",
+    "reason": "Whether an agent calls recall by itself is host behaviour (Claude Code, Codex); it is measured by BEH-01 and the host smoke, not by a CLI/MCP case."
+  },
+  "SMK-10": {
+    "status": "external",
+    "reason": "Needs the Arise host adapter (`doc_memory_clip_current_tab`, `dmem browser-mcp`). The Arise environment facts it depends on (own background tab, innerText exposure of hidden text, dialog handling) are verified by tests/smoke/arise_smoke.py (21/21)."
+  },
+  "SMK-15": {
+    "status": "product-only",
+    "reason": "Upgrade from an old build to a new one needs two product versions; there is no second version of the double."
+  }
+}

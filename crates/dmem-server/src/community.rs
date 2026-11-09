@@ -16,6 +16,39 @@ pub struct Contribution {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub review: Option<ReviewReport>,
 }
+#[derive(Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct ContributionQueueQuery {
+    status: Option<String>,
+    limit: Option<u16>,
+    cursor: Option<String>,
+}
+#[derive(Serialize)]
+pub(crate) struct ContributionPage {
+    items: Vec<Contribution>,
+    next_cursor: Option<String>,
+}
+fn queue_anchor<'a>(cursor: &'a str, status: &str) -> Result<(i64, &'a str), Fault> {
+    if cursor.len() > 160 {
+        return Err(Fault::InvalidInput);
+    }
+    let parts: Vec<_> = cursor.split(':').collect();
+    if parts.len() != 4
+        || parts[0] != "v1"
+        || parts[1] != status
+        || parts[2].is_empty()
+        || !parts[2].bytes().all(|b| b.is_ascii_digit())
+        || !parts[3].starts_with("contrib_")
+        || parts[3].len() <= 8
+        || parts[3].len() > 100
+        || !parts[3]
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+    {
+        return Err(Fault::InvalidInput);
+    }
+    Ok((parts[2].parse().map_err(|_| Fault::InvalidInput)?, parts[3]))
+}
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Submission {
@@ -134,6 +167,13 @@ impl Store {
             .map_err(internal)?;
         let mut snapshot: Template =
             serde_json::from_str(&raw.ok_or(Fault::NotFound)?).map_err(internal)?;
+        let web_origin = crate::web_store::origin(&tx, owner, &input.template_id)?;
+        if web_origin.as_ref().is_some_and(|o| {
+            !["CC0-1.0", "CC-BY-4.0"].contains(&o.license.as_str())
+                || (o.license == "CC-BY-4.0" && input.license != "CC-BY-4.0")
+        }) {
+            return Err(Fault::LicenseForbids);
+        }
         if (snapshot
             .origin
             .as_ref()
@@ -180,8 +220,69 @@ impl Store {
             review: None,
         };
         tx.execute("INSERT INTO contributions(id,owner,template_id,status,snapshot,created_at,updated_at) VALUES(?1,?2,?3,'pending',?4,?5,?5)",params![c.id,owner,c.template_id,serde_json::to_string(&c.snapshot).map_err(internal)?,now]).map_err(internal)?;
+        if let Some(mut origin) = web_origin {
+            origin.record_id = c.snapshot.id.clone();
+            tx.execute(
+                "INSERT INTO web_contribution_origins(contribution_id,payload) VALUES(?1,?2)",
+                params![c.id, serde_json::to_string(&origin).map_err(internal)?],
+            )
+            .map_err(internal)?;
+        }
         tx.commit().map_err(internal)?;
         Ok(c)
+    }
+    pub(crate) fn contribution_queue(
+        &self,
+        query: ContributionQueueQuery,
+    ) -> Result<ContributionPage, Fault> {
+        let status = query.status.as_deref().unwrap_or("all");
+        let limit = query.limit.unwrap_or(100);
+        if !["all", "pending", "approved", "rejected", "withdrawn"].contains(&status)
+            || !(1..=100).contains(&limit)
+        {
+            return Err(Fault::InvalidInput);
+        }
+        let anchor = query
+            .cursor
+            .as_deref()
+            .map(|c| queue_anchor(c, status))
+            .transpose()?;
+        let db = self.db.lock().map_err(internal)?;
+        let mut stmt = db
+            .prepare(
+                "SELECT id,template_id,status,snapshot,public_id,created_at,updated_at
+             FROM contributions
+             WHERE (?1='all' OR status=?1)
+               AND (?2 IS NULL OR created_at < ?2 OR (created_at=?2 AND id > ?3))
+             ORDER BY created_at DESC,id ASC LIMIT ?4",
+            )
+            .map_err(internal)?;
+        let mut items = stmt
+            .query_map(
+                params![
+                    status,
+                    anchor.map(|a| a.0),
+                    anchor.map(|a| a.1),
+                    i64::from(limit) + 1
+                ],
+                decode,
+            )
+            .map_err(internal)?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(internal)?;
+        let has_more = items.len() > usize::from(limit);
+        items.truncate(usize::from(limit));
+        let next_cursor = if has_more {
+            items
+                .last()
+                .map(|c| format!("v1:{status}:{}:{}", c.created_at, c.id))
+        } else {
+            None
+        };
+        for c in &mut items {
+            c.review = saved_review(&db, &c.id)?;
+        }
+        Ok(ContributionPage { items, next_cursor })
     }
     pub(crate) fn contributions(&self, owner: Option<&str>) -> Result<List<Contribution>, Fault> {
         let db = self.db.lock().map_err(internal)?;
@@ -253,6 +354,19 @@ impl Store {
         c.updated_at = now;
         if approve {
             tx.execute("INSERT INTO records(id,owner,kind,version,payload,updated_at) VALUES(?1,'@catalog','template',?2,?3,?4)",params![c.snapshot.id,c.snapshot.version,serde_json::to_string(&c.snapshot).map_err(internal)?,now]).map_err(internal)?;
+            let web_origin: Option<String> = tx
+                .query_row(
+                    "SELECT payload FROM web_contribution_origins WHERE contribution_id=?1",
+                    params![c.id],
+                    |r| r.get(0),
+                )
+                .optional()
+                .map_err(internal)?;
+            if let Some(raw) = web_origin {
+                let value: dmem_contracts::WebOrigin =
+                    serde_json::from_str(&raw).map_err(internal)?;
+                crate::web_store::save_origin(&tx, "@catalog", &value)?;
+            }
             c.public_id = Some(c.snapshot.id.clone());
         }
         tx.execute(

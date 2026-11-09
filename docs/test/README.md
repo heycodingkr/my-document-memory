@@ -5,6 +5,7 @@
 | 문서 | 내용 |
 |---|---|
 | 이 문서 | 원칙, 계층·프로필, 환경, 증거 규약, 기능→테스트 추적표, Runtime v1 대응, 게이트, 수치 기준 |
+| [`member-leaderboard-v1.md`](member-leaderboard-v1.md), [`member-leaderboard-v1-results.md`](member-leaderboard-v1-results.md) | 회원 가입/로그인·선택 공개 프로필·기여20점·전체/공개 순위 (`LB`), 실제 Router/SQLite·브라우저·운영 검증 |
 | [`fixtures.md`](fixtures.md) | 합성 입력의 단일 정의(신원, 라이브러리 `RCL-LIB`, 공유 카탈로그 `SHR-CAT`, 웹 fixture, 파일 빌더, 센티널) |
 | [`functional-tests.md`](functional-tests.md) | 핵심 케이스: `CORE` `FORM` `FMT` `MEM` `RCL` `LIB` `SHR` `DISC` `IMP` `VER` `TPL` `DOC-01~02` `PRIV` `MCP` |
 | [`functional-api.md`](functional-api.md), [`functional-connect.md`](functional-connect.md), [`functional-install.md`](functional-install.md) | 플랫폼 케이스: `API` `DB` / `DEDUP` `LINK` `CACHE` / `INST` `DIAG` |
@@ -16,6 +17,9 @@
 | [`tool-forms/`](tool-forms/README.md) | CLI·MCP·스니펫 형태 시나리오(`CLI` `MCPF` `SNIP`) |
 | [`user-flows.md`](user-flows.md), [`failure-matrix.md`](failure-matrix.md) | 사용자 여정(`FLOW`), 교차 계층 장애·복구(`FAIL`) |
 | [`environment.md`](environment.md) | 이 머신에서 확인한 도구와 실행 결과 |
+| [`metrics.md`](metrics.md), [`prereg/_template.md`](prereg/_template.md) | 제품/더블의 수치 기준과 문서 작업 A/B 사전 등록. WAM 결과를 이 제품의 성능으로 승계하지 않음 |
+| [`wam-port-completion-v1.md`](wam-port-completion-v1.md) | 원본 전체 처분, CLI/MCP·Arise·변이·실제 Rust 제품 실행 결과 (`PORT`, `HARN-17`) |
+| [`web-memory-v1.md`](web-memory-v1.md) | 실제 Rust URL 검색·미리보기·가져오기·출처, CLI/MCP, 소유 Arise 탭 클립·웹 입력 (`WI-01~24`) |
 | [`../../tests/README.md`](../../tests/README.md) | 테스트 코드 구성, 대상 어댑터, 하네스 API, 변이 목록 |
 
 ## 1. 원칙
@@ -91,12 +95,14 @@
 | 내 메모리 저장·가져오기 | LIB-01~16, TPL-01 | SMK-07 | SEC-A01, SEC-A03 |
 | 다른 사람 메모리 찾기·복사·게시·라이선스 | SHR-01~21, TPL-02~08 | SMK-08, SMK-11, BEH-07~08 | SEC-C01, SEC-D |
 | 웹 검색·미리보기·가져오기·클립 | DISC-01~08, IMP-01~20 | SMK-09~10, BEH-09, HOST-09 | SEC-E, SEC-B02 |
+| 실제 intake v1 부분집합 | WI-01~24 (`web-memory-v1.md`) | `web-memory-v1.py --browser --arise` | SSRF·타 소유자·외부 권리·서명/탭 음성 대조 |
 | 개인정보·동의·삭제 | PRIV-01~10 | SMK-11, SMK-16 | SEC-G, SEC-A |
 | MCP 계약·호스트 연결 | MCP-01~24, MCPF-01~27 | SMK-02, HOST-01~12, CUST-01~06 | SEC-H |
 | CLI 계약 | CLI-01~33, SNIP-01~04 | SMK-01, SMK-13 | SEC-F, SEC-H02 |
 | 서버 API·저장·연결·설치·캐시 | `functional-api.md`, `-connect.md`, `-install.md` | SMK-12~13, SMK-15 | SEC-D06, SEC-F |
 | 게시 검수·점수·모델·큐 | `functional-review.md`, `-curator.md`, `-models.md` | — | SEC-C |
 | 웹 화면·편집기·계정·운영·성능·출시 | `functional-web.md`, `-account.md`, `-ops.md`, `-release.md`, DOC-01~02 | — | SEC-B05, SEC-J |
+| 랜딩 기본 언어·한국어 전환 | `landing-bilingual-v1.md` (`LANG-01~05`) | 공개 HTTPS smoke | — |
 | 교차 계층 장애·복구, 사용자 여정 | FAIL-01~24, FLOW-01~12 | HOST-12 | SEC-E, SEC-J |
 
 ## 7. Runtime v1(다른 작업)과의 대응과 차이
@@ -125,14 +131,36 @@
 | 1 | 경로 고정 단어 대소문자 | 소문자로 바꾼다(`core.md` 2절 5.8) | `normalization.rs`는 대소문자를 유지 | 구현을 명세에 맞추거나 명세를 바꿀지 결정. `CORE-06`이 기준 |
 | 2 | 레코드 종류 | `template`·`reference`·`style_rule` | DB `template`·`source`·`document` | `source`↔`reference` 대응(문서화됨). 공개 CLI·MCP의 `kind` 이름은 이 명세가 기준 |
 | 3 | 가시성 | `private`·`team`·`public` | `Private`·`Public` | team은 다중 사용자 단계(문서화됨) |
-| 4 | CLI·MCP 표면 | `cli.md`·`mcp.md`·`contracts/mcp-tools.v1.json` | `dmem-cli`·`dmem-mcp`는 매니페스트만 있음 | 구현 시 이 명세를 따르거나 차이를 이 표에 기록 |
-| 5 | recall·게시·웹 가져오기·클립 | 전체 계약 | runtime-v1 범위 밖 | 프로필 `runtime-v1`에서 `F` 케이스는 `SKIP(profile)` |
+| 4 | CLI·MCP 표면 | `cli.md`·`mcp.md`·`contracts/mcp-tools.v1.json`의 `doc_memory_*` 12개 | 실제 Rust CLI·`document_*` stdio MCP가 구현되어 별도 제품 스모크로 검증됨 | `runtime-v1.md`, `recall-v1.md`, `memory-community-smoke-v1.md`의 구현 계약을 사용. 이름·오류·입력이 다른 full 계약을 그대로 제품에 연결하지 않음 |
+| 5 | recall·게시·웹 가져오기·클립 | 전체 계약 | recall·계정별 공개 기여·검수·복사에 이어 intake v1의 검색·URL fetch·preview/import·소유 탭 clip 구현 | `runtime-v1` 프로필의 `F`는 여전히 `SKIP(profile)`; 실제 부분집합은 `recall-v1.py`·`community-v1.py`·`web-memory-v1.py`로 검증 |
+
+### 하네스가 드러낸 명세 결함과 조치 (2026-11-09)
+
+케이스를 쓰고 더블에 돌리는 과정에서 명세 자체의 모순·빈틈이 드러났고, 아래처럼 명세를 고쳤다. 이 표는 "테스트를 먼저 쓰면 명세가 좋아진다"는 근거이자 제품 구현이 같은 곳에서 같은 질문을 받는다는 경고다.
+
+| # | 발견 | 드러낸 케이스 | 조치 |
+|---|---|---|---|
+| 1 | `library.md` 3절은 같은 scope 저장을 새 버전으로 쌓는다고 했고 `core.md`·`library.md` 2절·`MEM-08`은 자동 덮어쓰기를 금지 | MEM-08 | 자동 덮어쓰기 금지로 통일: 내용이 다르면 `invalid_input scope_conflict`, 변경은 `memory_id`+`base_version` |
+| 2 | `est_tokens`의 직렬화가 정해지지 않아 같은 힌트가 401 또는 400 토큰 | MEM-05 | `core.md` 8절: 컴팩트 JSON 기준 |
+| 3 | receipt가 힌트마다인지 호출마다인지 불명(`score.md`는 호출당 집합) | MCP-17, VER-06 | `recall.md`: 한 호출에 하나, 모든 힌트가 같은 값, `(memory_id, version)` 집합에 묶임 |
+| 4 | `attribution`이 공개 데이터에 있다고만 하고 어디서 보이는지 없음 | SHR-20 | `SourceSummary.derived_from`(선택)으로 공개: 직전 출처와 원 저작자·라이선스 |
+| 5 | 게시 고지(`PRIV-06`)의 형태가 명세에 없음 | PRIV-06 | `privacy.md`·계약: `notice: "privacy.detection_limit"` |
+| 6 | 가져온 페이지가 모두 같은 scope(공급자 기본 패턴)가 되어 서로 덮어씀 | IMP-04 | `web-import.md` 5절: `url_patterns`는 원본 URL의 canonical pattern |
+| 7 | 가져오기 호출 한도가 `IMP-20`에만 있고 한도 표에 없음 | IMP-20 | `core.md` 8절: 분당 30회·동시 4건(제안) |
+| 8 | `login_required`의 안내가 어디에 나오는지 없음 | IMP-16 | `core.md` 7절: 입력과 무관한 고정 메시지가 대안을 안내 |
+| 9 | 가져오기는 쿼리를 버리므로 `?variant=csv-only`·`?to=`를 fixture가 볼 수 없음 | FMT-10, IMP-11 | `core.md` 9절: `google-sheets-csv` 별칭, 리다이렉트는 `/redirect/<n>` |
+| 10 | span `locator` 형식이 없음 | FMT-11 | `memory.md`: `p:`·`t:`·`s:`·`page:` |
+| 11 | 내보내기가 이미지 자산을 쓴다고 했으나 v1은 이미지를 버림 | FMT-14 | `formats.md`: v1은 자산 디렉터리를 만들지 않음 |
+| 12 | 서빙되는 `tools/list`가 예산 12,000 bytes를 넘음(12,565) | MCP-23, HARN-12 | `outputSchema`는 `delete`만 서빙(11,103 bytes) |
+| 13 | 계약 `$ref` 4건이 끊겨 있어 한 호출이 MCP 서버를 멈춤 | HARN-12 | 계약 수정, 더블은 예외를 `internal`로 응답, 러너에 케이스 시간 제한 |
+| 14 | takedown된 항목이 소유자 `mine`에 남는지 불명 | SHR-15 | 열린 결정으로 기록(`sharing.md` 3절), 케이스는 판정하지 않음 |
+| 15 | 별칭의 `variant` 필드명이 명세(`implies`)와 어휘 파일(`variant`)이 다름 | HARN-12 | `form.md`를 어휘 파일에 맞춤 |
 
 ## 8. 마일스톤 게이트
 
 | 마일스톤 | 통과해야 하는 것 |
 |---|---|
-| M0 계약 | 명세·스키마·케이스 ID 합의, `HARN-10`~`HARN-12`, 더블 전체 통과, 변이 18개 전부 검출 |
+| M0 계약 | 명세·스키마·케이스 ID 합의, `HARN-10`~`HARN-12`·`HARN-17`, 더블 전체 통과, 변이 18개 전부 검출 |
 | M1 코어·로컬 라이브러리 | `CORE` `FORM` `FMT` `MEM` `LIB` `VER` 전부(`R1`), SEC-A·B 핵심(센티널 0) |
 | M2 recall·공유 | `RCL` `SHR` `TPL` 전부, SEC-D, `MCP-01~23`·`CLI` 계약, 서버 모드 |
 | M3 웹 가져오기·클립 | `DISC` `IMP` 전부, SEC-E(SSRF) 전부 0, Arise 스모크(SMK-09~10) |
@@ -153,7 +181,7 @@
 
 ## 10. 열린 질문
 
-1. `runtime-v1`의 CLI·MCP 이름·입력이 확정되면 차이표(7절)를 닫고 `R1` 케이스를 제품에 연결한다.
+1. 실제 제품 CLI·MCP 이름·입력은 7절처럼 전체 목표 계약과 다르다. 어댑터 없이 더블의 `R1`/`F` 결과를 제품 합격으로 세지 않는다. 제품은 전용 스모크를 실행한다.
 2. Claude Code·Codex의 `dmem-mcp` 등록 명령과 환경 변수 상속은 해당 호스트의 현재 문서로 확인해야 한다(WAM 승계 사실).
 3. 라이선스 어휘·복사 정책의 법적 검토.
 4. PDF·HWP 어댑터의 테스트 범위.

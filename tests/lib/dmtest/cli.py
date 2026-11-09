@@ -38,12 +38,14 @@ class Cli:
         self.argv0 = [argv0] if isinstance(argv0, str) else list(argv0)
         self.env, self.cwd = env, cwd
         self.calls = []  # (args, exit) of every call, for argv sink scans
+        self.transcript = []  # (stdout, stderr) bytes of every call: sink 1 of the sentinel sweep (security-scenarios.md)
 
     def run(self, args, stdin=None, timeout=30.0, env=None):
         data = stdin.encode("utf-8") if isinstance(stdin, str) else stdin
         merged = dict(self.env, **(env or {}))
         code, out, err, secs = run_with_timeout(self.argv0 + list(args), merged, stdin=data, timeout=timeout, cwd=self.cwd)
         self.calls.append((list(args), code))
+        self.transcript.append((out, err))
         return Result(code, out, err, secs)
 
     def json(self, args, stdin=None, timeout=30.0, env=None):

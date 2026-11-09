@@ -45,7 +45,7 @@ test('ML-02: email links open in another browser, require confirmation and rejec
 });
 test('AC-18: email → my page → private template → review → public → copy → withdraw',async({page,request})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- const email=await login(page);const title='Shared browser structure '+Date.now();
+ const email=await login(page);const title='Shared browser structure '+Date.now().toString(36);
  await page.getByRole('button',{name:'Template library',exact:true}).click();
  await page.getByRole('button',{name:'+ New template',exact:true}).click();
  let modal=page.getByRole('dialog');

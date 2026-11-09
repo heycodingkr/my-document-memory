@@ -39,7 +39,7 @@ test('About link explains the product and fits narrow screens',async({page})=>{
  const about=page.locator('#about');
  await expect(about.getByRole('heading',{name:'Your work is done. Why are you still writing about it?'})).toBeInViewport();
  await expect(about).toContainText('templates, writing guidance, review criteria, and selected references');
- for(const heading of ['Reuse the know-how.','Give AI the facts.','Review and decide.']){
+ for(const heading of ['Keep your format across platforms and models.','Help lower-cost models write better.','Review and decide.']){
   await expect(about.getByRole('heading',{name:heading,exact:true})).toBeVisible();
  }
  await expect(about).toContainText('Your memories stay private unless you choose to share them.');

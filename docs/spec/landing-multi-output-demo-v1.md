@@ -64,3 +64,11 @@ The asset worker receives a bounded list and writes only its dedicated asset dir
 - Initial test corrections: request label matching uses `exact:true`; the clock scenario explicitly pauses before seeking Home, because an unchanged native range value does not emit an input event. Production behavior was not altered to fit those test assumptions.
 - Integration review: the original letter placeholders are replaced with a reusable logo component; existing concurrent `AgentSetup`, public-memory/email entry points, English copy and navigation changes are preserved. App, API, authentication, deployment and production data were not modified by this task. Source was not staged or committed.
 - Existing local preview reused at `http://127.0.0.1:5174/#workflow-demo`, PID 68076, log `/private/tmp/dmem-dev.log`.
+
+## Production verification after deployment request
+
+The user subsequently requested deployment. Live inspection found that the intervening release `/srv/my-document-memory/releases/20261109T022729Z-13901` already included this landing. Public HTTPS HTML, both linked JavaScript/CSS bundles and all eight logo files matched the current local production files byte for byte, so no redundant release switch or service restart was performed.
+
+`DMEM_E2E_URL=https://mydocumentmemory.com DMEM_E2E_OUTPUT_DIR=../.artifacts/deploy/landing-production-browser pnpm --dir web exec playwright test tests/landing-demo.spec.ts` passed all five scenarios against the actual public origin. This covered the selected AI, complete and intermediate drafts, ten slide previews, playback/visibility controls, reduced motion, copying/manual fallback, local logos and desktop/390px/320px layouts. Tests did not send email or write production documents.
+
+Final public health was `200 {"ready":true}`; existing email configuration remained enabled. Stable-release and SHA-256 evidence: `.artifacts/deploy/landing-production-verification.json`. Public demo: https://mydocumentmemory.com/#workflow-demo.

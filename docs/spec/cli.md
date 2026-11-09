@@ -1,6 +1,6 @@
 # CLI: `dmem` 명령 표면과 자동화 계약
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM `cli.md`의 종료 코드·출력 계약·설정 규칙을 승계하고 명령을 문서 메모리 용도로 다시 정의했다. 로컬 stdio MCP 서버는 별도 바이너리 `dmem-mcp`다.
+상태: 전체 목표 계약(문서 우선). 실제 Rust CLI 부분집합은 [`runtime-v1.md`](runtime-v1.md)·[`recall-v1.md`](recall-v1.md)·[`memory-community-smoke-v1.md`](memory-community-smoke-v1.md)와 별도 제품 스모크로 검증한다. WAM `cli.md`의 종료 코드·출력 계약·설정 규칙을 승계하고 명령을 문서 메모리 용도로 다시 정의했다. 로컬 stdio MCP 서버는 별도 바이너리 `dmem-mcp`다.
 영역 / 테스트 ID 접두사: `CLI` (시나리오 원본: [`../test/tool-forms/cli-form.md`](../test/tool-forms/cli-form.md))
 기반: [`core.md`](core.md), [`recall.md`](recall.md), [`library.md`](library.md), [`sharing.md`](sharing.md), [`web-import.md`](web-import.md), [`mcp.md`](mcp.md), [`install.md`](install.md), [`link.md`](link.md)
 

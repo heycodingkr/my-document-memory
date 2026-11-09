@@ -31,6 +31,7 @@ _ISOLATED_ALIASES = {
     "google-docs": ("docs.google.com", "google_docs"),
     "google-slides": ("docs.google.com", "google_slides"),
     "google-sheets": ("docs.google.com", "google_sheets"),
+    "google-sheets-csv": ("docs.google.com", "google_sheets"),  # fixture variant whose export offers CSV only
     "notion": ("www.notion.so", "notion"),
 }
 _HEX32 = re.compile(r"^[0-9a-fA-F]{32}$")

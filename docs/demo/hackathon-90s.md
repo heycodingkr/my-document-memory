@@ -1,7 +1,8 @@
 # My Document Memory — 해커톤 90초 영상 구성안
 
-상태: v1 · 2026-11-09 · 요청: "문제 → 명령 → 시연 동작 → 공유를 통한 시간 절감", 구글독스·구글슬라이드·네이버 블로그를 에이전트 여러 명이 Arise Browser에서 동시에 처리하는 3~4분할 화면  
-기반: [`demo-video.md`](demo-video.md)(2:42 컨셉 영상)의 렌더 도구와 클레임 원장 규칙, 형제 프로젝트 `web-agentic-memory`(WAM) 영상의 구조(문제 → 실제 실행을 빠르게 → 공유 → 파급 효과 가정 → 마무리)와 실제 녹화 합성 방식  
+상태: v2 완료 · 2026-11-09 · 요청: "문제 → 명령 → 시연 동작 → 공유를 통한 시간 절감", 구글독스·구글슬라이드·네이버 블로그를 Arise Browser에서 처리하는 4분할 화면. 실제 소재는 **각각 따로 녹화한 실행을 합성**한다. 재개 명세·원인·검증 기록: [`hackathon-resume.md`](hackathon-resume.md).
+
+기반: [`demo-video.md`](demo-video.md)(2:42 컨셉 영상)의 렌더 도구와 클레임 원장 규칙, 형제 프로젝트 `web-agentic-memory`(WAM) 영상의 구조(문제 → 실제 실행을 빠르게 → 공유 → 파급 효과 가정 → 마무리)와 실제 녹화 합성 방식\
 렌더 도구: `demo/video/build.mjs --cut hackathon`, 음성: `demo/video/make-voice.py --cut hackathon`
 
 ## 한눈에
@@ -23,10 +24,10 @@
 |---|---|---|---|
 | 0:00–0:15 | 1 문제 | 빈 문서·슬라이드·글 세 장이 같은 준비 단계(양식 찾기 → 목차 → 자료 → 서식 → AI에게 다시 설명)에서 멈춰 있다 | 그림 |
 | 0:15–0:28 | 2 명령 | Arise Browser 에이전트 창에 요청문이 입력된다. 에이전트의 첫 행동은 Document Memory 조회 | 그림 + 실제 요청문 |
-| 0:28–1:02 | 3 동시 시연 | **2×2 네 창.** ① Docs 한 장 ② Slides 10장 ③ Blog 글 ④ Document Memory(MCP 호출·응답). 끝에 세 창이 "검토 대기"로 멈춘다 | 창별로 다름(아래) |
+| 0:28–1:02 | 3 실행 합성 | **2×2 네 창.** ① 실제 Docs 작성 ② Slides 10장 ③ 실제 Blog 초안 작성 ④ Document Memory(MCP 호출·응답). 각각 녹화한 실행임을 표시하며 Docs·Blog는 저장된 초안이다 | 실제 녹화·트레이스의 합성(아래) |
 | 1:02–1:15 | 4 공유 | 실제 앱: 양식 라이브러리 검색 → 미리보기(섹션·작성자·버전·라이선스) → 내 라이브러리로 복사 → 편집기. "오늘: 내장 카탈로그 · 다음: 사람 사이 공유" | 실제 녹화(가속) |
 | 1:15–1:26 | 5 시간 | 매번 건너뛰는 준비 단계 → "만약 한 번에 10분이면, 1,000번 재사용하면 약 167시간" | **가정**(측정 아님) |
-| 1:26–1:30 | 6 마무리 | 제품명과 "Share the memory. Save the time." | — |
+| 1:26–1:30 | 6 마무리 | 제품명, "Share the memory. Save the time.", **mydocumentmemory.com** | — |
 
 ### 자막과 내레이션(비트)
 
@@ -40,13 +41,13 @@
 | h04 | 15.4–19.0 | One sentence. Three documents. Three websites. | |
 | h05 | 19.4–23.6 | In Arise Browser, an agent works on each one. | |
 | h06 | 24.0–27.7 | But first, it asks Document Memory. | |
-| h07 | 28.5–33.0 | Three agents. Three windows. At the same time. | |
-| h08 | 33.4–39.4 | Each asks for the format, the sources and the rules. | |
+| h07 | 28.5–33.0 | Three workflows. Recorded separately in Arise. | |
+| h08 | 33.4–39.4 | Each asks for the format and the sources. | |
 | h09 | 39.8–46.6 | It returns structure, citations, and open questions. | It returns the structure, the citations, and a flag on anything still unconfirmed. |
-| h10 | 47.0–53.6 | So they write instead of guessing. | So they write instead of guessing. The Slides window is a real run, fast-forwarded. |
+| h10 | 47.0–53.6 | So they write instead of guessing. | So they write instead of guessing. The Slides window is a real run from an earlier project, fast-forwarded. |
 | h11 | 54.4–61.4 | Docs, deck and post. Ready for your review. | A one-pager, a ten-slide deck, and a blog post, ready for your review. |
-| h12 | 62.4–69.2 | Templates and sources live in a shared library. | Templates, references and rules live in a shared library, with author, version and license attached. |
-| h13 | 69.6–74.6 | Copy one, and your agent starts from good work. | Copy one, and your agent starts from someone else's good work. |
+| h12 | 62.4–69.2 | Templates live in a shared library, with credit attached. | Templates live in a shared library, with author, version and license attached. Your references stay private. |
+| h13 | 69.6–74.6 | Copy one, and your agent starts from a good structure. | |
 | h14 | 75.4–77.6 | Every reuse skips the setup. | |
 | h15 | 78.0–85.6 | Ten minutes saved, a thousand reuses: about 167 hours. | Say each reuse saves ten minutes. A thousand reuses: about 167 hours. A what-if, not a measurement. |
 | h16 | 86.3–89.7 | Share the memory. Save the time. | My Document Memory. Share the memory. Save the time. |
@@ -58,11 +59,11 @@
 | 씬 1 문제, 씬 2 에이전트 창 | 그림. 요청문은 시연용 문장 | `ILLUSTRATION` |
 | 씬 3 ④ Document Memory 창의 호출·응답 | **실제.** 격리 런타임(임시 DB·임의 포트)에 `dmem-mcp`를 stdio로 붙여 실제 JSON-RPC 호출. 걸린 시간은 측정값(`mcp-trace.json`) | `REAL · MCP` |
 | 씬 3 ② Slides 창 | **실제 녹화.** Arise 0.1.69 + Muse Spark 1.3(Meta Model API)이 Google Slides에서 **10장 덱**을 만든 2026-11-03의 **1회 실행**(WAM 프로젝트의 영상 소재, 덱 내용은 그 프로젝트). 가속 배율을 화면에 적는다 | `REAL RUN · ×N` |
-| 씬 3 ① Docs·③ Blog 창 | **그림.** 글은 `fixtures/my-document-memory-notes.md`의 사실만 풀어 썼다. 실제 Google Docs·네이버 블로그를 녹화한 것이 아니다 | `ILLUSTRATION` |
+| 씬 3 ① Docs·③ Blog 창 | **실제.** Codex가 로그인된 Arise의 공개 MCP를 통해 영어 문서와 네이버 초안을 작성했다. `browser_screenshot`의 실제 뷰포트와 시각을 기록하고 유휴 구간을 편집했다. 원문은 프로젝트 사실만 사용. Docs는 저장 후 재열기와 DOCX 내용 확인, Blog는 새 임시저장 글로 저장 | `REAL CAPTURE · EDITED` |
 | 씬 4 | **실제 녹화.** 실제 웹 앱과 서버(격리 런타임, 합성 데이터). 클릭은 Playwright 스크립트가 한다(에이전트 실행이 아니다). 가속 배율 표기 | `REAL APP · ×N` |
 | 씬 5 | **가정.** 10분과 1,000번은 가정이며 측정값이 없다 | `WHAT-IF · NOT MEASURED` |
 
-씬 3 전체에는 `ILLUSTRATION · FOUR WINDOWS` 배지를 달고, 창마다 위 표기를 창 제목줄에 붙인다. 영상 어디에도 "Google Docs·네이버 블로그에서 실제로 실행했다"는 말은 없다. 제품 랜딩 페이지의 고지("These examples describe the experience we are building toward")와 같은 입장이다.
+씬 3 전체에는 `REAL CAPTURES · RECORDED SEPARATELY` 배지를 달고, 창마다 위 표기를 창 제목줄에 붙인다. **동시 실행이나 소요 시간·속도 우위를 주장하지 않는다.** 외부 편집기 입력은 Arise를 사용하는 에이전트의 실행이며 MDM 자체의 Google·네이버 전용 커넥터를 뜻하지 않는다. 씬 1·2는 계속 `ILLUSTRATION`이다.
 
 ## 클레임 원장
 
@@ -74,12 +75,13 @@
 | C2 | 양식·참고자료·작성 결과를 따로 기억하고, 양식 섹션·출처·버전을 문서에 고정한다 | README "메모리의 구조" | 같은 단서 |
 | C3 | AI 호스트(Arise Browser)가 MCP로 양식·자료를 검색하고 편집 가능한 초안을 만든다. MCP 도구 7개 | README "에이전트 연결" | 금지: 호스트가 Google Docs·Slides·네이버에 **직접 쓴다**는 제품 기능 주장 |
 | C4 | 근거 문장은 원문 위치로 연결되고, 없는 사실은 "확인 필요"로 남는다 | README "현재 초안은…" | 금지: "틀리지 않는다" |
-| C5 | 에이전트 세 명이 각자 창에서 Docs·Slides·Blog를 동시에 처리하는 모습 | 그림 | 반드시 `ILLUSTRATION`. 실제 동시 실행을 주장하지 않는다 |
+| C5 | Docs·Slides·Blog 실행을 네 창으로 합성 | 개별 실제 녹화 | 반드시 `RECORDED SEPARATELY`. 동시 실행·동일 프로젝트·측정된 속도 우위를 주장하지 않는다 |
 | C6 | Slides 창은 Google Slides에서 10장 덱을 만든 실제 실행 1회이며 ×N로 빨리 감았다 | `web-agentic-memory/demo/video/README.md` "The Muse run in scene 3", `captures/run-muse-deck.json` | 금지: 시간·속도 우위 주장, 이 프로젝트의 결과물이라는 암시. 덱 내용은 이전 프로젝트의 것(`earlier project` 표기) |
-| C7 | 공유 라이브러리: 작성자·버전·라이선스가 붙은 양식을 내 비공개 라이브러리로 복사하고 원 출처를 보존한다 | README "document_template_copy", `accounts-community-v1.md` | 허용: "오늘은 내장 카탈로그". 금지: 사람들이 이미 많은 양식을 공유한다는 암시. 사람 사이 공유는 `NEXT` |
+| C7 | 공유 라이브러리: 작성자·버전·라이선스가 붙은 양식을 내 비공개 라이브러리로 복사하고 원 출처를 보존한다. **공개되는 것은 양식 구조뿐이고 참고자료는 비공개** | README "document_template_copy", `accounts-community-v1.md`, 앱의 공개 라이브러리 안내문("Only template structures are public. Copies stay in your private space with their original author and version.") | 허용: "오늘은 내장 카탈로그". 금지: 사람들이 이미 많은 양식을 공유한다는 암시, 참고자료·규칙이 공유된다는 말. 사람 사이 공유는 `PLANNED` |
 | C8 | 한 번에 10분 × 1,000번 = 10,000분 ≈ 167시간(166.7) | 산수 | 반드시 `WHAT-IF · NOT MEASURED`. "절약한다/절약됐다" 같은 사실형 금지 |
 | C9 | MCP 호출 횟수·걸린 시간 | `mcp-trace.json`(측정) | 화면 숫자는 파일 값과 같아야 한다 |
 | C10 | 씬 4의 제품 화면 | 실제 앱 녹화 | 합성 데이터 표기. 토큰·이메일·실제 자료가 보이면 안 된다 |
+| C11 | Docs·Blog에 영어 초안을 실제 입력하고 저장 | `demo/out/footage/arise/{docs,blog}/frames.json`, `edit.json`, `*-edited.mp4`; 로컬 검증 기록 `.artifacts/video-resume/` | `REAL CAPTURE · EDITED`. 각각 따로 녹화했으며 유휴·캐럿 프레임을 줄였다. 32초는 편집 길이이며 실행 성능 수치가 아니다. 블로그는 게시하지 않는다 |
 
 쓰지 않는 말: 시간·비용 절감을 측정했다는 말, "항상/완전히/모든", 실제 사용자 수·공유 양식 수, 제3자 로고, "free"(목표일 뿐 현재 보장이 아니다).
 
@@ -124,17 +126,60 @@
 |---|---|---|---|
 | G0 직접 | 이 구성안, 클레임 원장, 테스트 | 현재 README·랜딩·스펙과 대조 | 없음 |
 | G1 직접 | `--cut` 렌더 route, `script.json`, 빈 장면으로 HV-01·HV-04 일부 | 스크립트 테스트와 ffprobe를 부모가 실행 | G0 |
-| G2a 위임(luna) | PC-01~06 제품 캡처(스크립트·클립·`mcp-trace.json`·보고서) | 클립 프레임을 부모가 직접 열어 확인, 보고서와 파일을 대조, 포트·DB 불변 확인 | G0 |
+| G2a 직접(위임을 시도했으나 취소) | PC-01~06 제품 캡처(스크립트·클립·`mcp-trace.json`·보고서) | 클립 프레임을 직접 열어 확인, 보고서와 파일을 대조, 포트·DB 불변 확인 | G0 |
 | G2b 직접 | Slides 실제 클립 구간·가속·마스크(프라이버시 확인) | 프레임 직접 확인 | G0 |
 | G3 직접 | 씬 1–6, 창별 표기 | HV-02·03 | G1, G2a, G2b |
 | G4 직접 | 음성 합성·합성 믹스 | HV-04·05·09 | G3 |
 | G5 직접 | 전체 렌더, 프레임·OCR 검토 | HV-04·06·07·08·10 | G4 |
 
-설계·씬 구현·음성·검증은 직접 한다. 위임하는 것은 독립적이고 출력이 큰 제품 화면 캡처뿐이다.
+모두 직접 했다. 제품 캡처는 처음에 위임하려 했으나 (1) 쓰기 금지 문구 때문에 읽기 전용으로 분류되어 취소했고 (2) 통과할 때까지 반복하는 브라우저 루프라 직접 하는 쪽이 맞아 위임하지 않았다.
 
-## 열린 결정
+## 확정한 결정
 
-- 제출처의 길이·해상도 제한(90초 가정). 해상도·길이가 다르면 `script.json`과 `build.mjs` 인자로 바꾼다.
-- Docs·Blog 창을 실제 녹화로 바꿀지. 소유자의 Google·네이버 계정에서 에이전트를 실제로 돌려 녹화하면 된다(글을 쓰되 게시하지 않는다). 계정에 쓰기를 하므로 소유자 승인 뒤에만 한다.
-- 영상 끝에 주소(`mydocumentmemory.com`)를 넣을지. 공개 사이트는 로그인 화면이므로 넣지 않았다.
-- 한국어판. 한국어 목소리를 듣고 고른 뒤 `script.json`에 `ko` 문구를 추가하면 된다.
+- 소유자가 이 세션에서 **1분 30초**라고 확정했다. 이전에 저장한 3분 참가 안내의 길이를 이 영상에 적용하지 않는다. 해상도는 1920×1080, 별도 용량 제한은 제시되지 않아 최종 파일의 실측 용량을 보고한다.
+- Docs·Blog 실녹화를 승인했다. 로그인된 Arise에서 새 영어 문서·새 임시저장 글을 작성하며 게시하지 않는다.
+- 마지막 화면에 `mydocumentmemory.com`을 넣는다.
+- 영어 음성과 영어 자막을 사용한다. 한국어판은 만들지 않는다.
+
+## v1 검증 결과 (2026-11-09 · 실녹화 교체 전)
+
+렌더를 만든 쪽이 아니라 최종 mp4와 소재에 대해 같은 명령을 직접 다시 실행해 확인했다. 산출물은 `demo/out/video/`(git 제외): `mdm-hackathon-90s.en.vo.mp4`(음성 포함 최종본), `mdm-hackathon-90s.en.mp4`(무음), `.en.srt`, `.en-poster.jpg`.
+
+| ID | 결과 |
+|---|---|
+| HV-01 | `node --test "demo/video/hackathon/*.test.mjs"` 11/11 통과. 일부러 깨뜨린 변이 7종(자막 길이, 장면 이탈, 자막 겹침, 원장 밖 숫자, 음성 초과, 장면 공백, 틀린 산수)을 모두 잡았다. 기존 컨셉 영상 테스트 12/12도 그대로 통과(공용 코드 변경 회귀 없음) |
+| HV-02 | `--cut hackathon --lint` 120개 시각 이슈 0건. 기존 컷 `--lint`는 en·ko 214개 시각 이슈 0건. 린트 첫 실행이 겹침 5건(입력 커서와 안내 문구, 큰 숫자와 설명줄)을 잡아 고쳤다 |
+| HV-03 | 정지 화면과 최종 mp4에서 뽑은 프레임(4분할 3시점, 공유 장면 4시점 포함)을 직접 열어 확인했다 |
+| HV-04 | H.264 High, 1920×1080, 30fps, 2,700프레임, AAC LC 스테레오 44.1kHz, 길이 90.000초, 통합 음량 −16.3 LUFS, true peak −4.5 dBFS, 검은 화면 0 |
+| HV-05 | `.srt` 16큐가 `script.json`의 시간·문구와 일치 |
+| HV-06 | 같은 시각(50초) 정지 화면을 두 번 렌더한 PNG의 SHA-256이 같다 |
+| HV-07 | OCR(이메일·토큰·로컬 주소·계정 문구) 0건: 최종 mp4의 1초 간격 90프레임(3,051줄), 실제 Slides 클립 63프레임(832줄), 제품 클립 96프레임(4,142줄). 육안 확인: Slides 클립 6fps 모자이크 190프레임과 접촉 시트, 우상단 아바타 블러 확대. 이물 창·알림 배너 없음. 스캐너가 처음에 리소스 ID(`src_…`·`tpl_…`)를 토큰으로 오탐해 패턴을 43자 토큰 형식(40자 이상)으로 좁혔다 |
+| HV-08 | 화면 텍스트 45개 시각에서 뽑은 숫자는 전부 원장·측정값과 일치(×45·×1.7·×1.8은 오버레이 속도, `8 calls · 12 ms`와 호출별 ms는 실제 트레이스, 10·1,000·167·10,000은 what-if 장면) |
+| HV-09 | ElevenLabs로 16개 비트 949자 합성, 모든 비트가 창 안에 들어가고(최대 초과 0초, 가장 빠른 비트 1.04배속) 경고 없음. 키 값은 어디에도 출력되지 않았다 |
+| HV-10 | 렌더 중 페이지 오류·요청 실패·4xx/5xx·외부 요청 0건 |
+| PC-01 | 캡처 전후로 `data/dmem.sqlite3`(4096바이트, mtime)가 같고 3847·5174 포트의 서버는 같은 PID로 계속 살아 있다. 캡처가 시작한 프로세스는 모두 종료(`/tmp/mdm-capture` 경로 프로세스 0개). 토큰은 출력·파일·프레임에 없다 |
+| PC-03 | 실제 `dmem-mcp` stdio: 도구 7개, 호출 8회 모두 성공, 합계 11.8 ms(로컬 디버그 빌드), 만들어진 문서 3개가 양식·자료 v1을 고정한 것을 HTTP로 다시 읽어 확인 |
+| PC-04 | `library-preview` 15.7초, `agent-prompt` 17.0초, `create-draft` 26.1초, `deck-editor` 24.4초, `public-memories` 13.3초, 모두 1440×900 30fps. `library-preview`·`create-draft`·`public-memories` 세 개가 영상에 쓰였고 `agent-prompt`·`deck-editor`는 쓰지 않았다(예비 소재) |
+
+### v1의 한계와 알아 둘 것
+
+- **움직임과 소리.** 정지 화면·프레임·측정으로 확인했다. 영상을 처음부터 끝까지 재생해 보고 타이밍의 느낌과 목소리를 듣는 일은 사람이 한 번 해야 한다.
+- **v1의 Docs·Blog 창은 그림이었다.** v2에서 실제 Arise 캡처로 교체한다. 두 버전 모두 세 에이전트가 동시에 실행됐다는 증거는 없다.
+- **Slides 창은 이 프로젝트의 결과물이 아니다.** WAM 프로젝트의 2026-11-03 실행 1회(덱 내용은 그 프로젝트)이며 `EARLIER PROJECT`로 표기했다. 시간·속도 우위를 주장하지 않는다(실제 실행은 24분 49초였고 ×45로 빨리 감았다).
+- **Memory 창의 MCP 기록(왼쪽)과 앱 화면(오른쪽)은 서로 다른 격리 런타임에서 따로 녹화한 실제 소재**다. 문서 ID가 서로 다르다.
+- **시간 절감은 측정이 아니다.** 씬 5의 10분·1,000번·167시간은 what-if이며 화면과 음성에 그렇게 말한다.
+- **같은 템플릿으로 만든 초안의 슬라이드 수.** `10-Slide Pitch Deck`에서 `document_memory_create`가 만든 덱은 13장이다(양식 10장 + 선택한 자료 원문 3장). 영상은 MDM 초안의 장수를 말하지 않고, 10장은 Slides 창의 실제 실행 결과다.
+- **음성 키.** 쓴 키는 `~/.config/wam-demo/elevenlabs.key`(7일 제한 키, 2026-11-03 생성이라 약 2026-11-10 만료). 합성된 mp3는 `demo/out/voice-cache/`에 캐시되어 있어 재렌더·재합성은 키 없이 된다. `vo` 문구를 바꾸면 바뀐 비트만 새로 합성하므로 만료 뒤에는 새 키가 필요하다.
+
+## v2 완성본과 검증 (2026-11-09)
+
+- 최종 영상: `demo/out/video/mdm-hackathon-90s.en.final.mp4`. 영어 음성·영어 자막 포함, Docs·Blog 실녹화 합성, 마지막 `mydocumentmemory.com` 표시. 기존 v1 파일은 보존했다.
+- 부속 파일: `.en.final.srt`, `.en.final-poster.jpg`. 무음 합성본: `.en.real.mp4`.
+- 실측: **90.000초, 1920×1080, 30fps, 2,700프레임, H.264 High / AAC LC, 44.1kHz 스테레오, 7,848,210바이트(약 7.8MB)**. 통합 음량 −16.3 LUFS, true peak −4.5 dBFS. 검은 화면 0구간.
+- 검증: 렌더러·스크립트 테스트 25/25 통과, 레이아웃 120개 시각 이슈 0건. SRT 16큐의 시간·문구가 정본과 일치하며 실제 음성 16개 비트 모두 자기 창 안에 들어간다. 바뀐 h07만 46자를 새로 합성했다.
+- 개인정보 OCR: 최종본 1초 간격 90프레임 / 3,016줄, Docs·Blog 소재 64프레임 / 660줄, 모두 발견 0건. 실제 소재와 최종 4분할·끝 화면을 이미지로 열어 확인했다.
+- Docs는 Drive 저장 배지 확인 후 재열기·DOCX 원문 확인(836자, 제목·다섯 섹션·주소 모두 존재). Naver는 새 임시저장 글로 저장했고, 기존 QA 초안도 유지되어 목록이 1개에서 2개가 됐다. 별도 새 창에서 저장 목록의 새 글을 열어 제목·전체 본문·URL·태그를 다시 읽었다. 게시하지 않았다.
+- 개별 실행을 합성했고, Slides는 이전 WAM 프로젝트 소재다. 새 Docs·Blog 소재의 유휴 구간을 편집했으므로 소요 시간이나 속도 우위를 주장하지 않는다.
+- 음성은 파일·비트 길이·음량으로 검증했다. 현재 Codex 도구 경로에서는 오디오 입력이 전달되지 않아 직접 들었다고 주장하지 않는다. 세로 Shorts 전용 `video_qc`의 1080×1920 / 6–60초 판정은 이 가로 90초 컷의 합격 기준으로 사용하지 않았다.
+
+상세 입력·기대 결과·원인·리뷰는 [`hackathon-resume.md`](hackathon-resume.md), 로컬 증거는 `.artifacts/video-resume/`에 있다. 커밋·공개 업로드는 하지 않았다.

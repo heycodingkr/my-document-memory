@@ -77,11 +77,11 @@
 | FMT-07 | F | `zipbomb.docx`(해제 후 100 MiB, 압축비 1000:1) | `payload_too_large`, 종료 2, 메모리 사용이 한도 안(하네스가 자식 RSS 최대 256 MiB 이하를 확인), 부분 저장 0 |
 | FMT-08 | R1 | `deck-5.pptx` | deck StandardDoc: 슬라이드 5장, 순서 유지, `theme.aspect == "16:9"`, 역할 추론 `["cover","problem","solution","market","ask"]`(제목 기반, 못 정하면 `content`), 슬라이드 제목·본문 텍스트 보존 |
 | FMT-09 | F | `google_slides` 모양 URL(`/p/google-slides/…`)을 가져오기 | fixture 요청 로그에 `format=pptx`만 요청되고 `md`·`html` 시도가 없다. 결과는 deck이고 `layout_inferred` 경고 |
-| FMT-10 | F | `google_sheets` 모양 URL(기본 변형과 `?variant=csv-only`) | 기본은 xlsx 경로, csv-only는 `first_sheet_only` 경고. 둘 다 `sheet_support_deferred` 경고와 메타데이터(시트 이름·열 머리글)만 |
-| FMT-11 | F | `text.pdf`, `scan.pdf` | `text.pdf`는 reference로 저장되고 span `locator`가 `page:1` 형식. `scan.pdf`는 `extract_empty` reason `ocr_required`. PDF 어댑터가 없는 구현은 `SKIP` 사유를 남긴다 |
+| FMT-10 | F | `google_sheets` 모양 URL: 기본(`/p/google-sheets/…`)과 CSV만 내보내는 변형(`/p/google-sheets-csv/…`, 가져오기는 쿼리를 버리므로 변형을 경로 별칭으로 고른다) | 기본은 xlsx 내보내기만 요청하고, csv 변형은 xlsx를 먼저 시도한 뒤 csv로 후퇴하며 `first_sheet_only` 경고를 낸다. 둘 다 `sheet_support_deferred` 경고와 메타데이터(시트 이름·열 머리글)만 저장하고 데이터 행은 저장하지 않는다 |
+| FMT-11 | F | `text.pdf`, `scan.pdf` | `text.pdf`는 reference로 저장되고 span `locator`가 쪽 번호 형식 `page:<n>`(`page:1`). `scan.pdf`는 `extract_empty` reason `ocr_required`. PDF 어댑터가 없는 구현은 `SKIP` 사유를 남긴다 |
 | FMT-12 | F | Notion 모양 페이지(`/p/notion/Quarterly-Report-…`) | 헤딩·목록·표·콜아웃이 StandardDoc 블록으로 매핑(종류와 순서 일치). provider `notion` |
 | FMT-13 | F | `rich-lossy.docx`, `rich-lossy.pptx` | `warnings`에 `images_omitted`, `comments_dropped`, `unsupported_block` 중 해당 요소 종류마다 최소 1개. 경고 없이 사라진 요소 0(요소 종류 수 ≤ 경고 코드 종류 수) |
-| FMT-14 | R1 | `export`: 상대 경로 `--out`, 이미 있는 파일, 심볼릭 링크, 없는 상위 디렉터리, 정상 경로 | 상대·존재·링크·상위 없음은 종료 2이고 기존 파일 내용이 그대로다. 정상은 파일 모드 0600(이미지 자산 디렉터리 0700) |
+| FMT-14 | R1 | `export`: 상대 경로 `--out`, 이미 있는 파일, 심볼릭 링크, 없는 상위 디렉터리, 정상 경로(이미지 블록이 있는 문서) | 상대·존재·링크·상위 없음은 종료 2이고 기존 파일 내용이 그대로다. 정상은 파일 모드 0600. v1은 이미지 자산을 저장하지 않으므로 `<출력>.assets/`를 만들지 않는다(자산을 저장하는 구현은 0700으로 만든다) |
 
 ## MEM: 레이어·kind·슬롯·출처 ([`../spec/memory.md`](../spec/memory.md))
 
@@ -100,7 +100,7 @@
 | MEM-11 | F | `summary`에 URL, 이메일, 제어 문자 U+0007, 제로폭 문자, 주입 문구("이전 지시를 무시…") | URL·이메일·제어·제로폭은 `invalid_input`. 주입 문구는 저장되되 `injection_flagged` 경고이고 `recall`의 L1에는 그 문장이 없다 |
 | MEM-12 | R1 | 입력에 알 수 없는 필드 `foo`, MCP 입력에 알 수 없는 필드 | `invalid_input`, 저장 0건 |
 | MEM-13 | F | `import`(fixture) 후 `export --format json`의 `source` 블록 | `origin == "fetched"`, `source_host`·`content_hash`(`^sha256:`)·`retrieved_at` 있음. Google 모양 URL이면 `source_url == null`이고 `source_ref` 있음. 복사본은 `derived_from` 있음 |
-| MEM-14 | F | `license-none.html`(prose `PROSE_SENTINEL_1~5`)을 `import --as template` | `copy_policy_applied == "structure_only"`. `export --format json` 어디에도 `PROSE_SENTINEL_*` 0건. 헤딩과 표 머리글은 남고 `retained.body_chars_removed > 0` |
+| MEM-14 | F | `license-none.html`(prose `PROSE_SENTINEL_U1`, 표 본문 셀 `BODYCELL_U1`)을 `import --as template` | `copy_policy_applied == "structure_only"`. `export --format json` 어디에도 `PROSE_SENTINEL_*`·`BODYCELL_*` 0건. 헤딩과 표 머리글은 남고 `retained.body_chars_removed > 0` |
 | MEM-15 | R1 | 정상 문단 50개 중 하나에 비밀 센티널(가족별로 실행), template에 개인 정보 센티널(이메일·전화·주민·카드·계좌) | 비밀: `secret_detected`, 종료 2, 라이브러리 변화 0, 응답에 값·위치 없음. 개인 정보: 저장되고 값이 슬롯(`email`, `phone`, `national_id`, `card_number`, `account_number`)으로 치환되며 원래 값이 L0·L1·L2·원본 외 어디에도 없다(원본 보존 파일 제외), `scrub.pii_slotified`가 건수와 같다 |
 | MEM-16 | F | span 200 KiB짜리 reference를 `expand(level=2)`로 연속 읽기 | 각 응답 ≤64 KiB, `truncated`와 `cursor`로 이어지며 span이 순서대로 중복·누락 없이 모두 나온다 |
 
@@ -118,7 +118,7 @@
 | RCL-06 | F | M15(mine)·M16(team)·M17(public) 같은 조건, 호출자 `carol`, scope all | 순서 `[M15, M16, M17]`. `source.tier`가 각각 `mine`, `team`, `public` |
 | RCL-07 | F | M12(`weekly`)·M13(`draft`)에 `keywords=["초안"]`, 같은 호출에 `["draft"]`, `["weekly"]` | 앞 둘은 M13이 먼저이고 `matched_on`에 `keywords`가 있다(별칭 `초안`=`draft`). 셋째는 M12 먼저 |
 | RCL-08 | F | 후보가 6개 이상인 질의(doc_type 없는 Docs 편집 URL): 기본, `limit=1`, `limit=4` | 3개, 1개, `invalid_input` |
-| RCL-09 | F | 저장 순서를 바꾼 라이브러리 3개와 프로세스 재시작 후 같은 질의를 5번 | 힌트의 `memory_id` 순서가 모두 같다. 더블은 `updated_at` 동점일 때 `memory_id` 오름차순, 제품은 관찰한 필드로 계산 |
+| RCL-09 | F | 저장(적재) 순서를 바꾼 라이브러리 3개와 프로세스 재시작 후 같은 질의를 5번: 뚜렷한 순위가 있는 질의(RCL-01)와 모든 키가 같아 동점인 질의(M10·M11, doc_type `memo`) | 힌트의 `memory_id` 순서가 15번 모두 같다. 완전 동점은 `memory_id` 오름차순(더블: M10, M11)이다. 제품은 관찰한 필드로 기대를 계산한다. MCP 서버도 CLI와 같은 순서를 낸다 |
 | RCL-10 | R1 | 모르는 URL·양식 질의 / 거부되는 URL | 앞은 `hints == []`, `reason == "no_match"`, 종료 0. 뒤는 `url_rejected`, 요청 0건 |
 | RCL-11 | R1 | 모든 recall 응답 | `untrusted == true`, `framing`이 고정 문구와 같고 힌트에 L2 필드(`l2`, `structure`, `spans`)가 없다. 스키마 `RecallResult` 검증 통과 |
 | RCL-12 | F | 서버 모드에서 `anon`과 `carol`로 같은 recall(doc_type `lesson_plan`), 계정 없는 로컬 모드(서버 없는 별도 세계)에서 recall | `anon`: 공개 M17만, `receipt_id` 없음. `carol`: M15·M16·M17 모두 `receipt_id` 있음. 로컬: `receipt_id` 없음 |
@@ -275,7 +275,7 @@
 | ID | 단계 | 입력 | 기대 결과와 판정 근거 |
 |---|---|---|---|
 | MCP-01 | R1 | `initialize`(protocolVersion `2024-11-05`, `2025-03-26`, `2025-11-25`) | 지원 버전에 응답하고 `serverInfo`, `capabilities.tools`, `instructions`가 있다. 지원하지 않는 버전은 협상된 버전으로 응답 |
-| MCP-02 | R1 | `tools/list` | 도구 12개(이름이 [`../../contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)과 일치), 각 `inputSchema`가 카탈로그와 같다. 2025-03-26 이상에서만 `annotations`·`outputSchema`(`status`·`delete`) |
+| MCP-02 | R1 | `tools/list` | 도구 12개(이름이 [`../../contracts/mcp-tools.v1.json`](../../contracts/mcp-tools.v1.json)과 일치), 각 `inputSchema`가 카탈로그와 같다. 2025-03-26 이상에서만 `annotations`, `outputSchema`는 `delete`에만 있다 |
 | MCP-03 | R1 | 각 도구의 성공 호출 | text JSON과 `structuredContent`가 같고 스키마 `result`(카탈로그)를 통과한다 |
 | MCP-04 | R1 | 알 수 없는 method, 알 수 없는 tool 이름 | JSON-RPC 오류(-32601 / -32602), 상태 변화 0 |
 | MCP-05 | R1 | 잘못된 인자(타입 위반, enum 밖, 알 수 없는 필드, `limit` 범위) | `isError == true`, `error.code == "invalid_input"`, 입력 에코 없음, 상태 변화 0 |

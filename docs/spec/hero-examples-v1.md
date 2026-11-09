@@ -6,7 +6,7 @@ Requested 2026-11-09 after the initial domain deployment: show large visual exam
 
 Use original repository-native SVG illustrations, matching the current forest, sage and paper palette. Each contains a clearly labeled fictional document, rather than only an abstract icon or empty outline. A weekly report shows summary, delivery status and next actions; a presentation shows a kickoff cover plus following slides; a worklog shows completed work and upcoming work. Mark the previews as illustrative. Do not imply benchmark results, autonomous provider synchronization or real customer data.
 
-Create one static SVG sprite with three symbols and three standalone view fragments. The hero's existing Docs, Slides and Notion tabs render the matching large report, deck and worklog illustration. A directly adjacent examples section uses large linked previews: a full report on the left, a deck and worklog on the right; mobile stacks them. Every preview opens its matching public SVG view in a separate tab. Links must work without a login or connection token. Use descriptive accessible names, visible focus and responsive layouts.
+Create one static SVG sprite with three symbols and three standalone view fragments. The hero's existing Docs, Slides and Notion tabs render the matching large report, deck and worklog illustration. An examples section near the hero, preserving the existing About section and preceding the workflow demo, uses large linked previews: a full report on the left, a deck and worklog on the right; mobile stacks them. Every preview opens its matching public SVG view in a separate tab. Links must work without a login or connection token. Use descriptive accessible names, visible focus and responsive layouts.
 
 ## Dependency ordered atomic goals
 
@@ -39,3 +39,13 @@ No design, source claim, browser loop, build, test, migration judgment or final 
 ## Initial review
 
 The working tree has substantial concurrent English/account/community changes. Existing production is /srv/my-document-memory/releases/20261109T011532Z on jason-4090, my-document-memory.service, loopback 3848, Caddy HTTPS. Initial deployment, six native Google originals, six private source/form records and two v2 example documents have already passed public API, browser export and restart-persistence smoke. Do not overwrite parallel work or silently replace the production DB. The current frontend's account APIs require compatibility review before deploying the current working snapshot.
+
+## Release decision after live inspection
+
+The live release advanced independently to `/srv/my-document-memory/releases/20261109T022729Z-13901` while this work was in progress. It already runs account mode and both schema files. A direct SHA-256 comparison of all 32 Cargo/server/crate source and migration files found no differences against the parent-tested workspace. The parent read Store::open, both migration files, the executable owner mapping, authentication middleware and persistence-test assertions; the legacy bearer token still maps to owner `local`.
+
+Deploy this feature as a new immutable release copied from that live release, replacing only `web/dist`. Keep its identical server binary, environment, credentials and SQLite path. No database upgrade or schema change is performed. Acquire the existing deployment lock and verify the expected current-release path before activation to avoid overwriting a concurrent deployment. Record the old target for rollback, atomically switch the symlink, restart and perform public read-only seed and hero smoke. If the live target changes before activation, stop and inspect the new state.
+
+## Completion
+
+Deployed and verified as `/srv/my-document-memory/releases/20261109T024546Z-hero`. Public SVG routes, hero/gallery behavior and responsive checks passed; existing six sources/forms and two v2 example documents survived the restart unchanged. See [the verification and review record](../test/hero-examples-v1.md) for commands, release hashes, visual evidence and the separately registered sidebar issue.

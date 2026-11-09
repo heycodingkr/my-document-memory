@@ -1,6 +1,6 @@
 # MODEL: provider-neutral 모델 설정과 예산
 
-상태: 설계 초안(문서 우선, 구현 없음). WAM의 structured decision·최소 권한·예산 대기를 문서 검수에 적응했다. Meta/Muse 설정과 provider별 평가 기록은 제외한다.
+상태: 전체 목표 계약(문서 우선). 실제 제품 부분집합의 구현·검증 범위는 [색인](README.md)의 단계별 명세와 구분한다. WAM의 structured decision·최소 권한·예산 대기를 문서 검수에 적응했다. Meta/Muse 설정과 provider별 평가 기록은 제외한다.
 영역 / 테스트 ID 접두사: `MODEL` (케이스: [`../test/functional-models.md`](../test/functional-models.md))
 기반: [`gatekeeper.md`](gatekeeper.md), [`queue.md`](queue.md), [`runtime-v1.md`](runtime-v1.md), [`privacy.md`](privacy.md)
 

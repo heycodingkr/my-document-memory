@@ -170,12 +170,12 @@ def _file_content(path, form):
         raise DmemError("payload_too_large")
     fmt = ooxml.detect_format(p.name, data)
     if fmt in ("markdown", "text", "html"):
-        return {"format": fmt, "data": data.decode("utf-8", "replace")}, data
+        return {"format": fmt, "data": data.decode("utf-8", "replace")}, data, []
     if fmt in ("docx", "pptx", "xlsx", "pdf"):
         extract = {"docx": ooxml.extract_docx, "pptx": ooxml.extract_pptx, "xlsx": ooxml.extract_xlsx_meta, "pdf": ooxml.extract_pdf}[fmt]
-        doc, _ = extract(data)
+        doc, extraction_warnings = extract(data)  # macros, external relations, DDE, lossy parts: these must reach the caller
         form.setdefault("provider", fmt)
-        return {"format": "stddoc", "data": json.dumps(doc, ensure_ascii=False)}, data
+        return {"format": "stddoc", "data": json.dumps(doc, ensure_ascii=False)}, data, list(extraction_warnings)
     raise DmemError("unsupported_format")
 
 
@@ -250,9 +250,9 @@ def _run(ns, yes):
             args["base_version"] = ns.base_version
         if ns.dry_run:
             args["dry_run"] = True
-        original = None
+        original, file_warnings = None, []
         if ns.file:
-            args["content"], original = _file_content(ns.file, form)
+            args["content"], original, file_warnings = _file_content(ns.file, form)
         elif ns.stdin:
             if not ns.format:
                 raise Usage()
@@ -264,7 +264,7 @@ def _run(ns, yes):
             args["from_preview_id"] = ns.from_preview
         else:
             raise Usage()
-        return engine.dispatch("doc_memory_save", args, ctx, original=original)
+        return engine.dispatch("doc_memory_save", args, ctx, original=original, file_warnings=file_warnings)
     if cmd == "web":
         if ns.sub == "search":
             args = {"query": ns.target}
@@ -372,6 +372,8 @@ def main(argv=None):
             raise Usage()
         result = _run(ns, yes)
         print(json.dumps(result, ensure_ascii=False) if json_mode else json.dumps(result, ensure_ascii=False, indent=2))
+        if not json_mode and isinstance(result, dict) and result.get("notice") == "privacy.detection_limit":
+            print("Notice: automatic detection is not complete; the owner is responsible for what is published.")
         return 0
     except Usage:
         err = DmemError("invalid_input")

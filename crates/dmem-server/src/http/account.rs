@@ -32,6 +32,10 @@ pub(super) fn routes(s: &App) -> Router<App> {
         .route("/auth/logout", axum::routing::post(logout))
         .route("/public/templates", get(public_templates))
         .route("/public/templates/{id}", get(public_template))
+        .route(
+            "/public/templates/{id}/origin",
+            get(super::web::public_origin),
+        )
         .route("/admin/contributions", get(queue))
         .route("/admin/contributions/{id}/review", get(review))
         .route(
@@ -392,9 +396,11 @@ fn admin(s: &App, headers: &HeaderMap, write: bool) -> Result<String, HttpError>
 async fn queue(
     State(s): State<App>,
     headers: HeaderMap,
-) -> Reply<List<crate::community::Contribution>> {
+    q: Result<Query<crate::community::ContributionQueueQuery>, QueryRejection>,
+) -> Reply<crate::community::ContributionPage> {
     admin(&s, &headers, false)?;
-    Ok(Json(run(s, |db| db.contributions(None)).await?))
+    let Query(q) = q.map_err(|_| HttpError(Fault::InvalidInput))?;
+    Ok(Json(run(s, move |db| db.contribution_queue(q)).await?))
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

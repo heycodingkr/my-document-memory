@@ -233,7 +233,7 @@ def imp_17(ctx):
         codes = {w["code"] if isinstance(w, dict) else w for w in (r.json or {}).get("warnings", [])}
         ctx.expect({"hidden_text_removed", "injection_flagged"} <= codes, f"{name}: warnings {sorted(codes)}")
         stored = l2_text(ctx, r.json["memory_id"]) + ctx.cli().json(["expand", r.json["memory_id"], "--level", "1"]).stdout
-        for needle in ("HIDDEN_SENTINEL_", "<script", "<iframe", "onerror", "​", "‮", "‭", "⁦"):
+        for needle in ("HIDDEN_SENTINEL_", "<script", "<iframe", "onerror", "\u200b", "\u202e", "‭", "⁦"):
             ctx.expect(needle not in stored, f"{name}: stored content must not contain {needle!r}")
         level1 = ctx.cli().json(["expand", r.json["memory_id"], "--level", "1"]).json
         summary = json.dumps({k: level1.get(k) for k in ("title", "summary", "key_points", "outline")}, ensure_ascii=False).lower()
