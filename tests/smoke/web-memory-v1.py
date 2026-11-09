@@ -180,6 +180,17 @@ def run_arise(env, site, base, out, cli, http):
     session = "dmem-web-arise-" + str(time.time_ns())
     tab = None
     with McpSession([str(BIN / "dmem"), "browser-mcp", "--browser-mcp", "/Applications/Arise.app/Contents/MacOS/agent_browser"], env) as browser:
+        def native(name, arguments):
+            reply = browser.call(name, {"session_id": session, **arguments})
+            if reply is not None and reply.is_error:
+                (out / "arise-native-error.json").write_text(json.dumps({"tool": name, "reply": reply.structured or reply.json or reply.text}))
+                shot = browser.call("browser_screenshot", {"session_id": session})
+                if shot is not None and not shot.is_error:
+                    for block in shot.raw.get("content", []):
+                        if block.get("type") == "image":
+                            (out / "arise-input-failure.png").write_bytes(base64.b64decode(block["data"]))
+            return value(reply)
+
         def wait_eval(js, accept, label):
             # Navigation can invalidate an in-flight CEF evaluation. A successful
             # evaluation of the actual expected state is still mandatory.
@@ -223,14 +234,19 @@ def run_arise(env, site, base, out, cli, http):
             wait_eval("Boolean(document.querySelector('details.web-import'))", lambda result: str(result).lower() == "true", "app-panel")
             value(browser.call("browser_select_tab",{"session_id":session,"tab_id":tab}))
             value(browser.call("browser_snapshot",{"session_id":session}))
-            value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import > summary"}))
-            value(browser.call("browser_type",{"session_id":session,"selector":"input[aria-label='Document URL']","text":site+"/pages/resume-ko.html"}))
+            native("browser_click",{"selector":"details.web-import > summary"})
+            native("browser_type",{"selector":"input[aria-label='Document URL']","text":site+"/pages/resume-ko.html"})
             wait_eval("document.querySelector('input[aria-label=\"Document URL\"]')?.value||''", lambda result: result == site+"/pages/resume-ko.html", "url-input")
-            value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import form:has(input[aria-label='Document URL']) button"}))
+            native("browser_click",{"selector":"details.web-import form:has(input[aria-label='Document URL']) button"})
             wait_eval("Boolean(document.querySelector('.web-preview'))", lambda result: str(result).lower() == "true", "url-preview")
-            value(browser.call("browser_type",{"session_id":session,"selector":"input[aria-label='Import title']","text":"Arise web UI structure"}))
+            native("browser_type",{"selector":"input[aria-label='Import title']","text":"Arise web UI structure"})
             wait_eval("document.querySelector('input[aria-label=\"Import title\"]')?.value||''", lambda result: result == "Arise web UI structure", "title-input")
-            value(browser.call("browser_click",{"session_id":session,"selector":"details.web-import button.primary"}))
+            geometry = native("browser_eval", {"js":"JSON.stringify((()=>{const r=document.querySelector('details.web-import button.primary').getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:innerHeight,dy:r.top+r.height/2-innerHeight/2};})())"})
+            geometry = json.loads(geometry["result"])
+            (out / "arise-save-target.json").write_text(json.dumps(geometry))
+            native("browser_scroll", {"dy": geometry["dy"]})
+            wait_eval("(()=>{const b=document.querySelector('details.web-import button.primary'),r=b.getBoundingClientRect();return !b.disabled&&r.top>=0&&r.bottom<=innerHeight;})()", lambda result: str(result).lower() == "true", "save-button-visible")
+            native("browser_click",{"selector":"details.web-import button.primary"})
             wait_eval("document.querySelector('.web-content [role=status]')?.textContent||''", lambda result: isinstance(result, str) and "Saved to your private library" in result, "save")
             status, records=http("/v1/templates?q=Arise%20web%20UI%20structure")
             check("WI-18 actual Arise native form saves through the app",status==200 and any(t["title"]=="Arise web UI structure" and t["form"]["region"]=="KR" for t in records["items"]))

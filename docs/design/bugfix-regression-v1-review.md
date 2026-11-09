@@ -20,4 +20,10 @@ Use the existing app breakpoint (700px) for account navigation, and stack MyPage
 
 ## Review and results
 
-Pending post-fix validation.
+The exact pre-fix focused suite had 3 passes and 1 failure at 720×614. After the two CSS media-query changes it has 4 passes, including pointer scroll → Getting started → My space → Sign out and independent /v1/auth/session=401 assertions. The default account/admin/member browser suite now includes these cases and passes all 19 tests. The parent inspected the passing 720px and mobile screenshots. Additional boundary cases at701×500 and700×844 also pass; final default suite inventory is21 cases (19-case full run plus2 added boundary checks).
+
+The parent reconstructed each tracked pre-edit file from the saved baseline patch in an external temporary directory. AccountNavigation, MyPage and the account smoke runner exactly match their original contents plus the three intended single replacements; no unrelated incremental source edit was introduced. The current runtime contract documents registered-member bearer binding. Existing is_member queries accounts by owner, and the existing accounts test denies all four contribution routes for anonymous/nonmember/operator/invalid credentials. Fresh real CLI/MCP smoke passes all MC-01–11 checks.
+
+Svelte check reports 0 errors and 0 warnings; build passes. Fresh baseline Rust workspace execution passes 118 tests. These are local results; production frontend was not deployed. The parent’s four bounded public GET samples at 2026-11-09T05:25:24Z all return 200 in 0.202–0.243s; that does not resolve intermittent #409.
+
+The global diff whitespace gate passes. Rust fmt still reports 14 mismatching files in the fresh baseline. #405 and #410 were freshly claimed by codex-repository-consolidation-20261109-96462 during this pass, so no demo or Rust formatting source edits were made here; the exact log was supplied on #410. Arise host scrolling #404 and ongoing feature #406 remain outside the local responsive fix.

@@ -16,7 +16,7 @@ async function signIn(page:Page){
  await expect(page.getByRole('heading',{name:'My page.',exact:true})).toBeVisible();
 }
 
-for(const viewport of [{width:1416,height:614},{width:1024,height:500},{width:720,height:614}]){
+for(const viewport of [{width:1416,height:614},{width:1024,height:500},{width:720,height:614},{width:701,height:500}]){
  test('BUG-398-DESKTOP: sidebar actions remain reachable at '+viewport.width+'×'+viewport.height,async({page},testInfo)=>{
   await page.setViewportSize(viewport);
   await signIn(page);
@@ -45,15 +45,17 @@ for(const viewport of [{width:1416,height:614},{width:1024,height:500},{width:72
  });
 }
 
-test('BUG-398-MOBILE: mobile sign out remains reachable without horizontal overflow',async({page},testInfo)=>{
- await page.setViewportSize({width:390,height:844});
- await signIn(page);
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- const signOut=page.getByRole('button',{name:'Sign out',exact:true});
- await expect(signOut).toHaveCount(1);
- await expect(signOut).toBeInViewport({ratio:1});
- await page.screenshot({path:testInfo.outputPath('sidebar-mobile.png')});
- await signOut.click();
- await expect(page.getByLabel('Email address',{exact:true})).toBeVisible();
- expect((await page.request.get('/v1/auth/session')).status()).toBe(401);
-});
+for(const viewport of [{width:700,height:844},{width:390,height:844}]){
+ test('BUG-398-MOBILE: mobile sign out remains reachable at '+viewport.width+'×'+viewport.height,async({page},testInfo)=>{
+  await page.setViewportSize(viewport);
+  await signIn(page);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  const signOut=page.getByRole('button',{name:'Sign out',exact:true});
+  await expect(signOut).toHaveCount(1);
+  await expect(signOut).toBeInViewport({ratio:1});
+  await page.screenshot({path:testInfo.outputPath('sidebar-mobile.png')});
+  await signOut.click();
+  await expect(page.getByLabel('Email address',{exact:true})).toBeVisible();
+  expect((await page.request.get('/v1/auth/session')).status()).toBe(401);
+ });
+}
